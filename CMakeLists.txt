@@ -49,6 +49,7 @@ if (MSVC)
     configure_msvc_runtime()
 endif ()
 
+# boardcontroller
 set (LIBRARY_SRC
     "src/utils/timestamp.cpp"
     "src/utils/data_buffer.cpp"
@@ -64,7 +65,7 @@ add_library (
 )
 
 target_include_directories (
-    BoardController PUBLIC
+    BoardController PRIVATE
     inc
     src/utils/
     src/board_controller/inc
@@ -82,8 +83,25 @@ if (UNIX)
     target_link_libraries (BoardController -lpthread)
 endif (UNIX)
 
-# build cpp package
-add_subdirectory (cpp-package)
+# getdata
+# it's impossible to install target from subfolder, so we have to move GetData target to top level or split installation
+# I prefer to move GetData from subfolder to top level CMakeLists.txt
+add_library (
+    GetData STATIC
+    cpp-package/src/board_shim.cpp
+    cpp-package/src/data_handler.cpp
+)
+
+target_include_directories (
+    GetData PRIVATE
+    src/board_controller/inc
+)
+
+if (UNIX)
+    target_link_libraries (GetData pthread BoardController)
+else (UNIX)
+    target_link_libraries (GetData BoardController)
+endif (UNIX)
 
 # copy
 if (MSVC)
@@ -114,12 +132,6 @@ set (project_config "${CMAKE_HOME_DIRECTORY}/compiled/brainflowConfig.cmake")
 set (targets_export_name brainflowTargets)
 set (package_lib_install_dir ${CMAKE_INSTALL_PREFIX}/lib)
 set (package_inc_install_dir ${CMAKE_INSTALL_PREFIX}/inc)
-
-if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
-    set (targets_export_name_config brainflowTargets-debug)
-else (CMAKE_BUILD_TYPE EQUAL "DEBUG")
-    set (targets_export_name_config brainflowTargets-release)
-endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
 
 include (CMakePackageConfigHelpers)
 
