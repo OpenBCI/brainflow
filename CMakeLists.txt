@@ -4,7 +4,6 @@ project (brainflow)
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_VERBOSE_MAKEFILE ON)
 set (BRAINFLOW_VERSION 1.0.0)
-set (INSTALL_NAME brainflow_installed)
 
 macro (configure_msvc_runtime)
     if (MSVC)
@@ -45,6 +44,7 @@ macro (configure_msvc_runtime)
     endif ()
 endmacro ()
 
+# link msvc runtime statically
 if (MSVC)
     configure_msvc_runtime()
 endif ()
@@ -82,8 +82,10 @@ if (UNIX)
     target_link_libraries (BoardController -lpthread)
 endif (UNIX)
 
+# build cpp package
 add_subdirectory (cpp-package)
 
+# copy
 if (MSVC)
     add_custom_command (TARGET BoardController POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/BoardController.dll" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/BoardController.dll"
@@ -105,10 +107,19 @@ if (UNIX)
     )
 endif (UNIX)
 
+# install
 set (version_config "${CMAKE_HOME_DIRECTORY}/compiled/brainflowConfigVersion.cmake")
 set (config_install_dir "lib/cmake/brainflow")
 set (project_config "${CMAKE_HOME_DIRECTORY}/compiled/brainflowConfig.cmake")
 set (targets_export_name brainflowTargets)
+set (package_lib_install_dir ${CMAKE_INSTALL_PREFIX}/lib)
+set (package_inc_install_dir ${CMAKE_INSTALL_PREFIX}/inc)
+
+if (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+    set (targets_export_name_config brainflowTargets-debug)
+else (CMAKE_BUILD_TYPE EQUAL "DEBUG")
+    set (targets_export_name_config brainflowTargets-release)
+endif (CMAKE_BUILD_TYPE EQUAL "DEBUG")
 
 include (CMakePackageConfigHelpers)
 
@@ -138,6 +149,7 @@ install (
     RUNTIME DESTINATION lib
     LIBRARY DESTINATION lib
     INCLUDES DESTINATION inc
+    ARCHIVE DESTINATION lib
 )
 
 install (

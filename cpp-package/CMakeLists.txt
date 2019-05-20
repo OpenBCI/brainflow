@@ -5,7 +5,7 @@ set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_VERBOSE_MAKEFILE ON)
 
 add_library (
-    GetData SHARED
+    GetData STATIC
     src/board_shim.cpp
     src/data_handler.cpp
 )

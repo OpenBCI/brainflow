@@ -13,4 +13,8 @@ add_executable (
     src/brainflow_get_data.cpp
 )
 
-target_link_libraries (test_get_data brainflow::GetData)
+target_link_libraries (
+    test_get_data PUBLIC
+    brainflow::BoardController
+    brainflow::GetData
+)
