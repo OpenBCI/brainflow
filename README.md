@@ -217,3 +217,6 @@ Brainflow is a Cpp library which provides low-level API to read data from OpenBC
 You can find usage example at [cpp-test](./tests/cpp)
 
 You need to compile and install brainflow to use it
+
+## License: 
+MIT
