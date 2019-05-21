@@ -28,13 +28,13 @@ int set_log_level (int log_level);
 ```
 
 ## TODO List:
-- [] add Ganglion
-- [] add Cython daisy
-- [] add WiFI shield
-- [] Support Mac
-- [] integrate python and R bindings with MNE
-- [] fix Matlab package
-- [] code cleanup
+- [ ] add Ganglion
+- [ ] add Cython daisy
+- [ ] add WiFI shield
+- [ ] Support Mac
+- [ ] integrate python and R bindings with MNE
+- [ ] fix Matlab package
+- [ ] code cleanup
 
 ## Supported boards:
 For now only [OpenBCI Cyton Serial](http://docs.openbci.com/Hardware/02-Cyton) is supported, we are working on other boards
@@ -168,6 +168,7 @@ cd ..
 
 #### Linux
 * Install CMAKE>=3.10
+
 *If you wanna distribute compiled Linux linraries you HAVE to build it inside this [docker continer](https://github.com/Andrey1994/brainflow/blob/master/Docker/Dockerfile) otherwise your libraries will fail on Linux with another glibc version*
 ```
 mkdir build
