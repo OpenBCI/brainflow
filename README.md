@@ -180,7 +180,7 @@ docker run -it -v %host_path_to_brainflow%:%%path_inside_container% %container_i
 ```
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=..\\installed\\ ..
+cmake -DCMAKE_INSTALL_PREFIX=%install_path% ..
 make
 # you can skip installtion step if you don't need Cpp API
 make install
