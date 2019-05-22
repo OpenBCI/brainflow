@@ -42,12 +42,12 @@ For now only [OpenBCI Cyton Serial](http://docs.openbci.com/Hardware/02-Cyton) i
 
 ## Brainflow Bindings
 We support bindings for:
-* [python](https://github.com/Andrey1994/brainflow/blob/master/python-package/examples/brainflow_get_data.py)
-* [java](https://github.com/Andrey1994/brainflow/blob/master/java-package/brainflow/src/test/java/BrainFlowTest.java)
-* [R](https://github.com/Andrey1994/brainflow/blob/master/r-package/examples/brainflow_get_data.R)
-* [CPP](https://github.com/Andrey1994/brainflow/blob/master/cpp-package/src/brainflow_get_data.cpp)
-* [Matlab(WIP)](https://github.com/Andrey1994/brainflow/blob/master/matlab-package/brainflow/brainflow_get_data.m)
-* [C#](https://github.com/Andrey1994/brainflow/blob/master/csharp-package/brainflow/test/get_board_data.cs)
+* [python](./python-package)
+* [java](./java-package/brainflow/)
+* [R](./r-package/)
+* [CPP](./cpp-package/)
+* [Matlab(WIP)](./matlab-package/brainflow/)
+* [C#](./csharp-package/brainflow/)
 
 These bindings just call methods from dynamic libraries, if you are interested in other programming languages - feel free to create feature request
 
@@ -170,6 +170,13 @@ cd ..
 * Install CMAKE>=3.10
 
 *If you wanna distribute compiled Linux linraries you HAVE to build it inside this [docker continer](https://github.com/Andrey1994/brainflow/blob/master/Docker/Dockerfile) otherwise your libraries will fail on Linux with another glibc version*
+
+Instructions to build and run docker container and [docker getting started guide](https://docs.docker.com/get-started/)
+```
+cd Docker
+docker build .
+docker run -it -v %host_path_to_brainflow%:%%path_inside_container% %container_id% /bin/bash
+```
 ```
 mkdir build
 cd build
