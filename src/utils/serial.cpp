@@ -36,7 +36,6 @@ int Serial::set_serial_port_settings ()
     dcb_serial_params.DCBlength = sizeof (dcb_serial_params);
     if (GetCommState (this->port_descriptor, &dcb_serial_params) == 0)
     {
-
         CloseHandle (this->port_descriptor);
         return -1;
     }
