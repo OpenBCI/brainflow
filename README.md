@@ -182,7 +182,7 @@ mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=%install_path% ..
 make
-# you can skip installtion step if you don't need Cpp API
+# you can skip installation step if you don't need Cpp API
 make install
 ```
 
