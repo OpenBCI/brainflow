@@ -3,7 +3,7 @@
 #include "openbci_board.h"
 #include "serial.h"
 
-OpenBCIBoard::OpenBCIBoard (int num_channels, const char *port_name)
+OpenBCIBoard::OpenBCIBoard (int num_channels, const char *port_name) : serial (port_name)
 {
     this->num_channels = num_channels;
 
@@ -12,7 +12,6 @@ OpenBCIBoard::OpenBCIBoard (int num_channels, const char *port_name)
     initialized = false;
 
     db = NULL;
-    serial = new Serial (port_name);
 }
 
 OpenBCIBoard::~OpenBCIBoard ()
@@ -22,14 +21,14 @@ OpenBCIBoard::~OpenBCIBoard ()
 
 int OpenBCIBoard::open_port ()
 {
-    if (serial->is_port_open ())
+    if (serial.is_port_open ())
     {
-        Board::board_logger->error ("port {} already open", serial->get_port_name ());
+        Board::board_logger->error ("port {} already open", serial.get_port_name ());
         return PORT_ALREADY_OPEN_ERROR;
     }
 
-    Board::board_logger->info ("openning port {}", serial->get_port_name ());
-    int res = serial->open_serial_port ();
+    Board::board_logger->info ("openning port {}", serial.get_port_name ());
+    int res = serial.open_serial_port ();
     if (res < 0)
     {
         return UNABLE_TO_OPEN_PORT_ERROR;
@@ -40,7 +39,7 @@ int OpenBCIBoard::open_port ()
 
 int OpenBCIBoard::send_to_board (char *message)
 {
-    int res = serial->send_to_serial_port (message);
+    int res = serial.send_to_serial_port (message);
     if (res != 1)
         return BOARD_WRITE_ERROR;
 
@@ -49,7 +48,7 @@ int OpenBCIBoard::send_to_board (char *message)
 
 int OpenBCIBoard::set_port_settings ()
 {
-    int res = serial->set_serial_port_settings ();
+    int res = serial.set_serial_port_settings ();
     if (res < 0)
     {
         Board::board_logger->error ("Unable to set port settings, res is {}", res);
@@ -66,7 +65,7 @@ int OpenBCIBoard::status_check ()
     // board is ready if there are '$$$'
     for (int i = 0; i < 500; i++)
     {
-        int res = serial->read_from_serial_port (buf, 1);
+        int res = serial.read_from_serial_port (buf, 1);
         if (res > 0)
         {
             if (buf[0] == '$')
@@ -167,7 +166,7 @@ int OpenBCIBoard::release_session ()
         }
         initialized = false;
     }
-    delete serial;
+    serial.close_serial_port ();
     return STATUS_OK;
 }
 

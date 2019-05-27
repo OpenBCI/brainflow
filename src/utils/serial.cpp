@@ -25,8 +25,8 @@ int Serial::open_serial_port ()
     this->port_descriptor =
         CreateFile (this->port_name, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
     if (this->port_descriptor == INVALID_HANDLE_VALUE)
-        return -1;
-    return 0;
+        return SerialExitCodes::OPEN_PORT_ERROR;
+    return SerialExitCodes::OK;
 }
 
 int Serial::set_serial_port_settings ()
@@ -37,7 +37,7 @@ int Serial::set_serial_port_settings ()
     if (GetCommState (this->port_descriptor, &dcb_serial_params) == 0)
     {
         CloseHandle (this->port_descriptor);
-        return -1;
+        return SerialExitCodes::GET_PORT_STATE_ERROR;
     }
 
     dcb_serial_params.BaudRate = CBR_115200;
@@ -47,7 +47,7 @@ int Serial::set_serial_port_settings ()
     if (SetCommState (this->port_descriptor, &dcb_serial_params) == 0)
     {
         CloseHandle (this->port_descriptor);
-        return -2;
+        return SerialExitCodes::SET_PORT_STATE_ERROR;
     }
 
     timeouts.ReadIntervalTimeout = 1000;
@@ -58,15 +58,15 @@ int Serial::set_serial_port_settings ()
     if (SetCommTimeouts (this->port_descriptor, &timeouts) == 0)
     {
         CloseHandle (this->port_descriptor);
-        return -3;
+        return SerialExitCodes::SET_TIMEOUT_ERROR;
     }
-    return 0;
+    return OK;
 }
 
-int Serial::read_from_serial_port (void *b, int size)
+int Serial::read_from_serial_port (void *bytes_to_read, int size)
 {
     DWORD readed;
-    if (!ReadFile (this->port_descriptor, b, size, &readed, NULL))
+    if (!ReadFile (this->port_descriptor, bytes_to_read, size, &readed, NULL))
         return 0;
     return (int)readed;
 }
@@ -86,7 +86,7 @@ int Serial::close_serial_port ()
     {
         CloseHandle (this->port_descriptor);
     }
-    return 0;
+    return SerialExitCodes::OK;
 }
 
 /////////////////////////////////////////////////
@@ -111,8 +111,8 @@ int Serial::open_serial_port ()
     int flags = O_RDWR | O_NOCTTY;
     this->port_descriptor = open (this->port_name, flags);
     if (this->port_descriptor < 0)
-        return -1;
-    return 0;
+        return SerialExitCodes::OPEN_PORT_ERROR;
+    return OK;
 }
 
 int Serial::set_serial_port_settings ()
@@ -139,14 +139,14 @@ int Serial::set_serial_port_settings ()
     port_settings.c_cc[VTIME] = 10;
 
     if (tcsetattr (this->port_descriptor, TCSANOW, &port_settings) != 0)
-        return -1;
+        return SerialExitCodes::SET_PORT_STATE_ERROR;
     tcflush (this->port_descriptor, TCIOFLUSH);
-    return 0;
+    return SerialExitCodes::OK;
 }
 
-int Serial::read_from_serial_port (void *b, int size)
+int Serial::read_from_serial_port (void *bytes_to_read, int size)
 {
-    return read (this->port_descriptor, b, size);
+    return read (this->port_descriptor, bytes_to_read, size);
 }
 
 int Serial::send_to_serial_port (const void *message)
@@ -162,9 +162,9 @@ int Serial::close_serial_port ()
     {
         int res = close (port_descriptor);
         if (res < 0)
-            return -1;
+            return SerialExitCodes::CLOSE_ERROR;
     }
-    return 0;
+    return SerialExitCodes::OK;
 }
 
 #endif

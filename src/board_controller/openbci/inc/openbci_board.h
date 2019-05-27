@@ -19,7 +19,7 @@ protected:
     bool is_streaming;
     std::thread streaming_thread;
 
-    Serial *serial;
+    Serial serial;
 
     DataBuffer *db;
     int num_channels;
