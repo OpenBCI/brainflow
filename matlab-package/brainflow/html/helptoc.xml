@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding="utf-8"?>
+
+<toc version="2.0">
+<!-- First tocitem specifies top level in Help browser Contents pane -->
+<!-- This can be a roadmap page, as shown below, or a content page -->
+    <tocitem target="mytoolbox_product_page.html">MyToolbox Toolbox
+        <!-- Nest tocitems to create hierarchical entries in  Contents-->
+        <!-- To include icons, use the following syntax for tocitems: -->
+        <!-- <tocitem target="foo.html" image="HelpIcon.NAME"> -->
+        <!-- Title-of-Section </tocitem> -->
+        <!-- where NAME is one of the following (use capital letters): -->
+        <!-- FUNCTION, USER_GUIDE, EXAMPLES, BLOCK, GETTING_STARTED, -->
+        <!-- DEMOS, RELEASE_NOTES --> 
+        <!-- Icon images used for these entries are also stored in -->
+        <!-- matlabroot/toolbox/matlab/icons -->
+        <!-- A Getting Started Guide usually comes first -->
+        <tocitem target="mytbx_gs_top.html" image="HelpIcon.GETTING_STARTED">
+            Getting Started with the MyToolbox Toolbox
+            <tocitem target="mytbx_reqts_example.html">System Requirements
+            </tocitem>
+            <tocitem target="mytbx_features_example.html">Features
+                <!-- 2nd and lower TOC levels usually have anchor IDs -->
+                <tocitem target="mytbx_feature1_example.htm#10187">Feature 1
+                </tocitem>
+                <tocitem target="mytbx_feature2_example.htm#10193">Feature 2
+                </tocitem>
+            </tocitem>
+        </tocitem>
+        <!-- User Guide comes next -->
+        <tocitem target="mytbx_ug_intro.html" 
+            image="HelpIcon.USER_GUIDE">MyToolbox User Guide
+            <tocitem target="mytbx_ch_1.html">Setting Up MyToolbox
+            </tocitem>
+            <tocitem target="mytbx_ch_2.html">Processing Data
+            </tocitem>
+            <tocitem target="mytbx_ch_3.html">Verifying MyToolbox outputs 
+                <tocitem target="mytbx_ch_3a.html">Handling Test Failures
+                </tocitem>
+            </tocitem>
+        </tocitem>
+        <!-- Function reference next -->
+        <!-- First item is page describing function categories, if any -->
+        <tocitem target="helpfuncbycat.html" 
+                 image="HelpIcon.FUNCTION">Function Reference
+            <!-- First category, with link to anchor in above page -->
+            <tocitem target="helpfuncbycat.html#1">First Category
+                <!-- Inside category, list its functions alphabetically -->
+                <tocitem target="function_1.html">function_1</tocitem>
+                <tocitem target="function_2.html">function_2</tocitem>
+                <!-- ... -->
+            </tocitem>
+            <!-- Second category, with link to anchor in above page -->
+            <tocitem target="helpfuncbycat.html#2">Second Category
+                <!-- Inside category, list its functions alphabetically -->
+                <tocitem target="function_3.html">function_3</tocitem>
+                <tocitem target="function_4.html">function_4</tocitem>
+                <!-- ... -->
+             </tocitem>
+            <!-- Third category, with link to anchor in above page -->
+            <tocitem target="helpfuncbycat.html#3">Third category 
+                <!-- ... -->
+            </tocitem>
+        </tocitem>
+        <!-- Optional List of Examples, with hyperlinks to examples in other files -->
+        <tocitem target="mytbx_example.html" 
+                 image="HelpIcon.HelpIcon.EXAMPLES">Mytoolbox Examples
+        </tocitem>
+        <!-- Optional link or links to your or other Web sites -->
+        <tocitem target="http://www.mathworks.com" 
+                 image="$toolbox/matlab/icons/webicon.gif">
+        MyToolbox Web Site (Example only: goes to mathworks.com)
+        </tocitem>
+    </tocitem>
+</toc>

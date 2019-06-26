@@ -1,0 +1,123 @@
+<deployment-project plugin="plugin.toolbox" plugin-version="1.0">
+  <configuration build-checksum="1805014248" file="D:\summer intern\OpenBCI_2019\projects\Fan1117_local\brainflow\matlab-package\brainflow.prj" location="D:\summer intern\OpenBCI_2019\projects\Fan1117_local\brainflow\matlab-package" name="brainflow" target="target.toolbox" target-name="Package Toolbox">
+    <param.appname>brainflow</param.appname>
+    <param.authnamewatermark>Andrey, Daniel, Fan</param.authnamewatermark>
+    <param.email>contact@openbci.com</param.email>
+    <param.company>OpenBCI</param.company>
+    <param.summary>Brainflow is a library intended to obtain, parse and analyze EEG\EMG\ECG data from OpenBCI boards.</param.summary>
+    <param.description>Core module of this library is implemented in C\C++ and available for all bindings as a dynamic library. This approach allows to reduce code duplication and simplify maintenance, also it's better than any streaming based solution because using this library you don't need to worry about inter process communication and it's a single dependency.</param.description>
+    <param.screenshot />
+    <param.version>1.0</param.version>
+    <param.output>${PROJECT_ROOT}\brainflow.mltbx</param.output>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.guid>d1458244-d113-460e-ac9c-a70990c434b0</param.guid>
+    <param.exclude.filters />
+    <param.exclude.pcodedmfiles>true</param.exclude.pcodedmfiles>
+    <param.examples>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;examples&gt;
+   &lt;exampleCategory name="brainflow"&gt;
+      &lt;example name="brainflow_get_data" type="html"&gt;
+         &lt;file type="source"&gt;/html/brainflow_get_data.html&lt;/file&gt;
+         &lt;file type="main"&gt;/brainflow_get_data.m&lt;/file&gt;
+         &lt;file type="thumbnail"/&gt;
+      &lt;/example&gt;
+   &lt;/exampleCategory&gt;
+&lt;/examples&gt;</param.examples>
+    <param.demosxml />
+    <param.apps />
+    <param.registered.apps />
+    <param.docs>${PROJECT_ROOT}\brainflow\info.xml</param.docs>
+    <param.getting.started.guide>${PROJECT_ROOT}\brainflow\doc\GettingStarted.mlx</param.getting.started.guide>
+    <param.matlabpath.excludes />
+    <param.javaclasspath.excludes />
+    <param.exported.on.package>true</param.exported.on.package>
+    <param.required.addons />
+    <param.matlab.project.id />
+    <param.matlab.project.name />
+    <param.release.start>R2019a</param.release.start>
+    <param.release.end>R2019a</param.release.end>
+    <param.release.current.only>true</param.release.current.only>
+    <param.compatiblity.windows>true</param.compatiblity.windows>
+    <param.compatiblity.macos>true</param.compatiblity.macos>
+    <param.compatiblity.linux>true</param.compatiblity.linux>
+    <param.compatiblity.matlabonline>true</param.compatiblity.matlabonline>
+    <param.installation.map />
+    <param.additional.sw.names />
+    <param.additional.sw.licenses />
+    <param.additional.sw.win.url />
+    <param.additional.sw.mac.url />
+    <param.additional.sw.linux.url />
+    <unset>
+      <param.screenshot />
+      <param.version />
+      <param.output />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+      <param.exclude.filters />
+      <param.exclude.pcodedmfiles />
+      <param.demosxml />
+      <param.apps />
+      <param.registered.apps />
+      <param.matlabpath.excludes />
+      <param.javaclasspath.excludes />
+      <param.required.addons />
+      <param.matlab.project.id />
+      <param.matlab.project.name />
+      <param.compatiblity.windows />
+      <param.compatiblity.macos />
+      <param.compatiblity.linux />
+      <param.compatiblity.matlabonline />
+      <param.installation.map />
+      <param.additional.sw.names />
+      <param.additional.sw.licenses />
+      <param.additional.sw.win.url />
+      <param.additional.sw.mac.url />
+      <param.additional.sw.linux.url />
+    </unset>
+    <fileset.rootdir>
+      <file>${PROJECT_ROOT}\brainflow</file>
+    </fileset.rootdir>
+    <fileset.rootfiles>
+      <file>${PROJECT_ROOT}\brainflow\BoardShim.m</file>
+      <file>${PROJECT_ROOT}\brainflow\BoardsIds.m</file>
+      <file>${PROJECT_ROOT}\brainflow\brainflow_get_data.m</file>
+      <file>${PROJECT_ROOT}\brainflow\demos.xml</file>
+      <file>${PROJECT_ROOT}\brainflow\doc</file>
+      <file>${PROJECT_ROOT}\brainflow\html</file>
+      <file>${PROJECT_ROOT}\brainflow\inc</file>
+      <file>${PROJECT_ROOT}\brainflow\info.xml</file>
+      <file>${PROJECT_ROOT}\brainflow\lib</file>
+    </fileset.rootfiles>
+    <fileset.depfun.included />
+    <fileset.depfun.excluded />
+    <fileset.package />
+    <build-deliverables>
+      <file location="${PROJECT_ROOT}" name="brainflow.mltbx" optional="false">D:\summer intern\OpenBCI_2019\projects\Fan1117_local\brainflow\matlab-package\brainflow.mltbx</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>E:\software\Matlab2019a</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
