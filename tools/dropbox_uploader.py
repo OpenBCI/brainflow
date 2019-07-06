@@ -1,5 +1,6 @@
 import argparse
 import os
+import logging
 
 import dropbox
 import glob
@@ -21,6 +22,7 @@ class TransferData:
                 dbx.files_upload (f.read (), file_to)
 
 def main ():
+    logging.basicConfig (level = logging.DEBUG, format = '%(asctime)s %(message)s')
 
     parser = argparse.ArgumentParser ()
     parser.add_argument ('--token', type = str, help  = 'access token', required = True)
@@ -29,8 +31,11 @@ def main ():
     args = parser.parse_args ()
 
     transferData = TransferData (args.token)
+    logging.info ('remote dir %s' % args.remote_dir)
+    logging.info ('files: %s' % '\n'.join(glob.glob (args.local_files)))
     for file in glob.glob (args.local_files):
         remote_file = args.remote_dir + '/' + os.path.split (file)[1]
+        logging.info ('sending %s to %s' % (file, remote_file))
         transferData.upload_file (file, remote_file)
 
 if __name__ == '__main__':

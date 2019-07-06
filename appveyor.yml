@@ -48,9 +48,9 @@ after_test:
   - python -m pip install -r %APPVEYOR_BUILD_FOLDER%\tools\requirements.txt
 
 deploy_script:
-  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files $APPVEYOR_BUILD_FOLDER%\installed32\lib\*.* --remote-dir APPVEYOR_REPO_COMMIT
-  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files $APPVEYOR_BUILD_FOLDER%\installed32\inc\*.* --remote-dir APPVEYOR_REPO_COMMIT
-  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files $APPVEYOR_BUILD_FOLDER%\installed64\lib\*.* --remote-dir APPVEYOR_REPO_COMMIT
+  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed32\lib\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%
+  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed32\inc\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%
+  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed64\lib\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%
 
 notifications:
   - provider: Email
