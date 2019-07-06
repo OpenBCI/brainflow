@@ -13,13 +13,8 @@ class TransferData:
 
     def upload_file (self, file_from, file_to):
         dbx = dropbox.Dropbox (self.access_token)
-        # good enought for our task
-        if file_from.endswith ('.h') or file_from.endswith ('.cmake'):
-            with open (file_from, 'r') as f:
-                dbx.files_upload (f.read (), file_to)
-        else:
-            with open (file_from, 'rb') as f:
-                dbx.files_upload (f.read (), file_to)
+        with open (file_from, 'rb') as f:
+            dbx.files_upload (f.read (), file_to)
 
 def main ():
     logging.basicConfig (level = logging.DEBUG, format = '%(asctime)s %(message)s')
