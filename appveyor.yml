@@ -47,16 +47,19 @@ install:
 
 after_test:
   - python -m pip install -r %APPVEYOR_BUILD_FOLDER%\tools\requirements.txt
-  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed32\lib\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/win64
-  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed32\inc\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/win32
-  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed64\lib\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/inc
+  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed32\lib\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/win32
+  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed32\inc\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/inc
+  - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed64\lib\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/win64
 
 deploy_script:
   - ps: >-
-      If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
-        write-output "ps tag"
+      If ($env:APPVEYOR_REPO_TAG -eq "true") {
+        Invoke-Expression "python %APPVEYOR_BUILD_FOLDER%\tools\wait_for_file.py --token %DROPBOX_TOKEN% --file /%APPVEYOR_REPO_COMMIT%/linux/linux_success"
+        New-Item %APPVEYOR_BUILD_FOLDER%\linux_libs -itemtype directory
+        Invoke-Expression "python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_downloader.py --token %DROPBOX_TOKEN% --local-dir %APPVEYOR_BUILD_FOLDER%\linux_libs --remote-dir /%APPVEYOR_REPO_COMMIT%/linux"
+        ls %APPVEYOR_BUILD_FOLDER%\linux_libs
       } Else {
-        write-output "ps no tag"
+        write-output "Skip deployment for non tag"
       }
 
 notifications:
