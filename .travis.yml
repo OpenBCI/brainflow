@@ -34,7 +34,9 @@ script:
 
 after_success:
   - sudo -H pip3 install -r $TRAVIS_BUILD_DIR/tools/requirements.txt
-  - python3 $TRAVIS_BUILD_DIR/tools/dropbox_uploader.py  --token $DROPBOX_TOKEN --local-files "$TRAVIS_BUILD_DIR/installed/lib/*.*" --remote-dir /$TRAVIS_COMMIT
+  - python3 $TRAVIS_BUILD_DIR/tools/dropbox_uploader.py  --token $DROPBOX_TOKEN --local-files "$TRAVIS_BUILD_DIR/installed/lib/*.*" --remote-dir /$TRAVIS_COMMIT/linux
+  # notify that everything is ok
+  - echo success > linux_status && python3 $TRAVIS_BUILD_DIR/tools/dropbox_uploader.py  --token $DROPBOX_TOKEN --local-files linux_status --remote-dir /$TRAVIS_COMMIT/linux
 
 notifications:
   email:
