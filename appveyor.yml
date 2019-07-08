@@ -45,13 +45,11 @@ install:
 #   # I dont understand why the test below fails in appveyour, todo - investigate it
 #   #- mkdir %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32 && cd %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32 && cmake -G "Visual Studio 15 2017" -DCMAKE_SYSTEM_VERSION=8.1 -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%\installed32\ .. && cmake --build . --config Release && python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32\Release\test_get_data.exe 0
 
-after_test:
+deploy_script:
   - python -m pip install -r %APPVEYOR_BUILD_FOLDER%\tools\requirements.txt
   - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed32\lib\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/win32
   - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed32\inc\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/inc
   - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed64\lib\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/win64
-
-deploy_script:
   - ps: >-
       If ($env:APPVEYOR_REPO_TAG -eq "true") {
         Invoke-Expression "python %APPVEYOR_BUILD_FOLDER%\tools\wait_for_file.py --token %DROPBOX_TOKEN% --file /%APPVEYOR_REPO_COMMIT%/linux/linux_success"
