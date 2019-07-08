@@ -36,8 +36,12 @@ classdef BoardShim
             obj.board_id = uint32 (board_id)
             if board_id == uint32(BoardsIds.CYTON_BOARD)
                 obj.num_channels = 12
+                loadlibrary (obj.libname, 'board_controller.h')
+            elseif board_id == uint32(BoardsIds.GANGLION_BOARD)
+                obj.num_channels = 8
+                loadlibrary (obj.libname, 'board_controller.h')
             end
-            loadlibrary (obj.libname, 'board_controller.h')
+            
         end
 
         function check_ec (obj, ec)
