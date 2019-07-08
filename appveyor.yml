@@ -52,10 +52,10 @@ deploy_script:
   - python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_uploader.py --token %DROPBOX_TOKEN% --local-files %APPVEYOR_BUILD_FOLDER%\installed64\lib\*.* --remote-dir /%APPVEYOR_REPO_COMMIT%/win64
   - ps: >-
       If ($env:APPVEYOR_REPO_TAG -eq "true") {
-        Invoke-Expression "python %APPVEYOR_BUILD_FOLDER%\tools\wait_for_file.py --token %DROPBOX_TOKEN% --file /%APPVEYOR_REPO_COMMIT%/linux/linux_success"
-        New-Item %APPVEYOR_BUILD_FOLDER%\linux_libs -itemtype directory
-        Invoke-Expression "python %APPVEYOR_BUILD_FOLDER%\tools\dropbox_downloader.py --token %DROPBOX_TOKEN% --local-dir %APPVEYOR_BUILD_FOLDER%\linux_libs --remote-dir /%APPVEYOR_REPO_COMMIT%/linux"
-        ls %APPVEYOR_BUILD_FOLDER%\linux_libs
+        Invoke-Expression "python $env:APPVEYOR_BUILD_FOLDER\tools\wait_for_file.py --token $env:DROPBOX_TOKEN --file /$env:APPVEYOR_REPO_COMMIT/linux/linux_success"
+        New-Item $env:APPVEYOR_BUILD_FOLDER\linux_libs -itemtype directory
+        Invoke-Expression "python $env:APPVEYOR_BUILD_FOLDER\tools\dropbox_downloader.py --token $env:DROPBOX_TOKEN --local-dir $env:APPVEYOR_BUILD_FOLDER\linux_libs --remote-dir /$env:APPVEYOR_REPO_COMMIT/linux"
+        ls $env:APPVEYOR_BUILD_FOLDER\linux_libs
       } Else {
         write-output "Skip deployment for non tag"
       }
