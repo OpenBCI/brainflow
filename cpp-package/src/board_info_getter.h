@@ -1,5 +1,4 @@
-#ifndef BOARD_INFO_GETTER
-#define BOARD_INFO_GETTER
+#pragma once
 
 #include "board_controller.h"
 #include "brainflow_exception.h"
@@ -78,5 +77,3 @@ public:
         }
     }
 };
-
-#endif
