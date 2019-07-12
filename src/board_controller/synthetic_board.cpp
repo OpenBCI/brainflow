@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <fstream>
 #include <math.h>
 #include <random>
@@ -130,8 +129,8 @@ void SyntheticBoard::read_thread ()
     // random distr for noise
     std::random_device rd;
     std::mt19937 mt (rd ());
-    float min_noise = std::max (this->noise, 0.001f);
-    float range = (this->amplitude * min_noise) / 2.0f;
+    float max_noise = (this->noise > 0.001f) ? this->noise : 0.001f;
+    float range = (this->amplitude * max_noise) / 2.0f;
     Board::board_logger->info ("noise range is {}:{}", -range, range);
     Board::board_logger->info ("amplitude is {}", this->amplitude);
     Board::board_logger->info ("shift is {}", this->shift);
