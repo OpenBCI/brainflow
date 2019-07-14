@@ -56,6 +56,10 @@ int prepare_session (int board_id, char *port_name)
         case CYTON_DAISY_BOARD:
             board = new CytonDaisy (port_name);
             break;
+        case SYNTHETIC_BOARD:
+            board = new SyntheticBoard (port_name);
+            res = board->prepare_session ();
+            break;
         default:
             Board::board_logger->error ("No board with Id {}", board_id);
             return UNSUPPORTED_BOARD_ERROR;

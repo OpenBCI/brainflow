@@ -27,7 +27,7 @@
                     return Cyton.first_eeg_channel;
                 case (int)BoardIds.GANGLION_BOARD:
                     return Ganglion.first_eeg_channel;
-                case (int)Synthetic.board_id:
+                case (int)BoardIds.SYNTHETIC_BOARD:
                     return Synthetic.first_eeg_channel;
                 case (int)BoardIds.CYTON_DAISY_BOARD:
                     return CytonDaisy.first_eeg_channel;
@@ -44,7 +44,7 @@
                     return Cyton.num_eeg_channels;
                 case (int)BoardIds.GANGLION_BOARD:
                     return Ganglion.num_eeg_channels;
-                case (int)Synthetic.board_id:
+                case (int)BoardIds.SYNTHETIC_BOARD:
                     return Synthetic.num_eeg_channels;
                 case (int)BoardIds.CYTON_DAISY_BOARD:
                     return CytonDaisy.num_eeg_channels;
@@ -61,7 +61,7 @@
                     return Cyton.package_length;
                 case (int)BoardIds.GANGLION_BOARD:
                     return Ganglion.package_length;
-                case (int)Synthetic.board_id:
+                case (int)BoardIds.SYNTHETIC_BOARD:
                     return Synthetic.package_length;
                 case (int)BoardIds.CYTON_DAISY_BOARD:
                     return CytonDaisy.package_length;
