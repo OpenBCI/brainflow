@@ -50,6 +50,7 @@ test_script:
   # x32
   # I dont understand why the test below fails in appveyour, todo - investigate it
   #- mkdir %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32 && cd %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32 && cmake -G "Visual Studio 15 2017" -DCMAKE_SYSTEM_VERSION=8.1 -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%\installed32\ .. && cmake --build . --config Release && python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32\Release\test_get_data.exe 0
+  # todo add 32bit test for python
 
   # synthetci board tests
   - python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board -1 --port "smth"
