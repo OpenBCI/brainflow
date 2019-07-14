@@ -27,6 +27,7 @@ void CytonDaisy::read_thread ()
     int res;
     unsigned char b[32];
     float package[20]; // 16 eeg channelsm 3 accel and package num
+    bool first_sample = false;
     while (keep_alive)
     {
         // check start byte
@@ -55,7 +56,7 @@ void CytonDaisy::read_thread ()
             continue;
         }
 
-        if ((b[0] % 2 == 0) && (b[0] != 0)) // second sample
+        if ((b[0] % 2 == 0) && (first_sample))
         {
             // eeg
             for (int i = 0; i < 8; i++)
@@ -71,8 +72,9 @@ void CytonDaisy::read_thread ()
             package[19] /= 2.0f;
             db->add_data (get_timestamp (), package);
         }
-        else // first sample
+        else
         {
+            first_sample = true;
             package[0] = (float)b[0];
             // eeg
             for (int i = 0; i < 8; i++)
