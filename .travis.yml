@@ -32,6 +32,7 @@ addons:
       - python3-pip
       - r-base
       - libxml2-dev
+    update: true
 
 
 before_script:
