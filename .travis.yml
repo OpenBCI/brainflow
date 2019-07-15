@@ -1,6 +1,10 @@
 sudo: required
 dist: xenial
 
+os:
+  - linux
+  - osx
+
 services:
   - docker
 
