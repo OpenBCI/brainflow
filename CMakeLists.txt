@@ -56,26 +56,28 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     SET (GET_DATA_NAME "GetData")
     if(APPLE)
         SET (COMPILED_FILE_NAME "libBoardController.dylib")
-    elseif (UNIX)
+    endif (APPLE)
+    if (UNIX)
         SET (COMPILED_FILE_NAME "libBoardController.so")
-    else ()
+    endif (UNIX)
+    if (MSVC)
         SET (COMPILED_FILE_NAME "BoardController.dll")
         SET (GANGLION_LIB_NATIVE_PATH "${CMAKE_HOME_DIRECTORY}/GanglionBLEAPI/x64/Release/GanglionLibNative64.dll")
         SET (GANGLION_LIB_PATH "${CMAKE_HOME_DIRECTORY}/GanglionBLEAPI/x64/Release/GanglionLib.dll")
         SET (GANGLION_LIB_NATIVE_NAME "GanglionLibNative64.dll")
         SET (GANGLION_LIB_NAME "GanglionLib.dll")
-    endif (UNIX)
+    endif (MSVC)
 else (CMAKE_SIZEOF_VOID_P EQUAL 8)
     MESSAGE ("32 bits compiler detected")
     SET (PLATFORM_ACH "X86")
-    SET (BOARD_CONTROLLER_NAME "BoardController32")
-    SET (GET_DATA_NAME "GetData32")
+    SET (BOARD_CONTROLLER_NAME "BoardController86")
+    SET (GET_DATA_NAME "GetData86")
     if (APPLE)
-        SET (COMPILED_FILE_NAME "libBoardController32.dylib")
+        SET (COMPILED_FILE_NAME "libBoardController86.dylib")
     elseif (UNIX)
-        SET (COMPILED_FILE_NAME "libBoardController32.so")
+        SET (COMPILED_FILE_NAME "libBoardController86.so")
     else ()
-        SET (COMPILED_FILE_NAME "BoardController32.dll")
+        SET (COMPILED_FILE_NAME "BoardController86.dll")
         SET (GANGLION_LIB_NATIVE_PATH "${CMAKE_HOME_DIRECTORY}/GanglionBLEAPI/Win32/Release/GanglionLibNative32.dll")
         SET (GANGLION_LIB_PATH "${CMAKE_HOME_DIRECTORY}/GanglionBLEAPI/Win32/Release/GanglionLib.dll")
         SET (GANGLION_LIB_NATIVE_NAME "GanglionLibNative32.dll")
@@ -91,10 +93,8 @@ set (LIBRARY_SRC
     "src/board_controller/openbci/openbci_serial_board.cpp"
     "src/board_controller/openbci/ganglion.cpp"
     "src/board_controller/openbci/cyton.cpp"
-    "src/board_controller/openbci/cyton_daisy.cpp"
     "src/board_controller/board_controller.cpp"
     "src/board_controller/board.cpp"
-    "src/board_controller/synthetic_board.cpp"
 )
 
 add_library (
@@ -146,7 +146,7 @@ endif (UNIX)
 if (MSVC)
     add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD 
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/brainflow/lib/${COMPILED_FILE_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/brainflow/lib/MSVC/${COMPILED_FILE_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/board_controller.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/brainflow/inc/board_controller.h"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${COMPILED_FILE_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/lib/${COMPILED_FILE_NAME}"
@@ -165,13 +165,24 @@ endif (MSVC)
 if (UNIX)
     add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/brainflow/lib/${COMPILED_FILE_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/brainflow/lib/UNIX/${COMPILED_FILE_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/board_controller.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/brainflow/inc/board_controller.h"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${COMPILED_FILE_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/${COMPILED_FILE_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
     )
 endif (UNIX)
+if (APPLE)
+    add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/brainflow/lib/APPLE/${COMPILED_FILE_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/board_controller.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/brainflow/inc/board_controller.h"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${COMPILED_FILE_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/${COMPILED_FILE_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
+    )
+endif (APPLE)
+
 
 # install
 set (version_config "${CMAKE_HOME_DIRECTORY}/compiled/brainflowConfigVersion.cmake")
