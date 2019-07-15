@@ -22,6 +22,8 @@ addons:
       - python3
       - python3-setuptools
       - python3-pip
+      - r-base
+      - libxml2-dev
 
 before_script:
   - sudo pip3 install --upgrade pip
@@ -29,7 +31,6 @@ before_script:
   - sudo -H pip3 install --upgrade setuptools wheel virtualenv
   - sudo -H pip3 install $TRAVIS_BUILD_DIR/emulator
   # install R and required packages
-  - sudo -H apt-get install r-base libxml2-dev
   - sudo -H R --vanilla -e 'install.packages("stringi", dependencies=TRUE, INSTALL_opts = c("--no-lock"), repos="http://cran.us.r-project.org")'
   - sudo -H R --vanilla -e 'install.packages("stringr", dependencies=TRUE, INSTALL_opts = c("--no-lock"), repos="http://cran.us.r-project.org")'
   - sudo -H R --vanilla -e 'install.packages("glue", repos="http://cran.us.r-project.org")'
