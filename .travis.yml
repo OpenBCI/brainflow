@@ -26,13 +26,7 @@ addons:
       - libxml2-dev
   homebrew:
     packages:
-      - maven
-      - python3
-      - python3-setuptools
-      - python3-pip
-      - r-base
-      - libxml2-dev
-    update: true
+      - r
 
 
 before_script:
