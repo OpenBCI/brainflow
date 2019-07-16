@@ -26,7 +26,7 @@ addons:
       - libxml2-dev
   homebrew:
     packages:
-      - r-base
+      - r
     update: true
 
 install:
@@ -35,11 +35,11 @@ install:
   - sudo -H pip3 install --upgrade setuptools wheel virtualenv
   - sudo -H pip3 install $TRAVIS_BUILD_DIR/emulator
   # install R and required packages
-  - sudo R --vanilla -e 'install.packages("stringi", dependencies=TRUE, INSTALL_opts = c("--no-lock"), repos="http://cran.us.r-project.org")'
-  - sudo R --vanilla -e 'install.packages("stringr", dependencies=TRUE, INSTALL_opts = c("--no-lock"), repos="http://cran.us.r-project.org")'
-  - sudo R --vanilla -e 'install.packages("glue", repos="http://cran.us.r-project.org")'
-  - sudo R --vanilla -e 'install.packages("knitr", repos="http://cran.us.r-project.org")'
-  - sudo R --vanilla -e 'install.packages("reticulate", repos="http://cran.us.r-project.org")'
+  - sudo  R --vanilla -e 'install.packages("stringi", dependencies=TRUE, INSTALL_opts = c("--no-lock"), repos="http://cran.us.r-project.org")'
+  - sudo -H R --vanilla -e 'install.packages("stringr", dependencies=TRUE, INSTALL_opts = c("--no-lock"), repos="http://cran.us.r-project.org")'
+  - sudo -H R --vanilla -e 'install.packages("glue", repos="http://cran.us.r-project.org")'
+  - sudo -H R --vanilla -e 'install.packages("knitr", repos="http://cran.us.r-project.org")'
+  - sudo -H R --vanilla -e 'install.packages("reticulate", repos="http://cran.us.r-project.org")'
 
 before_script:
   # need to build in manylinux docker container!
