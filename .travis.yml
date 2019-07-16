@@ -26,7 +26,8 @@ addons:
       - libxml2-dev
   homebrew:
     packages:
-      - r
+      - r-base
+    update: true
 
 before_install:
   - sudo pip3 install --upgrade pip
