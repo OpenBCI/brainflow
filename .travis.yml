@@ -28,22 +28,19 @@ addons:
     packages:
       - r
 
-repos:
-  CRAN: http://cran.us.r-project.org
-
-r_packages:
-  - stringi
-  - stringr
-  - glue
-  - knitr
-  - reticulate
-
-
-before_script:
+before_install:
   - sudo pip3 install --upgrade pip
   - sudo pip3 install cmake
   - sudo -H pip3 install --upgrade setuptools wheel virtualenv
   - sudo -H pip3 install $TRAVIS_BUILD_DIR/emulator
+  # install R and required packages
+  - sudo -H R --vanilla -e 'install.packages("stringi", dependencies=TRUE, INSTALL_opts = c("--no-lock"), repos="http://cran.us.r-project.org")'
+  - sudo -H R --vanilla -e 'install.packages("stringr", dependencies=TRUE, INSTALL_opts = c("--no-lock"), repos="http://cran.us.r-project.org")'
+  - sudo -H R --vanilla -e 'install.packages("glue", repos="http://cran.us.r-project.org")'
+  - sudo -H R --vanilla -e 'install.packages("knitr", repos="http://cran.us.r-project.org")'
+  - sudo -H R --vanilla -e 'install.packages("reticulate", repos="http://cran.us.r-project.org")'
+
+before_script:
   # need to build in manylinux docker container!
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull dockcross/manylinux-x64 ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker run -e TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR -v $TRAVIS_BUILD_DIR:$TRAVIS_BUILD_DIR dockcross/manylinux-x64 /bin/bash -c "/opt/python/cp36-cp36m/bin/pip3.6 install cmake && cd $TRAVIS_BUILD_DIR && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/installed .. && make && make install" ; fi
