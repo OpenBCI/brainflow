@@ -5,6 +5,8 @@ os:
   - linux
   - osx
 
+osx_image: xcode6.4
+
 services:
   - docker
 
