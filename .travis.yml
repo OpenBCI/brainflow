@@ -30,6 +30,7 @@ addons:
 
 
 before_script:
+  - which R
   - sudo pip3 install --upgrade pip
   - sudo pip3 install cmake
   - sudo -H pip3 install --upgrade setuptools wheel virtualenv
