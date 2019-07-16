@@ -45,8 +45,8 @@ before_script:
   - sudo -H pip3 install --upgrade setuptools wheel virtualenv
   - sudo -H pip3 install $TRAVIS_BUILD_DIR/emulator
   # need to build in manylinux docker container!
-  - docker pull dockcross/manylinux-x64
-  - docker run -e TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR -v $TRAVIS_BUILD_DIR:$TRAVIS_BUILD_DIR dockcross/manylinux-x64 /bin/bash -c "/opt/python/cp36-cp36m/bin/pip3.6 install cmake && cd $TRAVIS_BUILD_DIR && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/installed .. && make && make install"
+  - if [ "$TRAVIS_OD_NAME" = "linux" ]; then docker pull dockcross/manylinux-x64 ; fi
+  - if [ "$TRAVIS_OD_NAME" = "linux" ]; then docker run -e TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR -v $TRAVIS_BUILD_DIR:$TRAVIS_BUILD_DIR dockcross/manylinux-x64 /bin/bash -c "/opt/python/cp36-cp36m/bin/pip3.6 install cmake && cd $TRAVIS_BUILD_DIR && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/installed .. && make && make install" ; fi
   - sudo -H pip3 install $TRAVIS_BUILD_DIR/python-package
   - cd $TRAVIS_BUILD_DIR/r-package/brainflow && sudo -H R CMD build . && sudo -H R CMD INSTALL brainflow_0.0.0.9000.tar.gz
   - cd $TRAVIS_BUILD_DIR/tests/cpp && mkdir build && cd build && cmake -DCMAKE_PREFIX_PATH=$TRAVIS_BUILD_DIR/installed .. && make
