@@ -158,5 +158,5 @@ void SyntheticBoard::read_thread ()
         usleep ((int)(1000000 / this->sampling_rate));
 #endif
     }
-    delete package;
+    delete[] package;
 }
