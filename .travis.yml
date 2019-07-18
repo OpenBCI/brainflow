@@ -29,7 +29,6 @@ addons:
   homebrew:
     packages:
       - r
-    update: true
 
 install:
   - sudo pip3 install --upgrade pip
