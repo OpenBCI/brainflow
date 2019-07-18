@@ -5,7 +5,7 @@ os:
   - linux
   - osx
 
-osx_image: xcode9.4
+osx_image: xcode11
 
 services:
   - docker
@@ -31,9 +31,6 @@ addons:
       - r
 
 install:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      brew update ;
-    fi
   - sudo pip3 install --upgrade pip
   - sudo pip3 install cmake
   - sudo -H pip3 install --upgrade setuptools wheel virtualenv
