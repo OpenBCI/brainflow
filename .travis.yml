@@ -31,6 +31,9 @@ addons:
       - r
 
 install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+      brew update ;
+    fi
   - sudo pip3 install --upgrade pip
   - sudo pip3 install cmake
   - sudo -H pip3 install --upgrade setuptools wheel virtualenv
