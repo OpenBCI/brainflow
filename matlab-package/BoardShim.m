@@ -28,25 +28,25 @@ classdef BoardShim
             obj.exit_codes(16) = 'ANOTHER_BOARD_IS_CREATED_ERROR';
             obj.exit_codes(17) = 'GENERAL_ERROR';
             obj.exit_codes(18) = 'SYNC_TIMEOUT_ERROR';
-            if isunix
+            if ismac
+                addpath('lib/APPLE');
                 obj.libname = 'libBoardController';
-            elseif ismac
+            elseif isunix
+                addpath('lib/UNIX');
                 obj.libname = 'libBoardController';
             else
+                addpath('lib/MSVC');
                 obj.libname = 'BoardController';
             end
             obj.port_name = port_name;
-            obj.board_id = int32 (board_id);
-            if board_id == int32 (BoardIDs.CYTON_BOARD)
+            obj.board_id = uint32 (board_id);
+            if board_id == uint32(BoardIDs.CYTON_BOARD)
                 obj.num_channels = 12;
-            elseif board_id == int32 (BoardIDs.GANGLION_BOARD)
+            elseif board_id == uint32(BoardIDs.GANGLION_BOARD)
                 obj.num_channels = 8;
-            elseif board_id == int32 (BoardIDs.SYNTHETIC_BOARD)
-                obj.num_channels = 12;
-            elseif board_id == int32 (BoardIDs.CYTON_DAISY_BOARD)
-                obj.num_channels = 20;
-            loadlibrary (obj.libname, 'board_controller.h') 
             end
+            addpath('inc');
+            loadlibrary (obj.libname, 'board_controller.h')
             
         end
 
