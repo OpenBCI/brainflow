@@ -29,13 +29,13 @@ classdef BoardShim
             obj.exit_codes(17) = 'GENERAL_ERROR';
             obj.exit_codes(18) = 'SYNC_TIMEOUT_ERROR';
             if ismac
-                addpath('lib/APPLE');
+                addpath('APPLE');
                 obj.libname = 'libBoardController';
             elseif isunix
-                addpath('lib/UNIX');
+                addpath('UNIX');
                 obj.libname = 'libBoardController';
             else
-                addpath('lib/MSVC');
+                addpath('MSVC');
                 obj.libname = 'BoardController';
             end
             obj.port_name = port_name;
@@ -48,7 +48,7 @@ classdef BoardShim
                 obj.num_channels = 12;
             elseif board_id == int32 (BoardIDs.CYTON_DAISY_BOARD)
                 obj.num_channels = 20;
-            addpath('inc');
+            addpath()
             loadlibrary (obj.libname, 'board_controller.h') 
             end
             
