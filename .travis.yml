@@ -40,7 +40,7 @@ install:
   # - sudo -H R --vanilla -e 'install.packages("stringr", dependencies=TRUE, INSTALL_opts = c("--no-lock"), repos="http://cran.us.r-project.org")'
   # - sudo -H R --vanilla -e 'install.packages("glue", repos="http://cran.us.r-project.org")'
   - sudo -H R --vanilla -e 'install.packages("knitr", repos="http://cran.us.r-project.org")'
-  # - sudo -H R --vanilla -e 'install.packages("reticulate", repos="http://cran.us.r-project.org")'
+  - sudo -H R --vanilla -e 'install.packages("reticulate", repos="http://cran.us.r-project.org")'
 
 before_script:
   # need to build in manylinux docker container!
