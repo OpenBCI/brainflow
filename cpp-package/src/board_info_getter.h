@@ -51,7 +51,7 @@ public:
     static const int num_eeg_channels = 16;
     static const int package_length = 20;
     static const int first_eeg_channel = 1;
-}
+};
 
 
 // todo: move it to low level api during implementation of signal processing in c++
