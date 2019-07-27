@@ -54,7 +54,7 @@ int NovaXR::start_stream (int buffer_size)
     }
 
     // start streaming
-    if (socket.send ("b", sizeof (char)) != 1)
+    if (socket.send ("b", 1) != 1)
     {
         Board::board_logger->error ("Failed to send a command to board");
         return BOARD_WRITE_ERROR;
@@ -80,7 +80,7 @@ int NovaXR::stop_stream ()
         keep_alive = false;
         is_streaming = false;
         streaming_thread.join ();
-        if (socket.send ("s", sizeof (char)) != 1)
+        if (socket.send ("s", 1) != 1)
         {
             Board::board_logger->error ("Failed to send a command to board");
             return BOARD_WRITE_ERROR;
@@ -112,7 +112,7 @@ void NovaXR::read_thread ()
     while (keep_alive)
     {
         // 63 bytes in dummy package
-        res = socket.recv (b, sizeof (unsigned char) * 63);
+        res = socket.recv (b, 63);
         if (res != 63)
         {
             Board::board_logger->trace ("unable to read 63 bytes, read {}", res);
