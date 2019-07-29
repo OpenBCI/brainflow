@@ -98,11 +98,11 @@ deploy_script:
       }
 
 artifacts:
-  - path: "%APPVEYOR_BUILD_FOLDER%\\build32\\brainflow_build32_stdout.txt"
+  - path: build32\brainflow_build32_stdout.txt
     name: brainflow_build64
     type: zip
 
-  - path: "%APPVEYOR_BUILD_FOLDER%\\build64\\brainflow_build64_stdout.txt"
+  - path: build64\brainflow_build64_stdout.txt
     name: brainflow_build64
     type: zip
 
