@@ -5,7 +5,7 @@ os:
   - linux
   - osx
 
-osx_image: xcode11
+osx_image: xcode9.4
 
 services:
   - docker
@@ -29,6 +29,7 @@ addons:
   homebrew:
     packages:
       - r
+      update: true
 
 install:
   - sudo pip3 install --upgrade pip
