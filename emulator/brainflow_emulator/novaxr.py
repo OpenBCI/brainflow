@@ -64,7 +64,7 @@ class NovaXREmulator (threading.Thread):
                 elif msg[0] == Message.stop_stream:
                     self.state = State.wait.value
                 else:
-                    raise ValueError ('received unepected character %s' % msg)
+                    raise ValueError ('received unexpected character %s' % msg)
             except socket.timeout:
                 logging.debug ('timeout for recv')
 
