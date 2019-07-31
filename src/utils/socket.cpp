@@ -115,8 +115,8 @@ int Socket::connect ()
 
 int Socket::send (const char *data, int size)
 {
-    int res = sendto (connect_socket, (const char *)data, size, 0, (sockaddr *)&socket_addr,
-        sizeof (socket_addr));
+    int res =
+        sendto (connect_socket, data, size, 0, (sockaddr *)&socket_addr, sizeof (socket_addr));
     return res;
 }
 

@@ -60,9 +60,9 @@ class NovaXREmulator (threading.Thread):
             try:
                 msg, self.addr = self.server_socket.recvfrom (128)
                 logging.info ('received %s from %s' % (msg, self.addr))
-                if msg[0] == Message.start_stream:
+                if msg == Message.start_stream.value:
                     self.state = State.stream.value
-                elif msg[0] == Message.stop_stream:
+                elif msg == Message.stop_stream.value:
                     self.state = State.wait.value
                 else:
                     raise ValueError ('received unexpected character %s' % msg)
