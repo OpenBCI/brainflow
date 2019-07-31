@@ -122,7 +122,7 @@ int Socket::send (const char *data, int size)
 
 int Socket::recv (void *data, int size)
 {
-    int len = sizeof (socket_addr);
+    unsigned int len = (unsigned int)sizeof (socket_addr);
     int res = recvfrom (connect_socket, (char *)data, size, 0, (sockaddr *)&socket_addr, &len);
     return res;
 }
