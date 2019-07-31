@@ -20,7 +20,7 @@ enum class SocketReturnCodes
     WSA_STARTUP_ERROR = 1,
     CREATE_SOCKET_ERROR = 2,
     CONNECT_ERROR = 3,
-    ATON_ERROR = 4
+    PTON_ERROR = 4
 };
 
 class Socket
@@ -34,7 +34,7 @@ public:
     }
 
     int connect ();
-    int send (const void *data, int size);
+    int send (const char *data, int size);
     int recv (void *data, int size);
     void close ();
     char *get_ip_addr ()
@@ -51,6 +51,7 @@ private:
     int port;
 #ifdef _WIN32
     SOCKET connect_socket;
+    struct sockaddr_in socket_addr;
 #else
     int connect_socket;
     struct sockaddr_in socket_addr;

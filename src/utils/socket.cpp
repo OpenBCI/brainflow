@@ -15,6 +15,7 @@ Socket::Socket (const char *ip_addr, int port)
     strcpy (this->ip_addr, ip_addr);
     this->port = port;
     connect_socket = INVALID_SOCKET;
+    memset (&socket_addr, 0, sizeof (socket_addr));
 }
 
 int Socket::connect ()
@@ -25,11 +26,12 @@ int Socket::connect ()
     {
         return (int)SocketReturnCodes::WSA_STARTUP_ERROR;
     }
-    struct sockaddr_in socket_addr;
-    memset (&socket_addr, 0, sizeof (socket_addr));
     socket_addr.sin_family = AF_INET;
     socket_addr.sin_port = htons (port);
-    socket_addr.sin_addr.s_addr = inet_addr (ip_addr);
+    if (inet_pton (AF_INET, ip_addr, &socket_addr.sin_addr) == 0)
+    {
+        return (int)SocketReturnCodes::PTON_ERROR;
+    }
 
     connect_socket = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (connect_socket == INVALID_SOCKET)
@@ -42,18 +44,13 @@ int Socket::connect ()
     setsockopt (connect_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof (timeout));
     setsockopt (connect_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
 
-    res = ::connect (connect_socket, (sockaddr *)&socket_addr, sizeof (socket_addr));
-    if (res == SOCKET_ERROR)
-    {
-        return (int)SocketReturnCodes::CONNECT_ERROR;
-    }
-
     return (int)SocketReturnCodes::STATUS_OK;
 }
 
-int Socket::send (const void *data, int size)
+int Socket::send (const char *data, int size)
 {
-    int res = ::send (connect_socket, (char *)data, size, 0);
+    int len = sizeof (socket_addr);
+    int res = sendto (connect_socket, data, size, 0, (sockaddr *)&socket_addr, len);
     if (res == SOCKET_ERROR)
     {
         return -1;
@@ -63,7 +60,8 @@ int Socket::send (const void *data, int size)
 
 int Socket::recv (void *data, int size)
 {
-    int res = ::recv (connect_socket, (char *)data, size, 0);
+    int len = sizeof (socket_addr);
+    int res = recvfrom (connect_socket, (char *)data, size, 0, (sockaddr *)&socket_addr, &len);
     if (res == SOCKET_ERROR)
     {
         return -1;
@@ -100,9 +98,9 @@ int Socket::connect ()
 
     socket_addr.sin_family = AF_INET;
     socket_addr.sin_port = htons (port);
-    if (inet_aton (ip_addr, &socket_addr.sin_addr) == 0)
+    if (inet_pton (AF_INET, ip_addr, &socket_addr.sin_addr) == 0)
     {
-        return (int)SocketReturnCodes::ATON_ERROR;
+        return (int)SocketReturnCodes::PTON_ERROR;
     }
 
     // ensure that library will not hang in blocking recv/send call
@@ -115,18 +113,17 @@ int Socket::connect ()
     return (int)SocketReturnCodes::STATUS_OK;
 }
 
-int Socket::send (const void *data, int size)
+int Socket::send (const char *data, int size)
 {
-    int res = sendto (connect_socket, (const char *)data, size, 0,
-        (const struct sockaddr *)&socket_addr, sizeof (socket_addr));
+    int res = sendto (connect_socket, (const char *)data, size, 0, (sockaddr *)&socket_addr,
+        sizeof (socket_addr));
     return res;
 }
 
 int Socket::recv (void *data, int size)
 {
-    unsigned int len = (unsigned int)sizeof (socket_addr);
-    int res =
-        recvfrom (connect_socket, (char *)data, size, 0, (struct sockaddr *)&socket_addr, &len);
+    int len = sizeof (socket_addr);
+    int res = recvfrom (connect_socket, (char *)data, size, 0, (sockaddr *)&socket_addr, &len);
     return res;
 }
 
