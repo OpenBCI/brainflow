@@ -3,7 +3,7 @@
 #include "custom_cast.h"
 #include "novaxr.h"
 
-NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, port)
+NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, 2390)
 {
     this->is_streaming = false;
     this->keep_alive = false;
@@ -100,8 +100,8 @@ int NovaXR::release_session ()
         if (is_streaming)
             stop_stream ();
         initialized = false;
+        socket.close ();
     }
-    socket.close ();
     return STATUS_OK;
 }
 

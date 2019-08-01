@@ -17,7 +17,6 @@ private:
     int num_channels;
     Socket socket;
 
-    const int port = 2390;
     void read_thread ();
 
 public:
