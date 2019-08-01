@@ -1,4 +1,7 @@
 #ifdef _WIN32
+#include <ws2tcpip.h>
+// windows sockets version 2 should be added before windows.h(seems like there is a version
+// conflict), windows sockets are used for wifi boards
 #include <windows.h>
 #endif
 
@@ -9,6 +12,7 @@
 #include "cyton.h"
 #include "cyton_daisy.h"
 #include "ganglion.h"
+#include "novaxr.h"
 #include "synthetic_board.h"
 
 Board *board = NULL;
@@ -55,6 +59,9 @@ int prepare_session (int board_id, char *port_name)
             break;
         case CYTON_DAISY_BOARD:
             board = new CytonDaisy (port_name);
+            break;
+        case NOVAXR_BOARD:
+            board = new NovaXR (port_name);
             break;
         default:
             Board::board_logger->error ("No board with Id {}", board_id);

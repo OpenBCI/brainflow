@@ -45,6 +45,8 @@ classdef BoardShim
                 obj.num_channels = 12;
             elseif board_id == int32 (BoardIDs.CYTON_DAISY_BOARD)
                 obj.num_channels = 20;
+            elseif board_id == int32 (BoardIDs.NOVAXR_BOARD)
+                obj.num_channels = 20;
             loadlibrary (obj.libname, 'board_controller.h') 
             end
             
