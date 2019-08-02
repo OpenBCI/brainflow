@@ -145,7 +145,7 @@ int Ganglion::start_stream (int buffer_size)
         Board::board_logger->error ("no data received in 20sec, stopping thread");
         this->is_streaming = true;
         this->stop_stream ();
-        return this->state;
+        return UNABLE_TO_OPEN_PORT_ERROR;
     }
 }
 

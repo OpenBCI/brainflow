@@ -1,3 +1,4 @@
+#include <chrono>
 #include <string.h>
 
 #include "custom_cast.h"
@@ -8,7 +9,8 @@ NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, 2390)
     this->is_streaming = false;
     this->keep_alive = false;
     this->initialized = false;
-    this->num_channels = 8;
+    this->num_channels = 20;
+    this->state = SYNC_TIMEOUT_ERROR;
     Board::board_logger->debug ("use ip addr {}", ip_addr);
 }
 
@@ -69,8 +71,21 @@ int NovaXR::start_stream (int buffer_size)
 
     keep_alive = true;
     streaming_thread = std::thread ([this] { this->read_thread (); });
-    is_streaming = true;
-    return STATUS_OK;
+    // wait for data to ensure that everything is okay
+    std::unique_lock<std::mutex> lk (this->m);
+    auto sec = std::chrono::seconds (1);
+    if (cv.wait_for (lk, 5 * sec, [this] { return this->state != SYNC_TIMEOUT_ERROR; }))
+    {
+        this->is_streaming = true;
+        return this->state;
+    }
+    else
+    {
+        Board::board_logger->error ("no data received in 5sec, stopping thread");
+        this->is_streaming = true;
+        this->stop_stream ();
+        return UNABLE_TO_OPEN_PORT_ERROR;
+    }
 }
 
 int NovaXR::stop_stream ()
@@ -80,6 +95,7 @@ int NovaXR::stop_stream ()
         keep_alive = false;
         is_streaming = false;
         streaming_thread.join ();
+        this->state = SYNC_TIMEOUT_ERROR;
         if (socket.send ("s", 1) != 1)
         {
             Board::board_logger->error ("Failed to send a command to board");
@@ -117,6 +133,19 @@ void NovaXR::read_thread ()
         {
             Board::board_logger->trace ("unable to read 63 bytes, read {}", res);
             continue;
+        }
+        else
+        {
+            // inform main thread that everything is ok and first package was received
+            if (this->state != STATUS_OK)
+            {
+                {
+                    std::lock_guard<std::mutex> lk (this->m);
+                    this->state = STATUS_OK;
+                }
+                this->cv.notify_one ();
+                Board::board_logger->debug ("start streaming");
+            }
         }
 
         float package[20];
