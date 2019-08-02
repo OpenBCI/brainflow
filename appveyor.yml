@@ -79,7 +79,7 @@ deploy_script:
   - aws s3 cp %APPVEYOR_BUILD_FOLDER%\installed64\lib\ s3://brainflow-artifacts/%APPVEYOR_REPO_COMMIT%/lib64 --recursive
   # download files from travis using S3 create package and publish it
   - ps: >-
-      If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
+      If ($env:APPVEYOR_REPO_TAG -eq "false" -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
         # wait 30 minutes until mac and linux file appear in s3
         $lin = $false;
         $osx = $false;
