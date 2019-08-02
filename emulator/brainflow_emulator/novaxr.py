@@ -72,6 +72,7 @@ class NovaXREmulator (threading.Thread):
             if self.state == State.stream.value:
                 package = list ()
                 package.append (self.package_num)
+                self.package_num = self.package_num + 1
                 for i in range (1, self.package_size):
                     package.append (random.randint (0, 255))
                     try:

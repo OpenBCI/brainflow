@@ -1,5 +1,7 @@
 #pragma once
 
+#include <condition_variable>
+#include <mutex>
 #include <thread>
 
 #include "board.h"
@@ -17,6 +19,9 @@ private:
     int num_channels;
     Socket socket;
 
+    std::mutex m;
+    std::condition_variable cv;
+    volatile int state;
     void read_thread ();
 
 public:
