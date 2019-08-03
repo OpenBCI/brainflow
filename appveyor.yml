@@ -93,6 +93,7 @@ deploy_script:
           echo "not found"
         }
         If ($lin -and $osx) {
+          write-output "Binaries found - running deployment"
           New-Item $env:APPVEYOR_BUILD_FOLDER\linux -itemtype directory
           New-Item $env:APPVEYOR_BUILD_FOLDER\osx -itemtype directory
           aws s3 cp s3://brainflow-artifacts/$env:APPVEYOR_REPO_COMMIT/linux/ $env:APPVEYOR_BUILD_FOLDER\linux_libs\ --recursive
