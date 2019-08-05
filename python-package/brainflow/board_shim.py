@@ -115,6 +115,11 @@ class BoardControllerDLL (object):
         else:
             dll_path = 'lib/libBoardController.so'
         self.lib = ctypes.cdll.LoadLibrary (pkg_resources.resource_filename (__name__, dll_path))
+        full_path = pkg_resources.resource_filename (__name__, dll_path)
+        if os.path.isfile (full_path):
+            self.lib = ctypes.cdll.LoadLibrary (full_path)
+        else:
+            raise FileNotFoundError ('Dynamic library %s is missed, did you forget to compile brainflow before installation of python package?' % full_path)
 
         self.prepare_session = self.lib.prepare_session
         self.prepare_session.restype = ctypes.c_int
