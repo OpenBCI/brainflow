@@ -2,9 +2,27 @@ import os
 import platform
 import sys
 from setuptools import setup, find_packages
-
-
+import struct
+import ctypes
+import pkg_resources
+#### check lib file
+if platform.system () == 'Windows':
+    if struct.calcsize ("P") * 8 == 64:
+        dll_paths = ['brainflow\\lib\\BoardController.dll', 'brainflow\\lib\\GanglionLib.dll', 'brainflow\\lib\\GanglionLibNative64.dll']
+    else:
+        dll_paths = ['brainflow\\lib\\BoardController32.dll', 'brainflow\\lib\\GanglionLibNative32.dll']
+elif platform.system () == 'Darwin':
+    dll_paths = ['brainflow/lib/libBoardController.dylib']
+else:
+    dll_paths = ['brainflow/lib/libBoardController.so']
+for dll_path in dll_paths:
+    full_path = pkg_resources.resource_filename (__name__, dll_path)
+    if os.path.isfile (full_path):
+        lib = ctypes.cdll.LoadLibrary (full_path)
+    else:
+        raise FileNotFoundError ('Dynamic library %s is missed, did you forget to compile brainflow before installation of python package?' % full_path)
 this_directory = os.path.abspath (os.path.dirname (__file__))
+#### check lib file
 with open (os.path.join (this_directory, 'README.md')) as f:
     long_description = f.read ()
 
@@ -34,7 +52,7 @@ setup (
             os.path.join ('lib', 'GanglionLib.dll'),
             os.path.join ('lib', 'GanglionLibNative64.dll'),
             os.path.join ('lib', 'GanglionLibNative32.dll'),
-            os.path.join ('lib', 'libBoardController.dylib')
+            os.path.join ('lib', 'libBoardController.dylib'),
         ]
     },
     zip_safe = True,
