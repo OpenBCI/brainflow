@@ -114,7 +114,6 @@ class BoardControllerDLL (object):
             dll_path = 'lib/libBoardController.dylib'
         else:
             dll_path = 'lib/libBoardController.so'
-        self.lib = ctypes.cdll.LoadLibrary (pkg_resources.resource_filename (__name__, dll_path))
         full_path = pkg_resources.resource_filename (__name__, dll_path)
         if os.path.isfile (full_path):
             self.lib = ctypes.cdll.LoadLibrary (full_path)
