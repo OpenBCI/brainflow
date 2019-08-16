@@ -23,6 +23,7 @@ protected:
     virtual int status_check ();
     virtual int set_port_settings ();
     virtual void read_thread () = 0;
+    virtual int send_to_board (char *msg);
 
 public:
     OpenBCISerialBoard (int num_channels, const char *port_name);

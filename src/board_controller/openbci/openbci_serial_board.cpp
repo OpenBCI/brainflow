@@ -44,11 +44,18 @@ int OpenBCISerialBoard::config_board (char *config)
     {
         return res;
     }
-    int lenght = strlen (config);
-    Board::board_logger->debug ("sending {} to the board", config);
-    res = serial.send_to_serial_port ((const void *)config, lenght);
+    return send_to_board (config);
+}
+
+int OpenBCISerialBoard::send_to_board (char *msg)
+{
+    int lenght = strlen (msg);
+    Board::board_logger->debug ("sending {} to the board", msg);
+    int res = serial.send_to_serial_port ((const void *)msg, lenght);
     if (res != lenght)
+    {
         return BOARD_WRITE_ERROR;
+    }
 
     return STATUS_OK;
 }
@@ -62,7 +69,7 @@ int OpenBCISerialBoard::set_port_settings ()
         return SET_PORT_ERROR;
     }
     Board::board_logger->trace ("set port settings");
-    return config_board ("v");
+    return send_to_board ("v");
 }
 
 int OpenBCISerialBoard::status_check ()
@@ -132,7 +139,7 @@ int OpenBCISerialBoard::start_stream (int buffer_size)
     }
 
     // start streaming
-    int send_res = config_board ("b");
+    int send_res = send_to_board ("b");
     if (send_res != STATUS_OK)
         return send_res;
 
@@ -156,7 +163,7 @@ int OpenBCISerialBoard::stop_stream ()
         keep_alive = false;
         is_streaming = false;
         streaming_thread.join ();
-        return config_board ("s");
+        return send_to_board ("s");
     }
     else
         return STREAM_THREAD_IS_NOT_RUNNING;
