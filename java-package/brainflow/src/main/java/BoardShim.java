@@ -23,6 +23,7 @@ public class BoardShim {
 		int get_current_board_data (int num_samples, float [] data_buf, double [] ts_buf, int[] returned_samples);
 		int get_board_data_count (int[] result);
 		int get_board_data (int data_count, float[] data_buf, double[] ts_buf);
+		int config_board (String config);
 	}
 
 	public int package_length;
@@ -68,13 +69,19 @@ public class BoardShim {
 	}
 
 	public void prepare_session () throws BrainFlowError {
-		System.out.println(board_id + port_name);
 		int ec = this.instance.prepare_session (board_id, port_name);
 		if (ec != ExitCode.STATUS_OK.get_code ()) {
 			throw new BrainFlowError ("Error in prepare_session", ec);
 		}
 	}
 
+	public void config_board (String config) throws BrainFlowError {
+		int ec = this.instance.config_board (config);
+		if (ec != ExitCode.STATUS_OK.get_code ()) {
+			throw new BrainFlowError ("Error in config_board", ec);
+		}
+	}
+	
 	public void start_stream (int buffer_size) throws BrainFlowError {
 		int ec = this.instance.start_stream (buffer_size);
 		if (ec != ExitCode.STATUS_OK.get_code ()) {
