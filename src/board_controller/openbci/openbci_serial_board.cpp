@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include "openbci_helpers.h"
 #include "openbci_serial_board.h"
 #include "serial.h"
 
@@ -36,10 +37,17 @@ int OpenBCISerialBoard::open_port ()
     return STATUS_OK;
 }
 
-int OpenBCISerialBoard::send_to_board (const char *message)
+int OpenBCISerialBoard::config_board (char *config)
 {
-    int res = serial.send_to_serial_port (message);
-    if (res != 1)
+    int res = validate_config (config);
+    if (res != STATUS_OK)
+    {
+        return res;
+    }
+    int lenght = strlen (message);
+    Board::board_logger->debug ("sending {} to the board", message);
+    int res = serial.send_to_serial_port ((const void *)message, lenght);
+    if (res != lenght)
         return BOARD_WRITE_ERROR;
 
     return STATUS_OK;
@@ -54,7 +62,7 @@ int OpenBCISerialBoard::set_port_settings ()
         return SET_PORT_ERROR;
     }
     Board::board_logger->trace ("set port settings");
-    return send_to_board ("v");
+    return config_board ("v");
 }
 
 int OpenBCISerialBoard::status_check ()
@@ -124,7 +132,7 @@ int OpenBCISerialBoard::start_stream (int buffer_size)
     }
 
     // start streaming
-    int send_res = send_to_board ("b");
+    int send_res = config_board ("b");
     if (send_res != STATUS_OK)
         return send_res;
 
@@ -148,7 +156,7 @@ int OpenBCISerialBoard::stop_stream ()
         keep_alive = false;
         is_streaming = false;
         streaming_thread.join ();
-        return send_to_board ("s");
+        return config_board ("s");
     }
     else
         return STREAM_THREAD_IS_NOT_RUNNING;

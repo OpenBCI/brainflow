@@ -12,6 +12,7 @@
 #include "custom_cast.h"
 #include "ganglion.h"
 #include "get_dll_dir.h"
+#include "openbci_helpers.h"
 
 // sleep is 10 ms, so wait for 2.5sec total
 #define MAX_ATTEMPTS_TO_GET_DATA 250
@@ -372,6 +373,16 @@ void Ganglion::read_thread ()
 #endif
         }
     }
+}
+
+int Ganglion::config_board (char *config)
+{
+    int res = validate_config (config);
+    if (res != STATUS_OK)
+    {
+        return res;
+    }
+    return UNSUPPORTED_BOARD_ERROR;
 }
 
 int Ganglion::call_start ()

@@ -17,6 +17,7 @@ def main ():
 
     board = brainflow.board_shim.BoardShim (args.board, args.port)
     board.prepare_session ()
+    board.config_board ('x1100000Xx2100000Xx3100000X')
     board.start_stream ()
     time.sleep (10)
     data = board.get_board_data ()
