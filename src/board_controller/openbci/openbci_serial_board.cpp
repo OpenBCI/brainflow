@@ -44,9 +44,9 @@ int OpenBCISerialBoard::config_board (char *config)
     {
         return res;
     }
-    int lenght = strlen (message);
-    Board::board_logger->debug ("sending {} to the board", message);
-    int res = serial.send_to_serial_port ((const void *)message, lenght);
+    int lenght = strlen (config);
+    Board::board_logger->debug ("sending {} to the board", config);
+    res = serial.send_to_serial_port ((const void *)config, lenght);
     if (res != lenght)
         return BOARD_WRITE_ERROR;
 
