@@ -28,12 +28,24 @@ classdef BoardShim
             obj.exit_codes(16) = 'ANOTHER_BOARD_IS_CREATED_ERROR';
             obj.exit_codes(17) = 'GENERAL_ERROR';
             obj.exit_codes(18) = 'SYNC_TIMEOUT_ERROR';
-            if isunix
-                obj.libname = 'libBoardController';
+            
+            if ispc
+                obj.libname = 'BoardController';
+                if not(libisloaded('BoardController'))
+                    loadlibrary('lib/BoardController.dll','inc/board_controller.h')
+                end
             elseif ismac
                 obj.libname = 'libBoardController';
+                if not(libisloaded('libBoardController'))
+                    loadlibrary('lib/libBoardController.dylib','inc/board_controller.h')
+                end
+            elseif isunix
+                obj.libname = 'libBoardController';
+                if not(libisloaded('libBoardController'))
+                    loadlibrary('lib/libBoardController.so', 'inc/board_controller.h')
+                end
             else
-                obj.libname = 'BoardController';
+                disp 'OS not supported!'
             end
             obj.port_name = port_name;
             obj.board_id = int32 (board_id);
@@ -45,9 +57,7 @@ classdef BoardShim
                 obj.num_channels = 12;
             elseif board_id == int32 (BoardIDs.CYTON_DAISY_BOARD)
                 obj.num_channels = 20;
-            loadlibrary (obj.libname, 'board_controller.h') 
             end
-            
         end
 
         function check_ec (obj, ec, task_name)
