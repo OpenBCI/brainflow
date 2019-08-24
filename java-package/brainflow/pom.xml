@@ -12,11 +12,11 @@
   </properties>
 
   <build>
-    <finalName>brainflow</finalName>
+    <finalName>brainflow-java</finalName>
 
     <resources>
       <resource>
-        <targetPath>${project.build.outputDirectory}/${project.build.finalName}</targetPath>
+        <targetPath>${project.build.outputDirectory}</targetPath>
         <filtering>false</filtering>
         <directory>${basedir}/src/main/resources</directory>
         <includes>
