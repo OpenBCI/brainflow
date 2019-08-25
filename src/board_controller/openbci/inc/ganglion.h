@@ -28,6 +28,7 @@ private:
     DLLLoader *dll_loader;
 
     int call_init ();
+    int call_config (char *config);
     int call_open ();
     int call_close ();
     int call_start ();

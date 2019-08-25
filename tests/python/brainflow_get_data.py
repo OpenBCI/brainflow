@@ -17,7 +17,16 @@ def main ():
 
     board = brainflow.board_shim.BoardShim (args.board, args.port)
     board.prepare_session ()
-    board.config_board ('x1100000Xx2100000Xx3100000X')
+    
+    # disable second channel, note emulator doesnt handle such commands, run with real board to validate
+    # different board have different data formats
+    if args.board in (brainflow.CYTON.board_id, brainflow.CYTON_DAISY.board_id, brainflow.SYNTHETIC.board_id):
+        board.config_board ('x2100000X')
+    elif args.board == brainflow.GANGLION.board_id:
+        board.config_board ('2')
+    else:
+        print ('unexpected board id')
+
     board.start_stream ()
     time.sleep (10)
     data = board.get_board_data ()
@@ -26,6 +35,7 @@ def main ():
 
     data_handler = brainflow.preprocess.DataHandler (args.board, numpy_data = data)
     filtered_data = data_handler.preprocess_data (order = 3, start = 1, stop = 50)
+    filtered_data.to_csv ('res.csv')
 
 
 if __name__ == "__main__":

@@ -9,33 +9,30 @@ classdef BoardShim
     methods
         function obj = BoardShim (board_id, port_name)
             obj.exit_codes = containers.Map ('KeyType', 'int32', 'ValueType', 'any');
-            obj.exit_codes (0) = 'STATUS_OK';
-            obj.exit_codes (1) = 'PORT_ALREADY_OPEN_ERROR';
-            obj.exit_codes (2) = 'UNABLE_TO_OPEN_PORT_ERROR';
-            obj.exit_codes (3) = 'SET_PORT_ERROR';
-            obj.exit_codes (4) = 'BOARD_WRITE_ERROR';
-            obj.exit_codes (5) = 'INCOMMING_MSG_ERROR';
-            obj.exit_codes (6) = 'INITIAL_MSG_ERROR';
-            obj.exit_codes (7) = 'BOARD_NOT_READY_ERROR';
-            obj.exit_codes (8) = 'STREAM_ALREADY_RUN_ERROR';
-            obj.exit_codes (9) = 'INVALID_BUFFER_SIZE_ERROR';
-            obj.exit_codes (10) = 'STREAM_THREAD_ERROR';
-            obj.exit_codes (11) = 'STREAM_THREAD_IS_NOT_RUNNING';
-            obj.exit_codes (12) = 'EMPTY_BUFFER_ERROR';
-            obj.exit_codes (13) = 'INVALID_ARGUMENTS_ERROR';
-            obj.exit_codes (14) = 'UNSUPPORTED_BOARD_ERROR';
-            obj.exit_codes (15) = 'BOARD_NOT_CREATED_ERROR';
-            obj.exit_codes (16) = 'ANOTHER_BOARD_IS_CREATED_ERROR';
-            obj.exit_codes (17) = 'GENERAL_ERROR';
-            obj.exit_codes (18) = 'SYNC_TIMEOUT_ERROR';
-            if ismac
-                addpath ('brainflow/lib/APPLE')
+            obj.exit_codes(0) = 'STATUS_OK';
+            obj.exit_codes(1) = 'PORT_ALREADY_OPEN_ERROR';
+            obj.exit_codes(2) = 'UNABLE_TO_OPEN_PORT_ERROR';
+            obj.exit_codes(3) = 'SET_PORT_ERROR';
+            obj.exit_codes(4) = 'BOARD_WRITE_ERROR';
+            obj.exit_codes(5) = 'INCOMMING_MSG_ERROR';
+            obj.exit_codes(6) = 'INITIAL_MSG_ERROR';
+            obj.exit_codes(7) = 'BOARD_NOT_READY_ERROR';
+            obj.exit_codes(8) = 'STREAM_ALREADY_RUN_ERROR';
+            obj.exit_codes(9) = 'INVALID_BUFFER_SIZE_ERROR';
+            obj.exit_codes(10) = 'STREAM_THREAD_ERROR';
+            obj.exit_codes(11) = 'STREAM_THREAD_IS_NOT_RUNNING';
+            obj.exit_codes(12) = 'EMPTY_BUFFER_ERROR';
+            obj.exit_codes(13) = 'INVALID_ARGUMENTS_ERROR';
+            obj.exit_codes(14) = 'UNSUPPORTED_BOARD_ERROR';
+            obj.exit_codes(15) = 'BOARD_NOT_CREATED_ERROR';
+            obj.exit_codes(16) = 'ANOTHER_BOARD_IS_CREATED_ERROR';
+            obj.exit_codes(17) = 'GENERAL_ERROR';
+            obj.exit_codes(18) = 'SYNC_TIMEOUT_ERROR';
+            if isunix
                 obj.libname = 'libBoardController';
-            elseif isunix
-                addpath ('brainflow/lib/UNIX')
+            elseif ismac
                 obj.libname = 'libBoardController';
             else
-                addpath ('brainflow/lib/MSVC')
                 obj.libname = 'BoardController';
             end
             obj.port_name = port_name;

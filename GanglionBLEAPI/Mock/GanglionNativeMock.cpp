@@ -40,7 +40,7 @@ namespace GanglionLibNative
 
     void thread_func ();
 
-    int initialize (void *param)
+    int initialize_native (void *param)
     {
         std::cout << "initialized" << std::endl;
         return STATUS_OK;
