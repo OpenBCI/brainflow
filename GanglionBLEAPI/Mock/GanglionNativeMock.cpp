@@ -109,6 +109,11 @@ namespace GanglionLibNative
         return STATUS_OK;
     }
 
+    int config_board_native (void *param)
+    {
+        return STATUS_OK;
+    }
+
     void thread_func ()
     {
         unsigned int counter = 0;
