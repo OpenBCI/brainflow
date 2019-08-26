@@ -32,6 +32,7 @@ public:
     int start_stream (int buffer_size);
     int stop_stream ();
     int release_session ();
+    int config_board (char *config);
     int get_board_id ()
     {
         return NOVAXR_BOARD;

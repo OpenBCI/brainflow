@@ -3,6 +3,7 @@
 
 #include "custom_cast.h"
 #include "novaxr.h"
+#include "openbci_helpers.h"
 
 NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, 2390)
 {
@@ -33,6 +34,24 @@ int NovaXR::prepare_session ()
         return GENERAL_ERROR;
     }
     initialized = true;
+    return STATUS_OK;
+}
+
+int NovaXR::config_board (char *config)
+{
+    Board::board_logger->debug ("Trying to config NovaXR with {}", config);
+    int res = validate_config (config);
+    if (res != STATUS_OK)
+    {
+        return res;
+    }
+    int len = strlen (config);
+    res = socket.send (config, len);
+    if (len != res)
+    {
+        Board::board_logger->error ("Failed to config a board");
+        return BOARD_WRITE_ERROR;
+    }
     return STATUS_OK;
 }
 
