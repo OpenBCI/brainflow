@@ -10,6 +10,7 @@
 #include <unistd.h>
 #endif
 
+#include "openbci_helpers.h"
 #include "synthetic_board.h"
 #include "timestamp.h"
 
@@ -125,7 +126,7 @@ void SyntheticBoard::read_thread ()
         base_wave[i] = this->amplitude * sin (1.8f * i * rads + this->shift);
     }
     // eeg channels + 3 accel channels + package num
-    float *package = (float *)malloc (sizeof (float) * (this->num_channels + 3 + 1));
+    float *package = new float[this->num_channels + 3 + 1];
     // random distr for noise
     std::random_device rd;
     std::mt19937 mt (rd ());
@@ -158,5 +159,10 @@ void SyntheticBoard::read_thread ()
         usleep ((int)(1000000 / this->sampling_rate));
 #endif
     }
-    free (package);
+    delete[] package;
+}
+
+int SyntheticBoard::config_board (char *config)
+{
+    return validate_config (config);
 }
