@@ -31,7 +31,7 @@ classdef BoardShim
             
             if ispc
                 obj.libname = 'BoardController';
-                if not (libisloaded ('BoardController.dll'))
+                if not (libisloaded ('BoardController'))
                     addpath ('brainflow/lib');
                     addpath ('brainflow/inc');
                     loadlibrary ('BoardController.dll','inc/board_controller.h');
