@@ -75,6 +75,12 @@ classdef BoardShim
             obj.check_ec (exit_code, task_name);
         end
 
+        function config_board (obj, config)
+            task_name = 'config_board';
+            exit_code = calllib (obj.libname, task_name, config);
+            obj.check_ec (exit_code, task_name);
+        end
+
         function start_stream (obj, buffer_size)
             task_name = 'start_stream';
             exit_code = calllib (obj.libname, task_name, buffer_size);
