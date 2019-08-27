@@ -31,18 +31,24 @@ classdef BoardShim
             
             if ispc
                 obj.libname = 'BoardController';
-                if not(libisloaded('BoardController.dll'))
-                    loadlibrary('BoardController.dll','inc/board_controller.h');
+                if not (libisloaded ('BoardController.dll'))
+                    addpath ('brainflow/lib');
+                    addpath ('brainflow/inc');
+                    loadlibrary ('BoardController.dll','inc/board_controller.h');
                 end
             elseif ismac
                 obj.libname = 'libBoardController';
-                if not(libisloaded('libBoardController'))
-                    loadlibrary('libBoardController.dylib','inc/board_controller.h');
+                if not (libisloaded ('libBoardController'))
+                    addpath ('brainflow/lib');
+                    addpath ('brainflow/inc');
+                    loadlibrary ('libBoardController.dylib','inc/board_controller.h');
                 end
             elseif isunix
                 obj.libname = 'libBoardController';
-                if not (libisloaded('libBoardController'))
-                    loadlibrary('libBoardController.so', 'inc/board_controller.h');
+                if not (libisloaded ('libBoardController'))
+                    addpath ('brainflow/lib');
+                    addpath ('brainflow/inc');
+                    loadlibrary ('libBoardController.so', 'inc/board_controller.h');
                 end
             else
                 error ('OS not supported!')
@@ -72,12 +78,6 @@ classdef BoardShim
         function prepare_session (obj)
             task_name = 'prepare_session';
             exit_code = calllib (obj.libname, task_name, obj.board_id, obj.port_name);
-            obj.check_ec (exit_code, task_name);
-        end
-
-        function config_board (obj, config)
-            task_name = 'config_board';
-            exit_code = calllib (obj.libname, task_name, config);
             obj.check_ec (exit_code, task_name);
         end
 
