@@ -137,10 +137,6 @@ namespace GanglionLib
             {
                 var task = send_command_async (config);
                 task.Wait ();
-                if (task.Result != (int)CustomExitCodes.STATUS_OK)
-                {
-                    return task.Result;
-                }
                 return task.Result;
             }
             catch (Exception ex)
