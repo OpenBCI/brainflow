@@ -53,7 +53,7 @@ int Socket::connect ()
     if (socket_type == (int)SocketType::TCP)
     {
         DWORD value = 1;
-        setsockopt (connect_socket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof (value));
+        setsockopt (connect_socket, IPPROTO_TCP, TCP_NODELAY, (char *)&value, sizeof (value));
         if (::connect (connect_socket, (sockaddr *)&socket_addr, sizeof (socket_addr)) ==
             SOCKET_ERROR)
         {
