@@ -64,9 +64,9 @@ test_script:
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board 2 --port
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 2
     # tests for novaxr
-  - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr.py python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board 3 --port 127.0.0.1
-  - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 3 127.0.0.1
-  #- python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32\Release\test_get_data.exe 3 127.0.0.1
+  - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_tcp.py python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --board 3 --port 127.0.0.1
+  - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_tcp.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 3 127.0.0.1
+  - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_tcp.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32\Release\test_get_data.exe 3 127.0.0.1
 
 # replace mocked libraries by real libs
 after_test:

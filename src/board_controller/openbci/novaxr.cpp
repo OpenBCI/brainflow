@@ -4,7 +4,7 @@
 #include "custom_cast.h"
 #include "novaxr.h"
 
-NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, 2390)
+NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, 2390, (int)SocketType::UDP)
 {
     this->is_streaming = false;
     this->keep_alive = false;

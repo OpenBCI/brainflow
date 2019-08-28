@@ -14,6 +14,12 @@
 #include <string.h>
 
 
+enum class SocketType
+{
+    UDP = 0,
+    TCP = 1
+};
+
 enum class SocketReturnCodes
 {
     STATUS_OK = 0,
@@ -27,7 +33,7 @@ class Socket
 {
 
 public:
-    Socket (const char *port_name, int port);
+    Socket (const char *port_name, int port, int socket_type);
     ~Socket ()
     {
         close ();
@@ -49,6 +55,7 @@ public:
 private:
     char ip_addr[32];
     int port;
+    int socket_type;
 #ifdef _WIN32
     SOCKET connect_socket;
     struct sockaddr_in socket_addr;
