@@ -73,8 +73,8 @@ script:
   - sudo -H python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/cyton_linux.py python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_get_data.py --log --board 2 --port 
   - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TRAVIS_BUILD_DIR/installed/lib python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/cyton_linux.py $TRAVIS_BUILD_DIR/tests/cpp/build/test_get_data 2
   # tests for novaxr
-  - sudo -H python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/novaxr.py python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_get_data.py --log --board 3 --port 127.0.0.1
-  - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TRAVIS_BUILD_DIR/installed/lib python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/novaxr.py $TRAVIS_BUILD_DIR/tests/cpp/build/test_get_data 3 127.0.0.1
+  - sudo -H python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/novaxr_udp.py python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_get_data.py --board 3 --port 127.0.0.1
+  - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TRAVIS_BUILD_DIR/installed/lib python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/novaxr_udp.py $TRAVIS_BUILD_DIR/tests/cpp/build/test_get_data 3 127.0.0.1
 
 after_success:
   - sudo -H pip3 install awscli
