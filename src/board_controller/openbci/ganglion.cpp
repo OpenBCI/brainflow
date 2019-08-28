@@ -12,6 +12,7 @@
 #include "custom_cast.h"
 #include "ganglion.h"
 #include "get_dll_dir.h"
+#include "openbci_helpers.h"
 
 // sleep is 10 ms, so wait for 2.5sec total
 #define MAX_ATTEMPTS_TO_GET_DATA 250
@@ -145,6 +146,7 @@ int Ganglion::start_stream (int buffer_size)
         Board::board_logger->error ("no data received in 20sec, stopping thread");
         this->is_streaming = true;
         this->stop_stream ();
+        // return the same exit code as novaxr
         return UNABLE_TO_OPEN_PORT_ERROR;
     }
 }
@@ -374,26 +376,20 @@ void Ganglion::read_thread ()
     }
 }
 
-int Ganglion::call_start ()
+int Ganglion::config_board (char *config)
 {
-    DLLFunc func = this->dll_loader->get_address ("start_stream_native");
-    if (func == NULL)
+    Board::board_logger->debug ("Trying to config Ganglion with {}", config);
+    int res = validate_config (config);
+    if (res != STATUS_OK)
     {
-        Board::board_logger->error ("failed to get function address for start_stream_native");
-        return GENERAL_ERROR;
+        return res;
     }
-    int res = (func) (NULL);
-    if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
-    {
-        Board::board_logger->error ("failed to start streaming {}", res);
-        return GENERAL_ERROR;
-    }
-    return STATUS_OK;
+    return call_config (config);
 }
 
 int Ganglion::call_init ()
 {
-    DLLFunc func = this->dll_loader->get_address ("initialize");
+    DLLFunc func = this->dll_loader->get_address ("initialize_native");
     if (func == NULL)
     {
         Board::board_logger->error ("failed to get function address for initialize");
@@ -440,6 +436,40 @@ int Ganglion::call_open ()
         return GENERAL_ERROR;
     }
     Board::board_logger->info ("Found Ganglion Device");
+    return STATUS_OK;
+}
+
+int Ganglion::call_config (char *config)
+{
+    DLLFunc func = this->dll_loader->get_address ("config_board_native");
+    if (func == NULL)
+    {
+        Board::board_logger->error ("failed to get function address for config_board_native");
+        return GENERAL_ERROR;
+    }
+    int res = (func) (config);
+    if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
+    {
+        Board::board_logger->error ("failed to config board {}", res);
+        return GENERAL_ERROR;
+    }
+    return STATUS_OK;
+}
+
+int Ganglion::call_start ()
+{
+    DLLFunc func = this->dll_loader->get_address ("start_stream_native");
+    if (func == NULL)
+    {
+        Board::board_logger->error ("failed to get function address for start_stream_native");
+        return GENERAL_ERROR;
+    }
+    int res = (func) (NULL);
+    if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
+    {
+        Board::board_logger->error ("failed to start streaming {}", res);
+        return GENERAL_ERROR;
+    }
     return STATUS_OK;
 }
 

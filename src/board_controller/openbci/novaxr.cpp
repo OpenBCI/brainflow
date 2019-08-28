@@ -3,6 +3,7 @@
 
 #include "custom_cast.h"
 #include "novaxr.h"
+#include "openbci_helpers.h"
 
 NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, 2390, (int)SocketType::UDP)
 {
@@ -33,6 +34,24 @@ int NovaXR::prepare_session ()
         return GENERAL_ERROR;
     }
     initialized = true;
+    return STATUS_OK;
+}
+
+int NovaXR::config_board (char *config)
+{
+    Board::board_logger->debug ("Trying to config NovaXR with {}", config);
+    int res = validate_config (config);
+    if (res != STATUS_OK)
+    {
+        return res;
+    }
+    int len = strlen (config);
+    res = socket.send (config, len);
+    if (len != res)
+    {
+        Board::board_logger->error ("Failed to config a board");
+        return BOARD_WRITE_ERROR;
+    }
     return STATUS_OK;
 }
 
@@ -84,6 +103,8 @@ int NovaXR::start_stream (int buffer_size)
         Board::board_logger->error ("no data received in 5sec, stopping thread");
         this->is_streaming = true;
         this->stop_stream ();
+        // more likely error occured due to wrong ip address, return UNABLE_TO_OPEN_PORT instead
+        // SYNC_TIMEOUT_ERROR
         return UNABLE_TO_OPEN_PORT_ERROR;
     }
 }
