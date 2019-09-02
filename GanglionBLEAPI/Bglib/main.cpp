@@ -53,6 +53,7 @@ namespace GanglionLibNative
 {
     int initialize_native (void *param)
     {
+        // there is no release method, ensure that we init all this staff once
         if (!initialized)
         {
             std::string dongle_port = get_dongle_port ();
@@ -160,11 +161,14 @@ namespace GanglionLibNative
             read_message_thread.join ();
         }
 
+        uart_close ();
+
         connection = 0;
         ganglion_handle_start = 0;
         ganglion_handle_end = 0;
         ganglion_handle_recv = 0;
         ganglion_handle_send = 0;
+        state = State::none;
         return (int)CustomExitCodesNative::STATUS_OK;
     }
 
@@ -195,19 +199,6 @@ namespace GanglionLibNative
         ble_cmd_attclient_attribute_write (connection, ganglion_handle_send, len, (uint8 *)&config);
         int res = wait_for_callback (5);
         return res;
-    }
-
-    int release_native (void *param)
-    {
-        if (initialized)
-        {
-            close_ganglion_native ();
-            state = State::none;
-            initialized = false;
-            ble_cmd_system_reset (0);
-            uart_close ();
-        }
-        return (int)CustomExitCodesNative::STATUS_OK;
     }
 
 } // GanglionLibNative

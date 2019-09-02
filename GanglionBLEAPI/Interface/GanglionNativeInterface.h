@@ -68,7 +68,6 @@ namespace GanglionLibNative
         SHARED_EXPORT int close_ganglion_native (void *param);
         SHARED_EXPORT int get_data_native (void *param);
         SHARED_EXPORT int config_board_native (void *param);
-        SHARED_EXPORT int release_native (void *param);
     }
 #endif
 }

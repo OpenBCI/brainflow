@@ -203,7 +203,6 @@ int Ganglion::release_session ()
     if (this->dll_loader != NULL)
     {
         this->call_close ();
-        this->call_release ();
         this->dll_loader->free_library ();
         delete this->dll_loader;
         this->dll_loader = NULL;
@@ -532,23 +531,6 @@ int Ganglion::call_close ()
     if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
     {
         Board::board_logger->error ("failed to close Ganglion {}", res);
-        return GENERAL_ERROR;
-    }
-    return STATUS_OK;
-}
-
-int Ganglion::call_release ()
-{
-    DLLFunc func = this->dll_loader->get_address ("release_native");
-    if (func == NULL)
-    {
-        Board::board_logger->error ("failed to get function address for release_native");
-        return GENERAL_ERROR;
-    }
-    int res = (func) (NULL);
-    if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
-    {
-        Board::board_logger->error ("failed to release ganglion {}", res);
         return GENERAL_ERROR;
     }
     return STATUS_OK;
