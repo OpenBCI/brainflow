@@ -19,7 +19,7 @@ public class BoardShim {
 
     public interface DllInterface extends Library {
         int prepare_session (int board_id, String port_name);
-        int config_board (String port_name, int board_id, String port_name);
+        int config_board (String config, int board_id, String port_name);
         int start_stream (int buffer_size, int board_id, String port_name);
         int stop_stream (int board_id, String port_name);
         int release_session (int board_id, String port_name);
