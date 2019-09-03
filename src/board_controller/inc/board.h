@@ -9,7 +9,7 @@
 class Board
 {
 public:
-    static std::shared_ptr<spdlog::logger> board_logger;
+    static spdlog::logger *board_logger;
     static int set_log_level (int level);
 
     virtual ~Board ()
@@ -22,8 +22,8 @@ public:
     }
     Board ()
     {
-        // should be initialized in start_stream
-        db = NULL;
+        skip_logs = false;
+        db = NULL; // should be initialized in start_stream
     }
     virtual int prepare_session () = 0;
     virtual int start_stream (int buffer_size) = 0;
@@ -38,4 +38,7 @@ public:
 
 protected:
     DataBuffer *db;
+    bool skip_logs; // we can not use spdlog in destructor call, but we need to call release_session
+                    // and stop_stream from destructor, idea - set this variable to true in
+                    // destructor and write logs under this check where resultuired
 };

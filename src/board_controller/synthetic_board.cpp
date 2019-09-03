@@ -35,6 +35,7 @@ SyntheticBoard::SyntheticBoard (const char *json_config) : Board ()
 
 SyntheticBoard::~SyntheticBoard ()
 {
+    skip_logs = true;
     release_session ();
 }
 
@@ -84,6 +85,10 @@ int SyntheticBoard::start_stream (int buffer_size)
 
 int SyntheticBoard::stop_stream ()
 {
+    if (!skip_logs)
+    {
+        Board::board_logger->trace ("stop stream");
+    }
     if (this->is_streaming)
     {
         this->keep_alive = false;
@@ -99,6 +104,10 @@ int SyntheticBoard::stop_stream ()
 
 int SyntheticBoard::release_session ()
 {
+    if (!skip_logs)
+    {
+        Board::board_logger->trace ("release session");
+    }
     if (this->initialized)
     {
         this->stop_stream ();

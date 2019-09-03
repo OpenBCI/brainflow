@@ -16,6 +16,7 @@ OpenBCISerialBoard::OpenBCISerialBoard (int num_channels, const char *port_name)
 
 OpenBCISerialBoard::~OpenBCISerialBoard ()
 {
+    skip_logs = true;
     release_session ();
 }
 
@@ -50,7 +51,10 @@ int OpenBCISerialBoard::config_board (char *config)
 int OpenBCISerialBoard::send_to_board (char *msg)
 {
     int lenght = strlen (msg);
-    Board::board_logger->debug ("sending {} to the board", msg);
+    if (!skip_logs)
+    {
+        Board::board_logger->debug ("sending {} to the board", msg);
+    }
     int res = serial.send_to_serial_port ((const void *)msg, lenght);
     if (res != lenght)
     {

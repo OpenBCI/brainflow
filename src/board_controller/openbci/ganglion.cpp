@@ -63,6 +63,7 @@ Ganglion::Ganglion (const char *port_name) : Board ()
 
 Ganglion::~Ganglion ()
 {
+    skip_logs = true;
     release_session ();
 }
 
@@ -377,7 +378,10 @@ void Ganglion::read_thread ()
 
 int Ganglion::config_board (char *config)
 {
-    Board::board_logger->debug ("Trying to config Ganglion with {}", config);
+    if (!skip_logs)
+    {
+        Board::board_logger->debug ("Trying to config Ganglion with {}", config);
+    }
     int res = validate_config (config);
     if (res != STATUS_OK)
     {
@@ -443,13 +447,19 @@ int Ganglion::call_config (char *config)
     DLLFunc func = this->dll_loader->get_address ("config_board_native");
     if (func == NULL)
     {
-        Board::board_logger->error ("failed to get function address for config_board_native");
+        if (!skip_logs)
+        {
+            Board::board_logger->error ("failed to get function address for config_board_native");
+        }
         return GENERAL_ERROR;
     }
     int res = (func) (config);
     if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
     {
-        Board::board_logger->error ("failed to config board {}", res);
+        if (!skip_logs)
+        {
+            Board::board_logger->error ("failed to config board {}", res);
+        }
         return GENERAL_ERROR;
     }
     return STATUS_OK;
@@ -477,13 +487,19 @@ int Ganglion::call_stop ()
     DLLFunc func = dll_loader->get_address ("stop_stream_native");
     if (func == NULL)
     {
-        Board::board_logger->error ("failed to get function address for stop_stream_native");
+        if (!skip_logs)
+        {
+            Board::board_logger->error ("failed to get function address for stop_stream_native");
+        }
         return GENERAL_ERROR;
     }
     int res = (func) (NULL);
     if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
     {
-        Board::board_logger->error ("failed to stop streaming {}", res);
+        if (!skip_logs)
+        {
+            Board::board_logger->error ("failed to stop streaming {}", res);
+        }
         return GENERAL_ERROR;
     }
     return STATUS_OK;
@@ -494,13 +510,19 @@ int Ganglion::call_close ()
     DLLFunc func = dll_loader->get_address ("close_ganglion_native");
     if (func == NULL)
     {
-        Board::board_logger->error ("failed to get function address for close_ganglion_native");
+        if (!skip_logs)
+        {
+            Board::board_logger->error ("failed to get function address for close_ganglion_native");
+        }
         return GENERAL_ERROR;
     }
     int res = (func) (NULL);
     if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
     {
-        Board::board_logger->error ("failed to close Ganglion {}", res);
+        if (!skip_logs)
+        {
+            Board::board_logger->error ("failed to close Ganglion {}", res);
+        }
         return GENERAL_ERROR;
     }
     return STATUS_OK;

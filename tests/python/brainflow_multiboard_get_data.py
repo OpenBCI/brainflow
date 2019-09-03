@@ -38,7 +38,7 @@ def main ():
     second_data = second_board.get_board_data ()
     first_board.stop_stream ()
     second_board.stop_stream ()
-    #first_board.release_session ()
+    first_board.release_session ()
     #second_board.release_session () test that we handle it correctly
 
     first_data_handler = brainflow.preprocess.DataHandler (args.first_board, numpy_data = first_data)
