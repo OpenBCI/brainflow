@@ -3,6 +3,7 @@
 #endif
 
 #include <map>
+#include <memory>
 #include <mutex>
 #include <utility>
 
@@ -13,7 +14,7 @@
 #include "ganglion.h"
 #include "synthetic_board.h"
 
-std::map<std::pair<int, std::string>, Board *> boards;
+std::map<std::pair<int, std::string>, std::shared_ptr<Board>> boards;
 std::mutex mutex;
 
 int prepare_session (int board_id, char *port_name)
@@ -39,24 +40,26 @@ int prepare_session (int board_id, char *port_name)
     std::pair<int, std::string> key = std::make_pair (board_id, str_port);
     if (boards.find (key) != boards.end ())
     {
+        Board::board_logger->error (
+            "Board with id {} and port {} already created", board_id, port_name);
         return PORT_ALREADY_OPEN_ERROR;
     }
 
     int res = STATUS_OK;
-    Board *board = NULL;
+    std::shared_ptr<Board> board = NULL;
     switch (board_id)
     {
         case CYTON_BOARD:
-            board = new Cyton (port_name);
+            board = std::shared_ptr<Board> (new Cyton (port_name));
             break;
         case GANGLION_BOARD:
-            board = new Ganglion (port_name);
+            board = std::shared_ptr<Board> (new Ganglion (port_name));
             break;
         case SYNTHETIC_BOARD:
-            board = new SyntheticBoard (port_name);
+            board = std::shared_ptr<Board> (new SyntheticBoard (port_name));
             break;
         case CYTON_DAISY_BOARD:
-            board = new CytonDaisy (port_name);
+            board = std::shared_ptr<Board> (new CytonDaisy (port_name));
             break;
         default:
             return UNSUPPORTED_BOARD_ERROR;
@@ -87,6 +90,8 @@ int start_stream (int buffer_size, int board_id, char *port_name)
     auto board_it = boards.find (key);
     if (board_it == boards.end ())
     {
+        Board::board_logger->error (
+            "Board with id {} and port {} is not created", board_id, port_name);
         return BOARD_NOT_CREATED_ERROR;
     }
 
@@ -110,6 +115,8 @@ int stop_stream (int board_id, char *port_name)
     auto board_it = boards.find (key);
     if (board_it == boards.end ())
     {
+        Board::board_logger->error (
+            "Board with id {} and port {} is not created", board_id, port_name);
         return BOARD_NOT_CREATED_ERROR;
     }
 
@@ -133,11 +140,12 @@ int release_session (int board_id, char *port_name)
     auto board_it = boards.find (key);
     if (board_it == boards.end ())
     {
+        Board::board_logger->error (
+            "Board with id {} and port {} is not created", board_id, port_name);
         return BOARD_NOT_CREATED_ERROR;
     }
 
     int res = board_it->second->release_session ();
-    delete board_it->second;
     boards.erase (board_it);
 
     return res;
@@ -161,6 +169,8 @@ int get_current_board_data (int num_samples, float *data_buf, double *ts_buf, in
     auto board_it = boards.find (key);
     if (board_it == boards.end ())
     {
+        Board::board_logger->error (
+            "Board with id {} and port {} is not created", board_id, port_name);
         return BOARD_NOT_CREATED_ERROR;
     }
 
@@ -185,6 +195,8 @@ int get_board_data_count (int *result, int board_id, char *port_name)
     auto board_it = boards.find (key);
     if (board_it == boards.end ())
     {
+        Board::board_logger->error (
+            "Board with id {} and port {} is not created", board_id, port_name);
         return BOARD_NOT_CREATED_ERROR;
     }
 
@@ -208,6 +220,8 @@ int get_board_data (int data_count, float *data_buf, double *ts_buf, int board_i
     auto board_it = boards.find (key);
     if (board_it == boards.end ())
     {
+        Board::board_logger->error (
+            "Board with id {} and port {} is not created", board_id, port_name);
         return BOARD_NOT_CREATED_ERROR;
     }
 
@@ -217,11 +231,7 @@ int get_board_data (int data_count, float *data_buf, double *ts_buf, int board_i
 int set_log_level (int log_level)
 {
     std::lock_guard<std::mutex> lock (mutex);
-    for (auto board_it = boards.begin (); board_it != boards.end (); board_it++)
-    {
-        board_it->second->set_log_level (log_level);
-    }
-    return STATUS_OK;
+    return Board::set_log_level (log_level);
 }
 
 int config_board (char *config, int board_id, char *port_name)
@@ -241,6 +251,8 @@ int config_board (char *config, int board_id, char *port_name)
     auto board_it = boards.find (key);
     if (board_it == boards.end ())
     {
+        Board::board_logger->error (
+            "Board with id {} and port {} is not created", board_id, port_name);
         return BOARD_NOT_CREATED_ERROR;
     }
 
