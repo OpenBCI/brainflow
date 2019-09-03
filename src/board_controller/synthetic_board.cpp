@@ -99,6 +99,7 @@ int SyntheticBoard::stop_stream ()
 
 int SyntheticBoard::release_session ()
 {
+    Board::board_logger->trace ("test");
     if (this->initialized)
     {
         this->stop_stream ();

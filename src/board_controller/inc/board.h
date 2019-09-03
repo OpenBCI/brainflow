@@ -29,7 +29,6 @@ public:
     virtual int start_stream (int buffer_size) = 0;
     virtual int stop_stream () = 0;
     virtual int release_session () = 0;
-    virtual int get_board_id () = 0;
     virtual int config_board (char *config) = 0;
 
     int get_current_board_data (

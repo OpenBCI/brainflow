@@ -2,7 +2,9 @@
 #include <windows.h>
 #endif
 
+#include <map>
 #include <mutex>
+#include <utility>
 
 #include "board.h"
 #include "board_controller.h"
@@ -11,7 +13,7 @@
 #include "ganglion.h"
 #include "synthetic_board.h"
 
-Board *board = NULL;
+std::map<std::pair<int, std::string>, Board *> boards;
 std::mutex mutex;
 
 int prepare_session (int board_id, char *port_name)
@@ -25,23 +27,23 @@ int prepare_session (int board_id, char *port_name)
 
     std::lock_guard<std::mutex> lock (mutex);
 
-    if ((board) && (board->get_board_id () == board_id))
+    std::string str_port;
+    if (port_name == NULL)
     {
-        Board::board_logger->warn ("Session is already prepared");
-        return STATUS_OK;
+        str_port = "";
     }
     else
     {
-        if (board)
-        {
-            Board::board_logger->error (
-                "Board with ID {} is already created you should release previous session first",
-                board->get_board_id ());
-            return ANOTHER_BOARD_IS_CREATED_ERROR;
-        }
+        str_port = port_name;
+    }
+    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
+    if (boards.find (key) != boards.end ())
+    {
+        return PORT_ALREADY_OPEN_ERROR;
     }
 
     int res = STATUS_OK;
+    Board *board = NULL;
     switch (board_id)
     {
         case CYTON_BOARD:
@@ -57,130 +59,190 @@ int prepare_session (int board_id, char *port_name)
             board = new CytonDaisy (port_name);
             break;
         default:
-            Board::board_logger->error ("No board with Id {}", board_id);
             return UNSUPPORTED_BOARD_ERROR;
     }
     res = board->prepare_session ();
     if (res != STATUS_OK)
     {
-        delete board;
         board = NULL;
     }
+    boards[key] = board;
     return res;
 }
 
-int start_stream (int buffer_size)
+int start_stream (int buffer_size, int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    if (board == NULL)
+    std::string str_port;
+    if (port_name == NULL)
+    {
+        str_port = "";
+    }
+    else
+    {
+        str_port = port_name;
+    }
+    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
+    auto board_it = boards.find (key);
+    if (board_it == boards.end ())
+    {
         return BOARD_NOT_CREATED_ERROR;
+    }
 
-    return board->start_stream (buffer_size);
+    return board_it->second->start_stream (buffer_size);
 }
 
-int stop_stream ()
+int stop_stream (int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    if (board == NULL)
+    std::string str_port;
+    if (port_name == NULL)
+    {
+        str_port = "";
+    }
+    else
+    {
+        str_port = port_name;
+    }
+    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
+    auto board_it = boards.find (key);
+    if (board_it == boards.end ())
+    {
         return BOARD_NOT_CREATED_ERROR;
+    }
 
-    return board->stop_stream ();
+    return board_it->second->stop_stream ();
 }
 
-int release_session ()
+int release_session (int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    if (board == NULL)
+    std::string str_port;
+    if (port_name == NULL)
+    {
+        str_port = "";
+    }
+    else
+    {
+        str_port = port_name;
+    }
+    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
+    auto board_it = boards.find (key);
+    if (board_it == boards.end ())
+    {
         return BOARD_NOT_CREATED_ERROR;
+    }
 
-    int res = board->release_session ();
-    delete board;
-    board = NULL;
+    int res = board_it->second->release_session ();
+    delete board_it->second;
+    boards.erase (board_it);
 
     return res;
 }
 
-int get_current_board_data (int num_samples, float *data_buf, double *ts_buf, int *returned_samples)
+int get_current_board_data (int num_samples, float *data_buf, double *ts_buf, int *returned_samples,
+    int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    if (board == NULL)
+    std::string str_port;
+    if (port_name == NULL)
+    {
+        str_port = "";
+    }
+    else
+    {
+        str_port = port_name;
+    }
+    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
+    auto board_it = boards.find (key);
+    if (board_it == boards.end ())
+    {
         return BOARD_NOT_CREATED_ERROR;
+    }
 
-    return board->get_current_board_data (num_samples, data_buf, ts_buf, returned_samples);
+    return board_it->second->get_current_board_data (
+        num_samples, data_buf, ts_buf, returned_samples);
 }
 
-int get_board_data_count (int *result)
+int get_board_data_count (int *result, int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    if (board == NULL)
+    std::string str_port;
+    if (port_name == NULL)
+    {
+        str_port = "";
+    }
+    else
+    {
+        str_port = port_name;
+    }
+    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
+    auto board_it = boards.find (key);
+    if (board_it == boards.end ())
+    {
         return BOARD_NOT_CREATED_ERROR;
+    }
 
-    return board->get_board_data_count (result);
+    return board_it->second->get_board_data_count (result);
 }
 
-int get_board_data (int data_count, float *data_buf, double *ts_buf)
+int get_board_data (int data_count, float *data_buf, double *ts_buf, int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    if (board == NULL)
+    std::string str_port;
+    if (port_name == NULL)
+    {
+        str_port = "";
+    }
+    else
+    {
+        str_port = port_name;
+    }
+    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
+    auto board_it = boards.find (key);
+    if (board_it == boards.end ())
+    {
         return BOARD_NOT_CREATED_ERROR;
+    }
 
-    return board->get_board_data (data_count, data_buf, ts_buf);
+    return board_it->second->get_board_data (data_count, data_buf, ts_buf);
 }
 
 int set_log_level (int log_level)
 {
     std::lock_guard<std::mutex> lock (mutex);
-    return Board::set_log_level (log_level);
+    for (auto board_it = boards.begin (); board_it != boards.end (); board_it++)
+    {
+        board_it->second->set_log_level (log_level);
+    }
+    return STATUS_OK;
 }
 
-int config_board (char *config)
+int config_board (char *config, int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    if (board == NULL)
+    std::string str_port;
+    if (port_name == NULL)
+    {
+        str_port = "";
+    }
+    else
+    {
+        str_port = port_name;
+    }
+    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
+    auto board_it = boards.find (key);
+    if (board_it == boards.end ())
+    {
         return BOARD_NOT_CREATED_ERROR;
-
-    return board->config_board (config);
-}
-
-// DLLMain is executed during LoadLibrary\FreeLibrary. Board object desctructorshould be called even
-// without it but for sanity check to ensure that we stop streaming data from the board I call it
-// manually here as well
-#ifdef _WIN32
-BOOL WINAPI DllMain (HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
-{
-    switch (fdwReason)
-    {
-        case DLL_PROCESS_DETACH:
-        {
-            if (board != NULL)
-            {
-                board->release_session ();
-                delete board;
-                board = NULL;
-            }
-            break;
-        }
-        default:
-            break;
     }
-    return TRUE;
+
+    return board_it->second->config_board (config);
 }
-#else
-// the same as DLL_PROCESS_DETACH for linux
-__attribute__ ((destructor)) static void terminate_all (void)
-{
-    if (board != NULL)
-    {
-        board->release_session ();
-        delete board;
-        board = NULL;
-    }
-}
-#endif
