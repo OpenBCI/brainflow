@@ -68,6 +68,7 @@ script:
   # - cd $TRAVIS_BUILD_DIR/tests/java/ && sudo -H javac -classpath $TRAVIS_BUILD_DIR/java-package/brainflow/target/brainflow-java-jar-with-dependencies.jar BrainFlowTest.java && ls -l . && sudo -H python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/cyton_linux.py java -classpath ".:$TRAVIS_BUILD_DIR/java-package/brainflow/target/brainflow-java-jar-with-dependencies.jar" BrainFlowTest 0
   # tests for synthetic board
   - python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_get_data.py --log --board -1 --port "smth"
+  - python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_multiboard_get_data.py --log --first-board -1 --first-port "smth1" --second-board -1 --second-port "smth2"
   - $TRAVIS_BUILD_DIR/tests/cpp/build/test_get_data -1 "smth"
   # tests for cyton daisy
   - sudo -H python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/cyton_linux.py python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_get_data.py --log --board 2 --port 
