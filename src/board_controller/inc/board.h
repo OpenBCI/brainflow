@@ -60,7 +60,5 @@ public:
 
 protected:
     DataBuffer *db;
-    bool skip_logs; // we can not use spdlog in destructor call, but we need to call release_session
-                    // and stop_stream from destructor, idea - set this variable to true in
-                    // destructor and write logs under this check where resultuired
+    bool skip_logs;
 };

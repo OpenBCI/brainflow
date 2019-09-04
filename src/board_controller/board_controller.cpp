@@ -17,6 +17,9 @@
 std::map<std::pair<int, std::string>, std::shared_ptr<Board>> boards;
 std::mutex mutex;
 
+std::pair<int, std::string> get_key (int board_id, char *port_name);
+int check_board_session (std::pair<int, std::string> key);
+
 int prepare_session (int board_id, char *port_name)
 {
 
@@ -28,16 +31,7 @@ int prepare_session (int board_id, char *port_name)
 
     std::lock_guard<std::mutex> lock (mutex);
 
-    std::string str_port;
-    if (port_name == NULL)
-    {
-        str_port = "";
-    }
-    else
-    {
-        str_port = port_name;
-    }
-    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
+    std::pair<int, std::string> key = get_key (board_id, port_name);
     if (boards.find (key) != boards.end ())
     {
         Board::board_logger->error (
@@ -77,23 +71,13 @@ int start_stream (int buffer_size, int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    std::string str_port;
-    if (port_name == NULL)
+    std::pair<int, std::string> key = get_key (board_id, port_name);
+    int res = check_board_session (key);
+    if (res != STATUS_OK)
     {
-        str_port = "";
+        return res;
     }
-    else
-    {
-        str_port = port_name;
-    }
-    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
     auto board_it = boards.find (key);
-    if (board_it == boards.end ())
-    {
-        Board::board_logger->error (
-            "Board with id {} and port {} is not created", board_id, port_name);
-        return BOARD_NOT_CREATED_ERROR;
-    }
 
     return board_it->second->start_stream (buffer_size);
 }
@@ -102,23 +86,13 @@ int stop_stream (int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    std::string str_port;
-    if (port_name == NULL)
+    std::pair<int, std::string> key = get_key (board_id, port_name);
+    int res = check_board_session (key);
+    if (res != STATUS_OK)
     {
-        str_port = "";
+        return res;
     }
-    else
-    {
-        str_port = port_name;
-    }
-    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
     auto board_it = boards.find (key);
-    if (board_it == boards.end ())
-    {
-        Board::board_logger->error (
-            "Board with id {} and port {} is not created", board_id, port_name);
-        return BOARD_NOT_CREATED_ERROR;
-    }
 
     return board_it->second->stop_stream ();
 }
@@ -127,25 +101,15 @@ int release_session (int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    std::string str_port;
-    if (port_name == NULL)
+    std::pair<int, std::string> key = get_key (board_id, port_name);
+    int res = check_board_session (key);
+    if (res != STATUS_OK)
     {
-        str_port = "";
+        return res;
     }
-    else
-    {
-        str_port = port_name;
-    }
-    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
     auto board_it = boards.find (key);
-    if (board_it == boards.end ())
-    {
-        Board::board_logger->error (
-            "Board with id {} and port {} is not created", board_id, port_name);
-        return BOARD_NOT_CREATED_ERROR;
-    }
 
-    int res = board_it->second->release_session ();
+    res = board_it->second->release_session ();
     boards.erase (board_it);
 
     return res;
@@ -156,23 +120,13 @@ int get_current_board_data (int num_samples, float *data_buf, double *ts_buf, in
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    std::string str_port;
-    if (port_name == NULL)
+    std::pair<int, std::string> key = get_key (board_id, port_name);
+    int res = check_board_session (key);
+    if (res != STATUS_OK)
     {
-        str_port = "";
+        return res;
     }
-    else
-    {
-        str_port = port_name;
-    }
-    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
     auto board_it = boards.find (key);
-    if (board_it == boards.end ())
-    {
-        Board::board_logger->error (
-            "Board with id {} and port {} is not created", board_id, port_name);
-        return BOARD_NOT_CREATED_ERROR;
-    }
 
     return board_it->second->get_current_board_data (
         num_samples, data_buf, ts_buf, returned_samples);
@@ -182,23 +136,13 @@ int get_board_data_count (int *result, int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    std::string str_port;
-    if (port_name == NULL)
+    std::pair<int, std::string> key = get_key (board_id, port_name);
+    int res = check_board_session (key);
+    if (res != STATUS_OK)
     {
-        str_port = "";
+        return res;
     }
-    else
-    {
-        str_port = port_name;
-    }
-    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
     auto board_it = boards.find (key);
-    if (board_it == boards.end ())
-    {
-        Board::board_logger->error (
-            "Board with id {} and port {} is not created", board_id, port_name);
-        return BOARD_NOT_CREATED_ERROR;
-    }
 
     return board_it->second->get_board_data_count (result);
 }
@@ -207,23 +151,13 @@ int get_board_data (int data_count, float *data_buf, double *ts_buf, int board_i
 {
     std::lock_guard<std::mutex> lock (mutex);
 
-    std::string str_port;
-    if (port_name == NULL)
+    std::pair<int, std::string> key = get_key (board_id, port_name);
+    int res = check_board_session (key);
+    if (res != STATUS_OK)
     {
-        str_port = "";
+        return res;
     }
-    else
-    {
-        str_port = port_name;
-    }
-    std::pair<int, std::string> key = std::make_pair (board_id, str_port);
     auto board_it = boards.find (key);
-    if (board_it == boards.end ())
-    {
-        Board::board_logger->error (
-            "Board with id {} and port {} is not created", board_id, port_name);
-        return BOARD_NOT_CREATED_ERROR;
-    }
 
     return board_it->second->get_board_data (data_count, data_buf, ts_buf);
 }
@@ -238,6 +172,23 @@ int config_board (char *config, int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
+    std::pair<int, std::string> key = get_key (board_id, port_name);
+    int res = check_board_session (key);
+    if (res != STATUS_OK)
+    {
+        return res;
+    }
+    auto board_it = boards.find (key);
+
+    return board_it->second->config_board (config);
+}
+
+/////////////////////////////////////////////////
+//////////////////// helpers ////////////////////
+/////////////////////////////////////////////////
+
+std::pair<int, std::string> get_key (int board_id, char *port_name)
+{
     std::string str_port;
     if (port_name == NULL)
     {
@@ -248,13 +199,17 @@ int config_board (char *config, int board_id, char *port_name)
         str_port = port_name;
     }
     std::pair<int, std::string> key = std::make_pair (board_id, str_port);
-    auto board_it = boards.find (key);
-    if (board_it == boards.end ())
+    return key;
+}
+
+int check_board_session (std::pair<int, std::string> key)
+{
+    if (boards.find (key) == boards.end ())
     {
         Board::board_logger->error (
-            "Board with id {} and port {} is not created", board_id, port_name);
+            "Board with id {} and port {} is not created", key.first, key.second);
         return BOARD_NOT_CREATED_ERROR;
     }
 
-    return board_it->second->config_board (config);
+    return STATUS_OK;
 }
