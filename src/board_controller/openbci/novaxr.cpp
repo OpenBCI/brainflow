@@ -12,11 +12,11 @@ NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, 2390, (int)SocketTyp
     this->initialized = false;
     this->num_channels = 20;
     this->state = SYNC_TIMEOUT_ERROR;
-    Board::board_logger->debug ("use ip addr {}", ip_addr);
 }
 
 NovaXR::~NovaXR ()
 {
+    skip_logs = true;
     release_session ();
 }
 
@@ -24,13 +24,13 @@ int NovaXR::prepare_session ()
 {
     if (initialized)
     {
-        Board::board_logger->info ("Session is already prepared");
+        safe_logger (spdlog::level::info, "Session is already prepared");
         return STATUS_OK;
     }
     int res = socket.connect ();
     if (res != 0)
     {
-        Board::board_logger->error ("failed to init socket: {}", res);
+        safe_logger (spdlog::level::err, "failed to init socket: {}", res);
         return GENERAL_ERROR;
     }
     initialized = true;
@@ -39,7 +39,7 @@ int NovaXR::prepare_session ()
 
 int NovaXR::config_board (char *config)
 {
-    Board::board_logger->debug ("Trying to config NovaXR with {}", config);
+    safe_logger (spdlog::level::debug, "Trying to config NovaXR with {}", config);
     int res = validate_config (config);
     if (res != STATUS_OK)
     {
@@ -49,7 +49,7 @@ int NovaXR::config_board (char *config)
     res = socket.send (config, len);
     if (len != res)
     {
-        Board::board_logger->error ("Failed to config a board");
+        safe_logger (spdlog::level::err, "Failed to config a board");
         return BOARD_WRITE_ERROR;
     }
     return STATUS_OK;
@@ -59,12 +59,12 @@ int NovaXR::start_stream (int buffer_size)
 {
     if (is_streaming)
     {
-        Board::board_logger->error ("Streaming thread already running");
+        safe_logger (spdlog::level::err, "Streaming thread already running");
         return STREAM_ALREADY_RUN_ERROR;
     }
     if (buffer_size <= 0 || buffer_size > MAX_CAPTURE_SAMPLES)
     {
-        Board::board_logger->error ("invalid array size");
+        safe_logger (spdlog::level::err, "invalid array size");
         return INVALID_BUFFER_SIZE_ERROR;
     }
 
@@ -77,14 +77,14 @@ int NovaXR::start_stream (int buffer_size)
     // start streaming
     if (socket.send ("b", 1) != 1)
     {
-        Board::board_logger->error ("Failed to send a command to board");
+        safe_logger (spdlog::level::err, "Failed to send a command to board");
         return BOARD_WRITE_ERROR;
     }
 
     db = new DataBuffer (num_channels, buffer_size);
     if (!db->is_ready ())
     {
-        Board::board_logger->error ("unable to prepare buffer");
+        safe_logger (spdlog::level::err, "unable to prepare buffer");
         return INVALID_BUFFER_SIZE_ERROR;
     }
 
@@ -119,7 +119,7 @@ int NovaXR::stop_stream ()
         this->state = SYNC_TIMEOUT_ERROR;
         if (socket.send ("s", 1) != 1)
         {
-            Board::board_logger->error ("Failed to send a command to board");
+            safe_logger (spdlog::level::err, "Failed to send a command to board");
             return BOARD_WRITE_ERROR;
         }
         return STATUS_OK;
@@ -135,7 +135,9 @@ int NovaXR::release_session ()
     if (initialized)
     {
         if (is_streaming)
+        {
             stop_stream ();
+        }
         initialized = false;
         socket.close ();
     }
@@ -152,7 +154,7 @@ void NovaXR::read_thread ()
         res = socket.recv (b, 63);
         if (res != 63)
         {
-            Board::board_logger->trace ("unable to read 63 bytes, read {}", res);
+            safe_logger (spdlog::level::trace, "unable to read 63 bytes, read {}", res);
             continue;
         }
         else
@@ -165,7 +167,7 @@ void NovaXR::read_thread ()
                     this->state = STATUS_OK;
                 }
                 this->cv.notify_one ();
-                Board::board_logger->debug ("start streaming");
+                safe_logger (spdlog::level::debug, "start streaming");
             }
         }
 

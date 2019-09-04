@@ -477,40 +477,6 @@ int Ganglion::call_start ()
     return STATUS_OK;
 }
 
-int Ganglion::call_config (char *config)
-{
-    DLLFunc func = this->dll_loader->get_address ("config_board_native");
-    if (func == NULL)
-    {
-        Board::board_logger->error ("failed to get function address for config_board_native");
-        return GENERAL_ERROR;
-    }
-    int res = (func) (config);
-    if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
-    {
-        Board::board_logger->error ("failed to config board {}", res);
-        return GENERAL_ERROR;
-    }
-    return STATUS_OK;
-}
-
-int Ganglion::call_start ()
-{
-    DLLFunc func = this->dll_loader->get_address ("start_stream_native");
-    if (func == NULL)
-    {
-        Board::board_logger->error ("failed to get function address for start_stream_native");
-        return GENERAL_ERROR;
-    }
-    int res = (func) (NULL);
-    if (res != GanglionLibNative::CustomExitCodesNative::STATUS_OK)
-    {
-        Board::board_logger->error ("failed to start streaming {}", res);
-        return GENERAL_ERROR;
-    }
-    return STATUS_OK;
-}
-
 int Ganglion::call_stop ()
 {
     DLLFunc func = dll_loader->get_address ("stop_stream_native");
