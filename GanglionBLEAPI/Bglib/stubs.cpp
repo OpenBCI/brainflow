@@ -14,10 +14,6 @@ void ble_rsp_system_get_info (const struct ble_msg_system_get_info_rsp_t *msg)
 {
 }
 
-void ble_evt_attclient_attribute_value (const struct ble_msg_attclient_attribute_value_evt_t *msg)
-{
-}
-
 void ble_default (const void *v)
 {
 }

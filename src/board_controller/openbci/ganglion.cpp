@@ -174,10 +174,7 @@ int Ganglion::stop_stream ()
     {
         this->keep_alive = false;
         this->is_streaming = false;
-        if (this->streaming_thread.joinable ())
-        {
-            this->streaming_thread.join ();
-        }
+        this->streaming_thread.join ();
         this->state = SYNC_TIMEOUT_ERROR;
         return this->call_stop ();
     }
@@ -391,7 +388,7 @@ void Ganglion::read_thread ()
 #ifdef _WIN32
             Sleep (10);
 #else
-            usleep (10000);
+            usleep (1000000);
 #endif
         }
     }

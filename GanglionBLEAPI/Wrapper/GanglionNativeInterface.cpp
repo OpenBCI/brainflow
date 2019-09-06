@@ -140,16 +140,16 @@ namespace GanglionLibNative
     int get_data_native (void *param)
     {
         Ganglion ^ wrapper = GanglionLibWrapper::instance->ganglion_obj;
-        BoardData ^ managedData = wrapper->get_data ();
-        if (managedData->exit_code != (int)CustomExitCodes::STATUS_OK)
+        board_data ^ managed_data = wrapper->get_data ();
+        if (managed_data->exit_code != (int)CustomExitCodes::STATUS_OK)
         {
-            return managedData->exit_code;
+            return managed_data->exit_code;
         }
-        struct GanglionDataNative *boardData = (struct GanglionDataNative *)param;
-        boardData->timestamp = managedData->timestamp;
-        for (int i = 0; i < managedData->data->Length; i++)
+        struct GanglionDataNative *board_data = (struct GanglionDataNative *)param;
+        board_data->timestamp = managed_data->timestamp;
+        for (int i = 0; i < managed_data->data->Length; i++)
         {
-            boardData->data[i] = (unsigned char)managedData->data[i];
+            board_data->data[i] = (unsigned char)managed_data->data[i];
         }
         return (int)CustomExitCodesNative::STATUS_OK;
     }
@@ -161,8 +161,8 @@ namespace GanglionLibNative
         return wrapper->config_board (conf_str, true); // use send characteristic
     }
 
-	int release_native (void *param)
-	{
+    int release_native (void *param)
+    {
         return (int)CustomExitCodesNative::STATUS_OK;
-	}
+    }
 }

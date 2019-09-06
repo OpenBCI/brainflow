@@ -11,7 +11,7 @@ ifeq ($(DEBUG), y)
 	CFLAGS += -g -DDEBUG
 endif
 
-SRCS := $(wildcard ./Bglib/*.cpp ../src/utils/serial.cpp)
+SRCS := $(wildcard ./Bglib/*.cpp ../src/utils/timestamp.cpp)
 OBJS := $(SRCS:.cpp=.o)
 DEPS := $(SRCS:.cpp=.d)
 

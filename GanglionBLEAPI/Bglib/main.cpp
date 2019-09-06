@@ -2,6 +2,7 @@
 #include <condition_variable>
 #include <ctype.h>
 #include <mutex>
+#include <queue>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -18,6 +19,8 @@
 
 volatile int exit_code = (int)GanglionLibNative::SYNC_ERROR;
 char uart_port[1024];
+std::queue<struct GanglionLibNative::GanglionDataNative>
+    data_queue; // not thread safe but maybe its ok
 volatile bd_addr connect_addr;
 volatile uint8 connection = 0;
 volatile uint16 ganglion_handle_start = 0; // I have no idea what it is but seems like its important
@@ -38,6 +41,9 @@ std::condition_variable cv;
 
 bool initialized = false;
 
+std::thread read_characteristic_thread; // I didnt find a way to subscribe for notifications, send
+                                        // commands to read data in a loop
+bool should_stop_stream = true;
 
 void read_message_worker ()
 {
@@ -45,6 +51,16 @@ void read_message_worker ()
     {
         // looks like it works wo mutex for reset_ble_dev and read_message
         read_message (UART_TIMEOUT);
+    }
+}
+
+// TODO try harder to find a way to enable notifications wo sending this command(maybe it will
+// improve bad sampling rate)
+void read_characteristic_worker ()
+{
+    while (!should_stop_stream)
+    {
+        ble_cmd_attclient_read_by_handle (connection, ganglion_handle_recv);
     }
 }
 
@@ -134,12 +150,24 @@ namespace GanglionLibNative
 
     int stop_stream_native (void *param)
     {
+        if (!should_stop_stream)
+        {
+            should_stop_stream = true;
+            read_characteristic_thread.join ();
+        }
         return config_board_native ((void *)"s");
     }
 
     int start_stream_native (void *param)
     {
-        return config_board_native ((void *)"b");
+        int res = config_board_native ((void *)"b");
+        if (res != (int)CustomExitCodesNative::STATUS_OK)
+        {
+            return res;
+        }
+        should_stop_stream = false;
+        read_characteristic_thread = std::thread (read_characteristic_worker);
+        return res;
     }
 
     int close_ganglion_native (void *param)
@@ -167,7 +195,19 @@ namespace GanglionLibNative
             return (int)CustomExitCodesNative::GANGLION_IS_NOT_OPEN_ERROR;
         }
         state = State::get_data_called;
-        return (int)CustomExitCodesNative::NOT_IMPLEMENTED_ERROR;
+        if (data_queue.empty ())
+        {
+            return (int)CustomExitCodesNative::NO_DATA_ERROR;
+        }
+        struct GanglionDataNative *board_data = (struct GanglionDataNative *)param;
+        struct GanglionDataNative data = data_queue.front ();
+        board_data->timestamp = data.timestamp;
+        for (int i = 0; i < 20; i++)
+        {
+            board_data->data[i] = data.data[i];
+        }
+        data_queue.pop ();
+        return (int)CustomExitCodesNative::STATUS_OK;
     }
 
     int config_board_native (void *param)
@@ -198,11 +238,12 @@ namespace GanglionLibNative
             initialized = false;
             ble_cmd_system_reset (0);
             keep_alive = false;
-            if (read_message_thread.joinable ())
-            {
-                read_message_thread.join ();
-            }
+            read_message_thread.join ();
             uart_close ();
+            while (!data_queue.empty ())
+            {
+                data_queue.pop ();
+            }
         }
         return (int)CustomExitCodesNative::STATUS_OK;
     }

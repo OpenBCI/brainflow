@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <math.h>
 #include <mutex>
+#include <queue>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -9,13 +10,14 @@
 #include "GanglionNativeInterface.h"
 #include "cmd_def.h"
 #include "helpers.h"
+#include "timestamp.h"
 #include "uart.h"
 
 
 #define GANGLION_SERVICE_UUID 0xfe84
 // seems like in this api chars uuids are not the same as in microsoft api
-#define GANGLION_SEND_CHAR_UUID 0x2803 // maybe it's not what we need or maybe we need to swap them
-#define GANGLION_RECV_CHAR_UUID 0x2800
+#define GANGLION_SEND_CHAR_UUID 0x2800
+#define GANGLION_RECV_CHAR_UUID 0x2803
 
 extern volatile int exit_code;
 extern volatile bd_addr connect_addr;
@@ -29,6 +31,8 @@ extern volatile State state;
 
 extern std::mutex m;
 extern std::condition_variable cv;
+
+extern std::queue<struct GanglionLibNative::GanglionDataNative> data_queue;
 
 void ble_evt_gap_scan_response (const struct ble_msg_gap_scan_response_evt_t *msg)
 {
@@ -164,5 +168,17 @@ void ble_evt_attclient_find_information_found (
             }
             cv.notify_one ();
         }
+    }
+}
+
+void ble_evt_attclient_attribute_value (const struct ble_msg_attclient_attribute_value_evt_t *msg)
+{
+    if ((int)msg->value.len >= 18)
+    {
+        unsigned char values[20] = {0};
+        memcpy (values, msg->value.data + 1,
+            (msg->value.len - 1) * sizeof (unsigned char)); // fist byte is a lenght
+        struct GanglionLibNative::GanglionDataNative data (values, (long)get_timestamp ());
+        data_queue.push (data);
     }
 }
