@@ -147,14 +147,13 @@ int NovaXR::release_session ()
 void NovaXR::read_thread ()
 {
     int res;
-    unsigned char b[63];
+    unsigned char b[72];
     while (keep_alive)
     {
-        // 63 bytes in dummy package
-        res = socket.recv (b, 63);
-        if (res != 63)
+        res = socket.recv (b, 72);
+        if (res != 72)
         {
-            safe_logger (spdlog::level::trace, "unable to read 63 bytes, read {}", res);
+            safe_logger (spdlog::level::trace, "unable to read 72 bytes, read {}", res);
             continue;
         }
         else
@@ -171,6 +170,7 @@ void NovaXR::read_thread ()
             }
         }
 
+        // todo fix parsing and update it in all bindings
         float package[20];
         // package num
         package[0] = (float)b[0];
