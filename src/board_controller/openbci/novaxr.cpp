@@ -10,7 +10,7 @@ NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, 2390, (int)SocketTyp
     this->is_streaming = false;
     this->keep_alive = false;
     this->initialized = false;
-    this->num_channels = 20;
+    this->num_channels = 23;
     this->state = SYNC_TIMEOUT_ERROR;
 }
 
@@ -146,6 +146,35 @@ int NovaXR::release_session ()
 
 void NovaXR::read_thread ()
 {
+    /* ------ NovaXR packet format --------
+     * Packet Byte [0]:     Packet Number
+     * Packet Byte [1]:     PPG
+     * Packet Byte [2:3]:   EDA
+     * Packet Byte [4:6]:   EEG_FC 0
+     * Packet Byte [7:9]:   EEG_FC 1
+     * Packet Byte [10:12]: EEG_OL 0
+     * Packet Byte [13:15]: EEG_OL 1
+     * Packet Byte [16:18]: EEG_OL 2
+     * Packet Byte [19:21]: EEG_OL 3
+     * Packet Byte [22:24]: EEG_OL 4
+     * Packet Byte [25:27]: EEG_OL 5
+     * Packet Byte [28:30]: EEG_OL 6
+     * Packet Byte [31:33]: EEG_OL 7
+     * Packet Byte [34:36]: EOG 0
+     * Packet Byte [37:39]: EOG 1
+     * Packet Byte [40:42]: EMG 0
+     * Packet Byte [43:45]: EMG 1
+     * Packet Byte [46:48]: EMG 2
+     * Packet Byte [49:51]: EMG 3
+     * Packet Byte [52:53]: AXL X
+     * Packet Byte [54:55]: AXL Y
+     * Packet Byte [56:57]: AXL Z
+     * Packet Byte [58:59]: GYR X
+     * Packet Byte [60:61]: GYR Y
+     * Packet Byte [62:63]: GYR Z
+     * Packet Byte [64:71]: Timestamp
+     */
+
     int res;
     unsigned char b[72];
     while (keep_alive)
@@ -154,6 +183,10 @@ void NovaXR::read_thread ()
         if (res != 72)
         {
             safe_logger (spdlog::level::trace, "unable to read 72 bytes, read {}", res);
+            for (int i = 0; i < res; i++)
+            {
+                safe_logger (spdlog::level::trace, "byte {} val {}", i, b[i]);
+            }
             continue;
         }
         else
@@ -161,6 +194,10 @@ void NovaXR::read_thread ()
             // inform main thread that everything is ok and first package was received
             if (this->state != STATUS_OK)
             {
+                for (int i = 0; i < 72; i++)
+                {
+                    safe_logger (spdlog::level::trace, "byte {} val {}", i, b[i]);
+                }
                 {
                     std::lock_guard<std::mutex> lk (this->m);
                     this->state = STATUS_OK;
@@ -170,21 +207,25 @@ void NovaXR::read_thread ()
             }
         }
 
-        // todo fix parsing and update it in all bindings
-        float package[20];
+        float package[23];
         // package num
         package[0] = (float)b[0];
         // eeg and emg
-        for (int i = 0; i < 16; i++)
+        for (int i = 4; i < 18; i++)
         {
-            package[i + 1] = (float)cast_24bit_to_int32 (b + 1 + 3 * i);
+            // put them directly after package num in brainflow
+            package[i - 3] = eeg_scale * (float)cast_24bit_to_int32 (b + 1 + 3 * i);
         }
-        package[17] = cast_16bit_to_int32 (b + 50);
-        package[18] = cast_16bit_to_int32 (b + 52);
-        package[19] = cast_16bit_to_int32 (b + 54);
+        package[15] = (float)b[1];                                // ppg
+        package[16] = cast_16bit_to_int32 (b + 2);                // eda todo scale?
+        package[17] = accel_scale * cast_16bit_to_int32 (b + 52); // accel x
+        package[18] = accel_scale * cast_16bit_to_int32 (b + 54); // accel y
+        package[19] = accel_scale * cast_16bit_to_int32 (b + 56); // accel z
+        package[20] = gyro_scale * cast_16bit_to_int32 (b + 58);  // gyro x
+        package[21] = gyro_scale * cast_16bit_to_int32 (b + 60);  // gyro y
+        package[22] = gyro_scale * cast_16bit_to_int32 (b + 62);  // gyro z
 
-        // temp, I dont know how many bytes will be in real timestamp just read rand 3 bytes for now
-        double timestamp = (double)cast_24bit_to_int32 (b + 55);
+        double timestamp = (double)atol ((const char *)(b + 64));
         db->add_data (timestamp, package);
     }
 }

@@ -51,7 +51,7 @@ class NovaXREmulator (threading.Thread):
         self.state = State.wait.value
         self.addr = None
         self.package_num = 0
-        self.package_size = 63
+        self.package_size = 72
 
     def run (self):
         while True:
