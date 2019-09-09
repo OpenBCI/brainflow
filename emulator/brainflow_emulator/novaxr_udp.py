@@ -5,6 +5,7 @@ import enum
 import logging
 import sys
 import random
+import time
 
 from brainflow_emulator.emulate_common import TestFailureError, log_multilines
 
@@ -75,12 +76,14 @@ class NovaXREmulator (threading.Thread):
                 package = list ()
                 package.append (self.package_num)
                 self.package_num = self.package_num + 1
-                for i in range (1, self.package_size):
+                for i in range (1, self.package_size - 8):
                     package.append (random.randint (0, 255))
-                    try:
-                        self.server_socket.sendto (bytes (package), self.addr)
-                    except socket.timeout:
-                        logging.info ('timeout for send')
+                timestamp = int (time.time ()).to_bytes (8, byteorder = 'little')
+                package.extend (timestamp)
+                try:
+                    self.server_socket.sendto (bytes (package), self.addr)
+                except socket.timeout:
+                    logging.info ('timeout for send')
 
 def main (cmd_list):
     if not cmd_list:

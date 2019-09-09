@@ -1,4 +1,5 @@
 #include <chrono>
+#include <stdint.h>
 #include <string.h>
 
 #include "custom_cast.h"
@@ -221,7 +222,9 @@ void NovaXR::read_thread ()
         package[21] = gyro_scale * cast_16bit_to_int32 (b + 60);  // gyro y
         package[22] = gyro_scale * cast_16bit_to_int32 (b + 62);  // gyro z
 
-        double timestamp = (double)atol ((const char *)(b + 64));
-        db->add_data (timestamp, package);
+        uint64_t uint_time;
+        memcpy (&uint_time, b + 64, 8);
+        safe_logger (spdlog::level::trace, "time is {}", (double)uint_time);
+        db->add_data ((double)uint_time, package);
     }
 }
