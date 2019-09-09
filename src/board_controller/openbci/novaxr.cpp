@@ -224,7 +224,6 @@ void NovaXR::read_thread ()
 
         uint64_t uint_time;
         memcpy (&uint_time, b + 64, 8);
-        safe_logger (spdlog::level::trace, "time is {}", (double)uint_time);
         db->add_data ((double)uint_time, package);
     }
 }
