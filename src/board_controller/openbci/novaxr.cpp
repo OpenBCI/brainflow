@@ -183,10 +183,6 @@ void NovaXR::read_thread ()
         if (res != 72)
         {
             safe_logger (spdlog::level::trace, "unable to read 72 bytes, read {}", res);
-            for (int i = 0; i < res; i++)
-            {
-                safe_logger (spdlog::level::trace, "byte {} val {}", i, b[i]);
-            }
             continue;
         }
         else
