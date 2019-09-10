@@ -70,7 +70,7 @@ test_script:
   - python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_multiboard_get_data.py --log --first-board -1 --first-port "smth1" --second-board -1 --second-port "smth2"
   - echo "stub text to dont start command with special character" && %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe -1 "smth"
   ## csharp
-  - %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release\test.exe -1
+  - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release && test.exe -1
   # tests for cyton daisy
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board 2 --port
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 2
