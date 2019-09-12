@@ -26,9 +26,11 @@ init:
 
 install:
   # build csharp (in order for copy ganglion mock into csharp test folder)
-  - cd %APPVEYOR_BUILD_FOLDER%\tools\ && nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages && nuget install MathNet.Filtering -OutputDirectory ../csharp-package/brainflow/packages # nuget package for csharp
-  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform=x64 /p:OutDir=%APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release   # 64
-  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib && cp BoardController.dll %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release\
+  ## nuget package for csharp
+  - cd %APPVEYOR_BUILD_FOLDER%\tools\ && nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages && nuget install MathNet.Filtering -OutputDirectory ../csharp-package/brainflow/packages
+  ## 64
+  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform=x64 /p:OutDir=..\..\..\tests\csharp\build\Release
+  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib && cp BoardController.dll ..\..\..\..\tests\csharp\build\Release\
   # install emulator for cyton
   - pip install %APPVEYOR_BUILD_FOLDER%\emulator\
   - cd %APPVEYOR_BUILD_FOLDER% && %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\certmgr.exe  /add %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\com0com.cer /s /r localMachine root
@@ -69,7 +71,8 @@ test_script:
   - python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board -1 --port "smth"
   - python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_multiboard_get_data.py --log --first-board -1 --first-port "smth1" --second-board -1 --second-port "smth2"
   - echo "stub text to dont start command with special character" && %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe -1 "smth"
-  - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release && test.exe -1 ## csharp
+  ## csharp
+  - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release && test.exe -1
   # tests for cyton daisy
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board 2 --port
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 2
