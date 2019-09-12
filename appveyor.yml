@@ -25,6 +25,10 @@ init:
   - cmd: set BRAINFLOW_VERSION=%APPVEYOR_REPO_TAG_NAME%
 
 install:
+  # build csharp (in order for copy ganglion mock into csharp test folder)
+  - cd %APPVEYOR_BUILD_FOLDER%\tools\ && nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages && nuget install MathNet.Filtering -OutputDirectory ../csharp-package/brainflow/packages # nuget package for csharp
+  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform=x64 /p:OutDir=%APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release   # 64
+  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib && cp BoardController.dll %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release\
   # install emulator for cyton
   - pip install %APPVEYOR_BUILD_FOLDER%\emulator\
   - cd %APPVEYOR_BUILD_FOLDER% && %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\certmgr.exe  /add %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\com0com.cer /s /r localMachine root
@@ -44,7 +48,7 @@ install:
   - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\python-package\brainflow\lib\GanglionLibNative64.dll
   - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\installed64\lib\GanglionLibNative64.dll
   - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\java-package\brainflow\src\main\resources\GanglionLibNative64.dll
-    - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release\
+  - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release\
   # install python package
   - pip install %APPVEYOR_BUILD_FOLDER%\python-package\
   # build cpp
@@ -52,11 +56,6 @@ install:
   - mkdir %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32 && cd %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32 && cmake -G "Visual Studio 15 2017" -DCMAKE_SYSTEM_VERSION=8.1 -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%\installed32\ .. && cmake --build . --config Release > cpp_test_build32_stdout.txt
   # mvn package for java
   - cd %APPVEYOR_BUILD_FOLDER%\java-package\brainflow && mvn package > maven_package_stdout.txt && cd ..\..\tests\java && javac -classpath ..\..\java-package\brainflow\target\brainflow-jar-with-dependencies.jar BrainFlowTest.java
-  # nuget package for csharp
-  - cd %APPVEYOR_BUILD_FOLDER%\tools\ && nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages && nuget install MathNet.Filtering -OutputDirectory ../csharp-package/brainflow/packages
-  ## 64
-  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform=x64 /p:OutDir=..\..\..\tests\csharp\build\Release
-  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib && cp BoardController.dll ..\..\..\..\tests\csharp\build\Release\
 
 test_script:
   # tests for cyton
@@ -64,17 +63,13 @@ test_script:
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 0
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32\Release\test_get_data.exe 0
   # tests for ganglion
-  ## Here stops
-  - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release && test.exe -1
-  ##
   - python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board 1 --port e6:73:73:18:09:b1
   - echo "stub text to dont start command with special character" && %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 1 e6:73:73:18:09:b1
   # tests for synthetic
   - python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board -1 --port "smth"
   - python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_multiboard_get_data.py --log --first-board -1 --first-port "smth1" --second-board -1 --second-port "smth2"
   - echo "stub text to dont start command with special character" && %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe -1 "smth"
-  ## csharp
-
+  - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release && test.exe -1 ## csharp
   # tests for cyton daisy
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board 2 --port
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 2
