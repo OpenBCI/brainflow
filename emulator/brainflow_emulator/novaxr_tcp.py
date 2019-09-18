@@ -6,6 +6,7 @@ import logging
 import sys
 import random
 import time
+import struct
 
 from brainflow_emulator.emulate_common import TestFailureError, log_multilines
 
@@ -82,7 +83,7 @@ class NovaXREmulator (threading.Thread):
                 self.package_num = self.package_num + 1
                 for i in range (1, self.package_size - 8):
                     package.append (random.randint (0, 255))
-                timestamp = int (time.time ()).to_bytes (8, byteorder = 'little')
+                timestamp = bytearray (struct.pack ("d", time.time ()))
                 package.extend (timestamp)
                 try:
                     self.conn.send (bytes (package))
