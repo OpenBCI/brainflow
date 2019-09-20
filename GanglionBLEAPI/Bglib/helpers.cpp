@@ -90,7 +90,7 @@ int open_ble_dev ()
     // send command to connect
     state = State::initial_connection;
     ble_cmd_gap_connect_direct (&connect_addr, gap_address_type_random, 40, 60, 100, 0);
-    int res = wait_for_callback (5);
+    int res = wait_for_callback (15);
     if (res != (int)GanglionLibNative::STATUS_OK)
     {
         return res;
@@ -102,16 +102,18 @@ int open_ble_dev ()
     ble_cmd_attclient_read_by_group_type (
         connection, FIRST_HANDLE, LAST_HANDLE, 2, primary_service_uuid);
 
-    return wait_for_callback (5);
+    return wait_for_callback (15);
 }
 
-int wait_for_callback (int num_sec)
+int wait_for_callback (int num_attempts)
 {
-    std::unique_lock<std::mutex> lk (m);
-    auto sec = std::chrono::seconds (1);
-    // wait for 5 sec
-    cv.wait_for (lk, num_sec * sec,
-        [&exit_code] { return exit_code != (int)GanglionLibNative::SYNC_ERROR; });
+    for (int i = 0; (i < num_attempts) && (exit_code == (int)GanglionLibNative::SYNC_ERROR); i++)
+    {
+        if (read_message (UART_TIMEOUT) > 0)
+        {
+            break;
+        }
+    }
     return exit_code;
 }
 

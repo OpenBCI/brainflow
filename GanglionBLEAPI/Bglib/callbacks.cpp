@@ -1,7 +1,5 @@
-#include <condition_variable>
 #include <ctype.h>
 #include <math.h>
-#include <mutex>
 #include <queue>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +10,6 @@
 #include "helpers.h"
 #include "timestamp.h"
 #include "uart.h"
-
 
 #define GANGLION_SERVICE_UUID 0xfe84
 // seems like in this api chars uuids are not the same as in microsoft api
@@ -28,9 +25,6 @@ extern volatile uint16 ganglion_handle_end;
 extern volatile uint16 ganglion_handle_recv;
 extern volatile uint16 ganglion_handle_send;
 extern volatile State state;
-
-extern std::mutex m;
-extern std::condition_variable cv;
 
 extern std::queue<struct GanglionLibNative::GanglionDataNative> data_queue;
 
@@ -65,11 +59,7 @@ void ble_evt_gap_scan_response (const struct ble_msg_gap_scan_response_evt_t *ms
         if (strstr (name, "anglion") != NULL)
         {
             memcpy ((void *)connect_addr.addr, msg->sender.addr, sizeof (bd_addr));
-            {
-                std::lock_guard<std::mutex> lk (m);
-                exit_code = (int)GanglionLibNative::STATUS_OK;
-            }
-            cv.notify_one ();
+            exit_code = (int)GanglionLibNative::STATUS_OK;
         }
     }
 
@@ -86,11 +76,7 @@ void ble_evt_connection_status (const struct ble_msg_connection_status_evt_t *ms
         // expiration, need to set exit code only when we call this methid from open_ble_device
         if (state == State::initial_connection)
         {
-            {
-                std::lock_guard<std::mutex> lk (m);
-                exit_code = (int)GanglionLibNative::STATUS_OK;
-            }
-            cv.notify_one ();
+            exit_code = (int)GanglionLibNative::STATUS_OK;
         }
     }
 }
@@ -128,19 +114,23 @@ void ble_evt_attclient_procedure_completed (
                 ganglion_handle_end); // triggers ble_evt_attclient_find_information_found
         }
     }
-    // triggered after ble_cmd_attclient_attribute_write
     else if (state == State::config_called)
     {
+        // triggered after ble_cmd_attclient_attribute_write as well as
+        // ble_rsp_attclient_attribute_write - skip it here and set exit code in
+        // ble_rsp_attclient_attribute_write
         if (msg->result == 0)
         {
-            {
-                std::lock_guard<std::mutex> lk (m);
-                exit_code = (int)GanglionLibNative::STATUS_OK;
-            }
-            cv.notify_one ();
+            exit_code = (int)GanglionLibNative::STATUS_OK;
         }
     }
 }
+
+void ble_rsp_attclient_attribute_write (const struct ble_msg_attclient_attribute_write_rsp_t *msg)
+{
+    // exit_code = (int)GanglionLibNative::STATUS_OK;
+}
+
 
 // finds characteristic handles and set exit_code for open_ganglion call
 void ble_evt_attclient_find_information_found (
@@ -162,11 +152,7 @@ void ble_evt_attclient_find_information_found (
         }
         if ((ganglion_handle_send) && (ganglion_handle_recv))
         {
-            {
-                std::lock_guard<std::mutex> lk (m);
-                exit_code = (int)GanglionLibNative::STATUS_OK;
-            }
-            cv.notify_one ();
+            exit_code = (int)GanglionLibNative::STATUS_OK;
         }
     }
 }

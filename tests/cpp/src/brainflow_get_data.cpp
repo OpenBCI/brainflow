@@ -75,9 +75,9 @@ int main (int argc, char *argv[])
         std::cout << "releasing session" << std::endl;
         board->release_session ();
         std::cout << "preprocessing data" << std::endl;
+        write_csv ("cpp_test_original.csv", data_buf, data_count, length);
         dh->preprocess_data (data_buf, data_count);
-
-        write_csv ("cpp_test.csv", data_buf, data_count, length);
+        write_csv ("cpp_test_filtered.csv", data_buf, data_count, length);
     }
     catch (const BrainFlowException &err)
     {

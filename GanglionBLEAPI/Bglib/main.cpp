@@ -1,5 +1,4 @@
 #include <chrono>
-#include <condition_variable>
 #include <ctype.h>
 #include <mutex>
 #include <queue>
@@ -30,29 +29,11 @@ volatile uint16 ganglion_handle_send = 0;
 volatile State state =
     State::none; // same callbacks are triggered by different methods we need to differ them
 
-std::thread
-    read_message_thread; // read_message should be executed in a loop but connection has
-                         // small timeout and need to be updated via callback for disconnect
-                         // so we need to keep connection up to date I run read_message
-                         // during all execution, not only when we call start\stop and other merhods
-volatile bool keep_alive = false;
-std::mutex m;
-std::condition_variable cv;
-
 bool initialized = false;
-
+std::mutex mutex;
 std::thread read_characteristic_thread; // I didnt find a way to subscribe for notifications, send
                                         // commands to read data in a loop
 bool should_stop_stream = true;
-
-void read_message_worker ()
-{
-    while (keep_alive)
-    {
-        // looks like it works wo mutex for reset_ble_dev and read_message
-        read_message (UART_TIMEOUT);
-    }
-}
 
 // TODO try harder to find a way to enable notifications wo sending this command(maybe it will
 // improve bad sampling rate)
@@ -60,6 +41,7 @@ void read_characteristic_worker ()
 {
     while (!should_stop_stream)
     {
+        read_message (UART_TIMEOUT);
         ble_cmd_attclient_read_by_handle (connection, ganglion_handle_recv);
     }
 }
@@ -78,18 +60,6 @@ namespace GanglionLibNative
             strcpy (uart_port, dongle_port.c_str ());
             bglib_output = output;
             exit_code = (int)CustomExitCodesNative::SYNC_ERROR;
-            if (uart_open (uart_port))
-            {
-                return (int)CustomExitCodesNative::GANGLION_NOT_FOUND_ERROR;
-            }
-            int res = reset_ble_dev ();
-            if (res != (int)CustomExitCodesNative::STATUS_OK)
-            {
-                return res;
-            }
-            keep_alive = true;
-            read_message_thread = std::thread (read_message_worker);
-
             initialized = true;
         }
         return (int)CustomExitCodesNative::STATUS_OK;
@@ -97,7 +67,10 @@ namespace GanglionLibNative
 
     int open_ganglion_native (void *param)
     {
-        // without reset here open-close-open doesnt works I spent hours to figure it out
+        if (uart_open (uart_port))
+        {
+            return (int)CustomExitCodesNative::GANGLION_NOT_FOUND_ERROR;
+        }
         int res = reset_ble_dev ();
         if (res != (int)CustomExitCodesNative::STATUS_OK)
         {
@@ -107,7 +80,7 @@ namespace GanglionLibNative
         state = State::open_called;
         ble_cmd_gap_discover (gap_discover_observation);
 
-        res = wait_for_callback (5);
+        res = wait_for_callback (15);
         if (res != (int)CustomExitCodesNative::STATUS_OK)
         {
             return res;
@@ -118,7 +91,10 @@ namespace GanglionLibNative
 
     int open_ganglion_mac_addr_native (void *param)
     {
-        // without reset here open-close-open doesnt works I spent hours to figure it out
+        if (uart_open (uart_port))
+        {
+            return (int)CustomExitCodesNative::GANGLION_NOT_FOUND_ERROR;
+        }
         int res = reset_ble_dev ();
         if (res != (int)CustomExitCodesNative::STATUS_OK)
         {
@@ -155,11 +131,16 @@ namespace GanglionLibNative
             should_stop_stream = true;
             read_characteristic_thread.join ();
         }
-        return config_board_native ((void *)"s");
+        int res = config_board_native ((void *)"s");
+        std::queue<struct GanglionLibNative::GanglionDataNative> empty;
+        std::swap (data_queue, empty); // free queue
+        return res;
     }
 
     int start_stream_native (void *param)
     {
+        // in theory after 'b' callback should be triggered automatically but it doesnt, so I
+        // created another thread which reads data in a loop
         int res = config_board_native ((void *)"b");
         if (res != (int)CustomExitCodesNative::STATUS_OK)
         {
@@ -172,25 +153,31 @@ namespace GanglionLibNative
 
     int close_ganglion_native (void *param)
     {
-        if (!keep_alive)
+        if (!initialized)
         {
             return (int)CustomExitCodesNative::GANGLION_IS_NOT_OPEN_ERROR;
         }
         state = State::close_called;
 
-        stop_stream_native (NULL);
+        if (!should_stop_stream)
+        {
+            stop_stream_native (NULL);
+        }
 
         connection = 0;
         ganglion_handle_start = 0;
         ganglion_handle_end = 0;
         ganglion_handle_recv = 0;
         ganglion_handle_send = 0;
+
+        uart_close ();
+
         return (int)CustomExitCodesNative::STATUS_OK;
     }
 
     int get_data_native (void *param)
     {
-        if (!keep_alive)
+        if (!initialized)
         {
             return (int)CustomExitCodesNative::GANGLION_IS_NOT_OPEN_ERROR;
         }
@@ -212,7 +199,7 @@ namespace GanglionLibNative
 
     int config_board_native (void *param)
     {
-        if (!keep_alive)
+        if (!initialized)
         {
             return (int)CustomExitCodesNative::GANGLION_IS_NOT_OPEN_ERROR;
         }
@@ -225,7 +212,8 @@ namespace GanglionLibNative
             return (int)CustomExitCodesNative::SEND_CHARACTERISTIC_NOT_FOUND_ERROR;
         }
         ble_cmd_attclient_attribute_write (connection, ganglion_handle_send, len, (uint8 *)&config);
-        int res = wait_for_callback (5);
+        ble_cmd_attclient_execute_write (connection, 1);
+        int res = wait_for_callback (15);
         return res;
     }
 
@@ -236,14 +224,6 @@ namespace GanglionLibNative
             close_ganglion_native (NULL);
             state = State::none;
             initialized = false;
-            ble_cmd_system_reset (0);
-            keep_alive = false;
-            read_message_thread.join ();
-            uart_close ();
-            while (!data_queue.empty ())
-            {
-                data_queue.pop ();
-            }
         }
         return (int)CustomExitCodesNative::STATUS_OK;
     }

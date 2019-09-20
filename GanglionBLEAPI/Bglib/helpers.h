@@ -25,5 +25,5 @@ void output (uint8 len1, uint8 *data1, uint16 len2, uint8 *data2);
 int read_message (int timeout_ms);
 std::string get_dongle_port ();
 int open_ble_dev ();
-int wait_for_callback (int num_sec);
+int wait_for_callback (int num_attempts);
 int reset_ble_dev ();

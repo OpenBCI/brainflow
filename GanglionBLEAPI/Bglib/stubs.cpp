@@ -221,10 +221,6 @@ void ble_rsp_attclient_read_by_handle (const struct ble_msg_attclient_read_by_ha
 {
 }
 
-void ble_rsp_attclient_attribute_write (const struct ble_msg_attclient_attribute_write_rsp_t *msg)
-{
-}
-
 void ble_rsp_attclient_write_command (const struct ble_msg_attclient_write_command_rsp_t *msg)
 {
 }
