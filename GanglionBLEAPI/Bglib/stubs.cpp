@@ -18,6 +18,10 @@ void ble_default (const void *v)
 {
 }
 
+void ble_rsp_attclient_attribute_write (const struct ble_msg_attclient_attribute_write_rsp_t *msg)
+{
+}
+
 void ble_rsp_attributes_send (const struct ble_msg_attributes_send_rsp_t *msg)
 {
 }

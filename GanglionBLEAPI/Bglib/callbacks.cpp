@@ -11,10 +11,8 @@
 #include "timestamp.h"
 #include "uart.h"
 
+#include <iostream>
 #define GANGLION_SERVICE_UUID 0xfe84
-// seems like in this api chars uuids are not the same as in microsoft api
-#define GANGLION_SEND_CHAR_UUID 0x2800
-#define GANGLION_RECV_CHAR_UUID 0x2803
 
 extern volatile int exit_code;
 extern volatile bd_addr connect_addr;
@@ -27,6 +25,13 @@ extern volatile uint16 ganglion_handle_send;
 extern volatile State state;
 
 extern std::queue<struct GanglionLibNative::GanglionDataNative> data_queue;
+
+// uuid - 2d30c083-f39f-4ce6-923f-3484ea480596
+const int send_char_uuid_bytes[16] = {
+    150, 5, 72, 234, 132, 52, 63, 146, 230, 76, 159, 243, 131, 192, 48, 45};
+// uuid - 2d30c082-f39f-4ce6-923f-3484ea480596
+const int recv_char_uuid_bytes[16] = {
+    150, 5, 72, 234, 132, 52, 63, 146, 230, 76, 159, 243, 130, 192, 48, 45};
 
 void ble_evt_gap_scan_response (const struct ble_msg_gap_scan_response_evt_t *msg)
 {
@@ -116,21 +121,17 @@ void ble_evt_attclient_procedure_completed (
     }
     else if (state == State::config_called)
     {
-        // triggered after ble_cmd_attclient_attribute_write as well as
-        // ble_rsp_attclient_attribute_write - skip it here and set exit code in
-        // ble_rsp_attclient_attribute_write
+        std::cout << "triggered res" << (int)msg->result << "  chrhandle " << msg->chrhandle
+                  << " send " << ganglion_handle_send << " recv " << ganglion_handle_recv
+                  << std::endl;
         if (msg->result == 0)
+        // for unknown reason after start_stream this method triggered with another chrhandle value!
+        // if ((msg->result == 0) && (msg->chrhandle == ganglion_handle_send))
         {
             exit_code = (int)GanglionLibNative::STATUS_OK;
         }
     }
 }
-
-void ble_rsp_attclient_attribute_write (const struct ble_msg_attclient_attribute_write_rsp_t *msg)
-{
-    // exit_code = (int)GanglionLibNative::STATUS_OK;
-}
-
 
 // finds characteristic handles and set exit_code for open_ganglion call
 void ble_evt_attclient_find_information_found (
@@ -138,14 +139,26 @@ void ble_evt_attclient_find_information_found (
 {
     if (state == State::open_called)
     {
-        if (msg->uuid.len == 2)
+        if (msg->uuid.len == 16)
         {
-            uint16 uuid = (msg->uuid.data[1] << 8) | msg->uuid.data[0];
-            if (uuid == GANGLION_RECV_CHAR_UUID)
+            bool is_send = true;
+            bool is_recv = true;
+            for (int i = 0; i < 16; i++)
+            {
+                if (msg->uuid.data[i] != send_char_uuid_bytes[i])
+                {
+                    is_send = false;
+                }
+                if (msg->uuid.data[i] != recv_char_uuid_bytes[i])
+                {
+                    is_recv = false;
+                }
+            }
+            if (is_recv)
             {
                 ganglion_handle_recv = msg->chrhandle;
             }
-            else if (uuid == GANGLION_SEND_CHAR_UUID)
+            if (is_send)
             {
                 ganglion_handle_send = msg->chrhandle;
             }

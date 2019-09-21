@@ -35,14 +35,13 @@ std::thread read_characteristic_thread; // I didnt find a way to subscribe for n
                                         // commands to read data in a loop
 bool should_stop_stream = true;
 
-// TODO try harder to find a way to enable notifications wo sending this command(maybe it will
-// improve bad sampling rate)
 void read_characteristic_worker ()
 {
     while (!should_stop_stream)
     {
         read_message (UART_TIMEOUT);
-        ble_cmd_attclient_read_by_handle (connection, ganglion_handle_recv);
+        ble_cmd_attclient_read_by_handle (
+            connection, ganglion_handle_recv); // I think we dont need this line
     }
 }
 
@@ -131,7 +130,7 @@ namespace GanglionLibNative
             should_stop_stream = true;
             read_characteristic_thread.join ();
         }
-        int res = config_board_native ((void *)"s");
+        int res = config_board_native ((char *)"s");
         std::queue<struct GanglionLibNative::GanglionDataNative> empty;
         std::swap (data_queue, empty); // free queue
         return res;
@@ -141,7 +140,7 @@ namespace GanglionLibNative
     {
         // in theory after 'b' callback should be triggered automatically but it doesnt, so I
         // created another thread which reads data in a loop
-        int res = config_board_native ((void *)"b");
+        int res = config_board_native ((char *)"b");
         if (res != (int)CustomExitCodesNative::STATUS_OK)
         {
             return res;
@@ -211,7 +210,7 @@ namespace GanglionLibNative
         {
             return (int)CustomExitCodesNative::SEND_CHARACTERISTIC_NOT_FOUND_ERROR;
         }
-        ble_cmd_attclient_attribute_write (connection, ganglion_handle_send, len, (uint8 *)&config);
+        ble_cmd_attclient_attribute_write (connection, ganglion_handle_send, len, (uint8 *)config);
         ble_cmd_attclient_execute_write (connection, 1);
         int res = wait_for_callback (15);
         return res;
