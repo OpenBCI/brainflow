@@ -10,6 +10,8 @@ def main ():
     parser.add_argument ('--log', action = 'store_true')
     args = parser.parse_args ()
 
+    brainflow.board_shim.BoardShim.set_log_file ('test_log.txt')
+
     if (args.log):
         brainflow.board_shim.BoardShim.enable_dev_board_logger ()
     else:
@@ -20,12 +22,10 @@ def main ():
     
     # disable second channel, note emulator doesnt handle such commands, run with real board to validate
     # different board have different data formats
-    if args.board in (brainflow.CYTON.board_id, brainflow.CYTON_DAISY.board_id, brainflow.SYNTHETIC.board_id, brainflow.NOVAXR.board_id):
+    if args.board != brainflow.GANGLION.board_id:
         board.config_board ('x2100000X')
-    elif args.board == brainflow.GANGLION.board_id:
+    else args.board == brainflow.GANGLION.board_id:
         board.config_board ('2')
-    else:
-        print ('unexpected board id')
 
     board.start_stream ()
     time.sleep (10)

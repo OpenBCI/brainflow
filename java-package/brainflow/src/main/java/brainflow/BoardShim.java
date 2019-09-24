@@ -27,6 +27,7 @@ public class BoardShim {
         int get_board_data_count (int[] result, int board_id, String port_name);
         int get_board_data (int data_count, float[] data_buf, double[] ts_buf, int board_id, String port_name);
         int set_log_level (int log_level);
+        int set_log_file (String log_file);
     }
 
     public int package_length;
@@ -142,7 +143,7 @@ public class BoardShim {
         return new BoardData (package_length, data_arr, ts_arr);
     }
 
-    public void set_log_level (int log_level) throws BrainFlowError {
+    private void set_log_level (int log_level) throws BrainFlowError {
         int ec = this.instance.set_log_level (log_level);
         if (ec != ExitCode.STATUS_OK.get_code ()) {
             throw new BrainFlowError ("Error in set_log_level", ec);
@@ -159,5 +160,12 @@ public class BoardShim {
 
     public void disable_board_logger () throws BrainFlowError {
         set_log_level (6);
+    }
+
+    public void set_log_file (String log_file) throws BrainFlowError {
+        int ec = this.instance.set_log_file (log_file);
+        if (ec != ExitCode.STATUS_OK.get_code ()) {
+            throw new BrainFlowError ("Error in set_log_file", ec);
+        }
     }
 }

@@ -8,6 +8,7 @@ namespace test
         static void Main (string[] args)
         {
             BoardShim.enable_dev_board_logger ();
+            BoardShim.set_log_file ("test.txt");
             BoardShim board_shim;
             if (args.Length == 2)
                 board_shim = new BoardShim (Int32.Parse(args[0]), args[1]);
