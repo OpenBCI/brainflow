@@ -24,7 +24,7 @@ def main ():
     # different board have different data formats
     if args.board != brainflow.GANGLION.board_id:
         board.config_board ('x2100000X')
-    else args.board == brainflow.GANGLION.board_id:
+    else:
         board.config_board ('2')
 
     board.start_stream ()
