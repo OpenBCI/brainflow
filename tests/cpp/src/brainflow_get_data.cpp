@@ -38,7 +38,6 @@ int main (int argc, char *argv[])
     }
 
     BoardShim::enable_board_logger ();
-    BoardShim::set_log_file ("test_log.txt");
 
     int board_id = atoi (argv[1]);
     BoardShim *board = new BoardShim (board_id, argv[2]);

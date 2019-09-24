@@ -10,8 +10,6 @@ def main ():
     parser.add_argument ('--log', action = 'store_true')
     args = parser.parse_args ()
 
-    brainflow.board_shim.BoardShim.set_log_file ('test_log.txt')
-
     if (args.log):
         brainflow.board_shim.BoardShim.enable_dev_board_logger ()
     else:
