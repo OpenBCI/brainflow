@@ -7,8 +7,6 @@ import java.nio.file.StandardCopyOption;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
 import org.apache.commons.lang3.SystemUtils;
 
