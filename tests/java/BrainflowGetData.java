@@ -1,6 +1,6 @@
 import brainflow.*;
 
-public class BrainFlowTest {
+public class BrainflowGetData {
 
     public static void main (String[] args) throws Exception {
 
@@ -13,11 +13,6 @@ public class BrainFlowTest {
         Thread.sleep (10000);
         board_shim.stop_stream ();
         System.out.println ("Stopped");
-        if (board_shim.get_board_data_count () < 100)
-        {
-            System.out.println ("too small data");
-            throw new IllegalStateException ();
-        }
         System.out.println (board_shim.get_board_data_count ());
         board_shim.release_session ();
         System.out.println ("Released");
