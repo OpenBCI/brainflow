@@ -42,7 +42,7 @@ install:
 
 before_script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      jdk_switcher use openjdk8 ;
+      sudo -H jdk_switcher use openjdk8 ;
     fi
   # need to build in manylinux docker container!
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
