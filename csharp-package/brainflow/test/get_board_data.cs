@@ -45,7 +45,7 @@ namespace test
 
             monitorThread = new Thread(GetSignal);
             monitorThread.Start();
-            System.Threading.Thread.Sleep(6000);
+            Thread.Sleep(6000);
             monitorThread.Join();
 
             board_shim.stop_stream();
