@@ -41,7 +41,6 @@ install:
   - sudo -H R --vanilla -e 'install.packages("reticulate", repos="http://cran.us.r-project.org")'
 
 before_script:
-  - jdk_switcher use openjdk11
   # need to build in manylinux docker container!
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       docker pull dockcross/manylinux-x64 ;
