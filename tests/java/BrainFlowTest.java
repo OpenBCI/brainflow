@@ -1,4 +1,4 @@
-package brainflow;
+import brainflow.*;
 
 public class BrainFlowTest {
 
