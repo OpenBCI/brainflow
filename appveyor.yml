@@ -19,9 +19,9 @@ clone_depth: 3
 build: off
 
 init:
-  - cmd: set PATH=%PY_DIR%;%PY_DIR%\Scripts;C:\Program Files\Java\jdk1.8.0\bin;%APPVEYOR_BUILD_FOLDER%\installed64\lib;%APPVEYOR_BUILD_FOLDER%\installed32\lib;%PATH%
+  - cmd: set PATH=%PY_DIR%;%PY_DIR%\Scripts;C:\Program Files\Java\jdk11\bin;%APPVEYOR_BUILD_FOLDER%\installed64\lib;%APPVEYOR_BUILD_FOLDER%\installed32\lib;%PATH%
   - cmd: set CNC_INSTALL_CNCA0_CNCB0_PORTS="YES"
-  - cmd: set JAVA_HOME=C:\Program Files\Java\jdk1.8.0
+  - cmd: set JAVA_HOME=C:\Program Files\Java\jdk11
   - cmd: set BRAINFLOW_VERSION=%APPVEYOR_REPO_TAG_NAME%
 
 install:
@@ -75,18 +75,18 @@ test_script:
   - python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_multiboard_get_data.py --log --first-board -1 --first-port "smth1" --second-board -1 --second-port "smth2"
   - echo "stub text to dont start command with special character" && %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe -1 "smth"
   - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release && test.exe -1
-  - cd %APPVEYOR_BUILD_FOLDER%\tests\java\ && java -classpath ".;brainflow-java-jar-with-dependencies.jar" BrainflowGetData -1 "smth" 
+  - cd %APPVEYOR_BUILD_FOLDER%\tests\java\ && java -classpath %APPVEYOR_BUILD_FOLDER%\tests\java\;%APPVEYOR_BUILD_FOLDER%\tests\java\brainflow-java-jar-with-dependencies.jar BrainflowGetData -1 "smth" 
   # tests for cyton daisy
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board 2 --port
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 2
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release\test.exe 2
-  - cd %APPVEYOR_BUILD_FOLDER%\tests\java\ && python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py java -classpath ".;brainflow-java-jar-with-dependencies.jar" BrainflowGetData 2
+  - cd %APPVEYOR_BUILD_FOLDER%\tests\java\ && python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py java -classpath %APPVEYOR_BUILD_FOLDER%\tests\java\;%APPVEYOR_BUILD_FOLDER%\tests\java\brainflow-java-jar-with-dependencies.jar BrainflowGetData 2
   # tests for novaxr
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_udp.py python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --board 3 --port 127.0.0.1
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_udp.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe 3 127.0.0.1
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_udp.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32\Release\test_get_data.exe 3 127.0.0.1
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_udp.py %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release\test.exe 3 127.0.0.1
-  - cd %APPVEYOR_BUILD_FOLDER%\tests\java\ && python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_udp.py java -classpath ".;brainflow-java-jar-with-dependencies.jar" BrainflowGetData 3 127.0.0.1
+  - cd %APPVEYOR_BUILD_FOLDER%\tests\java\ && python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_udp.py java -classpath %APPVEYOR_BUILD_FOLDER%\tests\java\;%APPVEYOR_BUILD_FOLDER%\tests\java\brainflow-java-jar-with-dependencies.jar BrainflowGetData 3 127.0.0.1
 
 # replace mocked libraries by real libs
 after_test:

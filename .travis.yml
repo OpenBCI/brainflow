@@ -1,11 +1,11 @@
 sudo: required
-dist: xenial
+dist: bionic # java 11
 
 os:
   - linux
   - osx
 
-osx_image: xcode9.3
+osx_image: xcode10.1 # java 11
 
 services:
   - docker
@@ -16,16 +16,6 @@ env:
     - secure: o4T5hXAk2mQHYLjZ+Yr/JwMkgfe5gvjm8XLVIJ4BNsO0OpW7oXQ5Hcw8nKYlF3HEGjHkdW+nHeKFtYivI32Yu6QYvUQK0Titp91LELPKgMpz8IvpksI3SbAyQOw6trDhoV/3r0kBT2Xjw2Q8aXjH9e55Ogw6G+MhiKCJL3/y8ECofjssPNaSAJO9AEbG658KMRYL9BTjMkLJlhkeaIwTvPMWBGdIpMIll6uD1xa0iMaB1taWT0oEapuY8rygF10YgKOrsRf/P5kfd742MxdJkbMhOQcgXb6SK7yjkGp6gMbv5rktpCK+7UfQQC8ibmoI/JMjeKDLoB6eVIbWMGBHcfcgWFqIFq4sT39kCl4ZbZZ+MU77mCVqq6UA6Vy/n8tbSICJvjkaBa//6pu+oAWYsTFFLN6beAxDB1RsS78m+ejMznPX2v2KI2bHmZp2qXRdN7csp6nCXJl1b3rWhrKuIdmhS5PFAvuCXMDxpOSPhNdEa8akonISy7SGQL4jgoINsLpRrKQFpLHzcan8UHQVVg4UuRugqZ2pYYoUaP2YMbjOKg1VgKZjALlFiNIKRqlDLNT24gakSJ9OFAU45TXE8gUEpA6JyfQuP6fwrD9TwhAdLSxjQkfNT0X3Nd/aAu4AxPNI7Ra0eoIW8/O+WvVT8jK0Qfg8bH0nMIYRgVPcbmc=
 
 language: java
-jdk:
-  - oraclejdk8
-
-matrix:
-  include:
-  # On OSX, run with default JDK only.
-  # - os: osx
-  # On Linux, run with specific JDKs only.
-  - os: linux
-    env: CUSTOM_JDK="oraclejdk8"
 
 addons:
   apt:
@@ -41,10 +31,6 @@ addons:
       - r
     update: true
 
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export JAVA_HOME=$(/usr/libexec/java_home); fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then jdk_switcher use "$CUSTOM_JDK"; fi
-
 install:
   - sudo pip3 install --upgrade pip
   - sudo pip3 install cmake
@@ -55,6 +41,7 @@ install:
   - sudo -H R --vanilla -e 'install.packages("reticulate", repos="http://cran.us.r-project.org")'
 
 before_script:
+  - jdk_switcher use openjdk11
   # need to build in manylinux docker container!
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       docker pull dockcross/manylinux-x64 ;
