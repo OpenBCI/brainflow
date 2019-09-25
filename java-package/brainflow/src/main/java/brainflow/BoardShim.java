@@ -53,17 +53,17 @@ public class BoardShim {
     
     private static void unpack_from_jar (String lib_name)
     {
-    	try
-    	{
-	        File file = new File (lib_name);
-	        if (file.exists ())
-	            file.delete ();
-	        InputStream link = (BoardShim.class.getResourceAsStream (lib_name));
-	        Files.copy (link, file.getAbsoluteFile ().toPath ());
-    	} catch (Exception io)
-    	{
-    		System.err.println ("native library: " + lib_name + " is not found in jar file");
-    	}
+        try
+        {
+            File file = new File (lib_name);
+            if (file.exists ())
+                file.delete ();
+            InputStream link = (BoardShim.class.getResourceAsStream (lib_name));
+            Files.copy (link, file.getAbsoluteFile ().toPath ());
+        } catch (Exception io)
+        {
+            System.err.println ("native library: " + lib_name + " is not found in jar file");
+        }
     }
     
     public static void enable_board_logger () throws BrainFlowError {
