@@ -1,11 +1,14 @@
 sudo: required
-dist: bionic # java 11
+dist: xenial
 
 os:
   - linux
   - osx
 
-osx_image: xcode10.1 # java 11
+jdk:
+- openjdk11
+
+osx_image: xcode9.4
 
 services:
   - docker
