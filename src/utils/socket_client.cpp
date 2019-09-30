@@ -1,5 +1,6 @@
-#include "socket.h"
+#include <string.h>
 
+#include "socket_client.h"
 
 ///////////////////////////////
 /////////// WINDOWS ///////////
@@ -10,7 +11,7 @@
 #pragma comment(lib, "Mswsock.lib")
 #pragma comment(lib, "AdvApi32.lib")
 
-Socket::Socket (const char *ip_addr, int port, int socket_type)
+SocketClient::SocketClient (const char *ip_addr, int port, int socket_type)
 {
     strcpy (this->ip_addr, ip_addr);
     this->port = port;
@@ -19,7 +20,7 @@ Socket::Socket (const char *ip_addr, int port, int socket_type)
     this->socket_type = socket_type;
 }
 
-int Socket::connect ()
+int SocketClient::connect ()
 {
     WSADATA wsadata;
     int res = WSAStartup (MAKEWORD (2, 2), &wsadata);
@@ -64,7 +65,27 @@ int Socket::connect ()
     return (int)SocketReturnCodes::STATUS_OK;
 }
 
-int Socket::send (const char *data, int size)
+int SocketClient::get_local_ip_addr (char *local_ip)
+{
+    struct sockaddr_in local_addr;
+    int size = sizeof (local_addr);
+    int err = getsockname (connect_socket, (struct sockaddr *)&local_addr, &size);
+    if (!err)
+    {
+        return (int)SocketReturnCodes::STATUS_OK;
+    }
+
+    char buffer[80];
+    const char *p = inet_ntop (AF_INET, &local_addr.sin_addr, buffer, 80);
+    if (p != NULL)
+    {
+        strcpy (local_ip, buffer);
+        return (int)SocketReturnCodes::STATUS_OK;
+    }
+    return (int)SocketReturnCodes::CONNECT_ERROR;
+}
+
+int SocketClient::send (const char *data, int size)
 {
     int len = sizeof (socket_addr);
     int res = 0;
@@ -83,7 +104,7 @@ int Socket::send (const char *data, int size)
     return res;
 }
 
-int Socket::recv (void *data, int size)
+int SocketClient::recv (void *data, int size)
 {
     int len = sizeof (socket_addr);
     int res;
@@ -102,7 +123,7 @@ int Socket::recv (void *data, int size)
     return res;
 }
 
-void Socket::close ()
+void SocketClient::close ()
 {
     closesocket (connect_socket);
     connect_socket = INVALID_SOCKET;
@@ -117,7 +138,7 @@ void Socket::close ()
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
-Socket::Socket (const char *ip_addr, int port, int socket_type)
+SocketClient::SocketClient (const char *ip_addr, int port, int socket_type)
 {
     strcpy (this->ip_addr, ip_addr);
     this->port = port;
@@ -126,7 +147,7 @@ Socket::Socket (const char *ip_addr, int port, int socket_type)
     this->socket_type = socket_type;
 }
 
-int Socket::connect ()
+int SocketClient::connect ()
 {
     if (socket_type == (int)SocketType::UDP)
     {
@@ -168,7 +189,27 @@ int Socket::connect ()
     return (int)SocketReturnCodes::STATUS_OK;
 }
 
-int Socket::send (const char *data, int size)
+int get_local_ip_addr (char *local_ip)
+{
+    struct sockaddr_in local_addr;
+    int size = sizeof (local_addr);
+    int err = getsockname (connect_socket, (struct sockaddr *)&local_addr, &size);
+    if (!err)
+    {
+        return (int)SocketReturnCodes::STATUS_OK;
+    }
+
+    char buffer[80];
+    const char *p = inet_ntop (AF_INET, &local_addr.sin_addr, buffer, 80);
+    if (p != NULL)
+    {
+        strcpy (local_ip, buffer);
+        return (int)SocketReturnCodes::STATUS_OK;
+    }
+    return (int)SocketReturnCodes::CONNECT_ERROR;
+}
+
+int SocketClient::send (const char *data, int size)
 {
     int res;
     if (socket_type == (int)SocketType::UDP)
@@ -183,7 +224,7 @@ int Socket::send (const char *data, int size)
     return res;
 }
 
-int Socket::recv (void *data, int size)
+int SocketClient::recv (void *data, int size)
 {
     unsigned int len = (unsigned int)sizeof (socket_addr);
     int res;
@@ -198,7 +239,7 @@ int Socket::recv (void *data, int size)
     return res;
 }
 
-void Socket::close ()
+void SocketClient::close ()
 {
     ::close (connect_socket);
     connect_socket = -1;

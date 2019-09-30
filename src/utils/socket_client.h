@@ -2,8 +2,6 @@
 
 #ifdef _WIN32
 #include <ws2tcpip.h>
-// should be included before windows.h
-#include <windows.h>
 #else
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -29,12 +27,12 @@ enum class SocketReturnCodes
     PTON_ERROR = 4
 };
 
-class Socket
+class SocketClient
 {
 
 public:
-    Socket (const char *port_name, int port, int socket_type);
-    ~Socket ()
+    SocketClient (const char *port_name, int port, int socket_type);
+    ~SocketClient ()
     {
         close ();
     }
@@ -43,6 +41,7 @@ public:
     int send (const char *data, int size);
     int recv (void *data, int size);
     void close ();
+    int get_local_ip_addr (char *local_ip);
     char *get_ip_addr ()
     {
         return ip_addr;
@@ -51,6 +50,7 @@ public:
     {
         return port;
     }
+
 
 private:
     char ip_addr[32];
