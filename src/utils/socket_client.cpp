@@ -194,13 +194,13 @@ int SocketClient::get_local_ip_addr (char *connect_ip, int port, char *local_ip)
     int return_value = (int)SocketReturnCodes::STATUS_OK;
     struct sockaddr_in serv;
     char buffer[80];
-    SOCKET sock = INVALID_SOCKET;
+    int sock = -1;
     struct sockaddr_in name;
 
     if (return_value == (int)SocketReturnCodes::STATUS_OK)
     {
         sock = socket (AF_INET, SOCK_DGRAM, 0);
-        if (sock == INVALID_SOCKET)
+        if (sock < 0)
         {
             return_value = (int)SocketReturnCodes::CREATE_SOCKET_ERROR;
         }
@@ -219,7 +219,7 @@ int SocketClient::get_local_ip_addr (char *connect_ip, int port, char *local_ip)
 
     if (return_value == (int)SocketReturnCodes::STATUS_OK)
     {
-        if (::connect (sock, (const struct sockaddr *)&serv, sizeof (serv)) == SOCKET_ERROR)
+        if (::connect (sock, (const struct sockaddr *)&serv, sizeof (serv)) == -1)
         {
             return_value = (int)SocketReturnCodes::CONNECT_ERROR;
         }
@@ -227,7 +227,7 @@ int SocketClient::get_local_ip_addr (char *connect_ip, int port, char *local_ip)
 
     if (return_value == (int)SocketReturnCodes::STATUS_OK)
     {
-        int namelen = sizeof (name);
+        socklen_t namelen = (socklen_t)sizeof (name);
         int err = getsockname (sock, (struct sockaddr *)&name, &namelen);
         if (err != 0)
         {
@@ -248,7 +248,7 @@ int SocketClient::get_local_ip_addr (char *connect_ip, int port, char *local_ip)
         }
     }
 
-    close (sock);
+    ::close (sock);
     return return_value;
 }
 

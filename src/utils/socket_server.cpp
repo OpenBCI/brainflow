@@ -79,7 +79,8 @@ void SocketServer::close ()
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
-SocketServer::SocketServer (const char *ip_addr, int port, int socket_type)
+SocketServer::SocketServer (
+    const char *local_ip, const char *client_ip, int local_port, int client_port)
 {
     strcpy (this->client_ip, client_ip);
     strcpy (this->local_ip, local_ip);
@@ -102,7 +103,7 @@ int SocketServer::bind ()
         return (int)SocketReturnCodes::PTON_ERROR;
     }
 
-    if (bind (server_socket, (const struct sockaddr *)&server_addr, sizeof (server_addr)) != 0)
+    if (::bind (server_socket, (const struct sockaddr *)&server_addr, sizeof (server_addr)) != 0)
     {
         return (int)SocketReturnCodes::CONNECT_ERROR;
     }
@@ -119,7 +120,7 @@ int SocketServer::bind ()
 
 int SocketServer::recv (void *data, int size)
 {
-    unsigned int len = (unsigned int)sizeof (socket_addr);
+    unsigned int len = (unsigned int)sizeof (client_addr);
     int res = recvfrom (server_socket, (char *)data, size, 0, (sockaddr *)&client_addr, &len);
     return res;
 }
