@@ -98,14 +98,14 @@ int OpenBCIWifiShieldBoard::prepare_session ()
     safe_logger (spdlog::level::trace, "response data {}", (char const *)request->response_data);
     http_release (request);
 
-    url = "http://" + std::string (this->shield_ip) + "/tcp";
+    url = "http://" + std::string (this->shield_ip) + "/udp";
 
     json post_data;
     post_data["ip"] = std::string (local_ip);
     post_data["port"] = LOCAL_PORT;
     post_data["output"] = std::string ("raw");
     post_data["delimiter"] = true;
-    post_data["latency"] = 10000; // copypasted from old sdk I dont know what it means
+    post_data["latency"] = 10000;
     std::string post_str = post_data.dump ();
     safe_logger (spdlog::level::info, "configuration string {}", post_str.c_str ());
     request = http_post (url.c_str (), post_str.c_str (), strlen (post_str.c_str ()), NULL);
@@ -115,12 +115,12 @@ int OpenBCIWifiShieldBoard::prepare_session ()
         return GENERAL_ERROR;
     }
     int send_res = wait_for_http_resp (request);
+    safe_logger (spdlog::level::trace, "response data {}", (char const *)request->response_data);
     if (send_res != STATUS_OK)
     {
         http_release (request);
         return send_res;
     }
-    safe_logger (spdlog::level::trace, "response data {}", (char const *)request->response_data);
     http_release (request);
 
     initialized = true;
@@ -231,6 +231,7 @@ int OpenBCIWifiShieldBoard::wait_for_http_resp (http_t *request, int max_attempt
     int i = 0;
     while (status == HTTP_STATUS_PENDING)
     {
+        i++;
         if (i == max_attempts)
         {
             safe_logger (spdlog::level::err, "still pending after {} attempts", max_attempts);

@@ -30,7 +30,6 @@ void CytonWifi::read_thread ()
         res = server_socket->recv (b, 1);
         if (res != 1)
         {
-            safe_logger (spdlog::level::debug, "unable to read 1 byte");
             continue;
         }
         if (b[0] != START_BYTE)
@@ -41,7 +40,6 @@ void CytonWifi::read_thread ()
         res = server_socket->recv (b, 32);
         if (res != 32)
         {
-            safe_logger (spdlog::level::debug, "unable to read 32 bytes");
             continue;
         }
         // check end byte
