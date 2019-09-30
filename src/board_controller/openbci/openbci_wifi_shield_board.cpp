@@ -63,17 +63,8 @@ int OpenBCIWifiShieldBoard::prepare_session ()
         return STATUS_OK;
     }
 
-    // used to get local ip addr in shield network
-    SocketClient client_socket (shield_ip, 53, (int)SocketType::UDP);
-    int res = client_socket.connect ();
-    if (res != 0)
-    {
-        safe_logger (spdlog::level::err, "failed to init client socket: {}", res);
-        return GENERAL_ERROR;
-    }
     char local_ip[80];
-    res = client_socket.get_local_ip_addr (local_ip);
-    client_socket.close ();
+    int res = SocketClient::get_local_ip_addr (shield_ip, 80, local_ip);
     if (res != 0)
     {
         safe_logger (spdlog::level::err, "failed to get local ip addr: {}", res);

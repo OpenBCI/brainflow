@@ -11,6 +11,77 @@
 #pragma comment(lib, "Mswsock.lib")
 #pragma comment(lib, "AdvApi32.lib")
 
+
+int SocketClient::get_local_ip_addr (char *connect_ip, int port, char *local_ip)
+{
+    WSADATA wsadata;
+    int return_value = (int)SocketReturnCodes::STATUS_OK;
+    struct sockaddr_in serv;
+    char buffer[80];
+    SOCKET sock = INVALID_SOCKET;
+    struct sockaddr_in name;
+    int res = WSAStartup (MAKEWORD (2, 2), &wsadata);
+    if (res != 0)
+    {
+        return_value = (int)SocketReturnCodes::WSA_STARTUP_ERROR;
+    }
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        sock = socket (AF_INET, SOCK_DGRAM, 0);
+        if (sock == INVALID_SOCKET)
+        {
+            return_value = (int)SocketReturnCodes::CREATE_SOCKET_ERROR;
+        }
+    }
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        memset (&serv, 0, sizeof (serv));
+        serv.sin_family = AF_INET;
+        if (inet_pton (AF_INET, connect_ip, &serv.sin_addr) == 0)
+        {
+            return_value = (int)SocketReturnCodes::PTON_ERROR;
+        }
+        serv.sin_port = htons (port);
+    }
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        if (::connect (sock, (const struct sockaddr *)&serv, sizeof (serv)) == SOCKET_ERROR)
+        {
+            return_value = (int)SocketReturnCodes::CONNECT_ERROR;
+        }
+    }
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        int namelen = sizeof (name);
+        int err = getsockname (sock, (struct sockaddr *)&name, &namelen);
+        if (err != 0)
+        {
+            return_value = (int)SocketReturnCodes::CONNECT_ERROR;
+        }
+    }
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        const char *p = inet_ntop (AF_INET, &name.sin_addr, buffer, 80);
+        if (p != NULL)
+        {
+            strcpy (local_ip, buffer);
+        }
+        else
+        {
+            return_value = (int)SocketReturnCodes::PTON_ERROR;
+        }
+    }
+
+    closesocket (sock);
+    WSACleanup ();
+    return return_value;
+}
+
 SocketClient::SocketClient (const char *ip_addr, int port, int socket_type)
 {
     strcpy (this->ip_addr, ip_addr);
@@ -63,26 +134,6 @@ int SocketClient::connect ()
     }
 
     return (int)SocketReturnCodes::STATUS_OK;
-}
-
-int SocketClient::get_local_ip_addr (char *local_ip)
-{
-    struct sockaddr_in local_addr;
-    int size = sizeof (local_addr);
-    int err = getsockname (connect_socket, (struct sockaddr *)&local_addr, &size);
-    if (!err)
-    {
-        return (int)SocketReturnCodes::STATUS_OK;
-    }
-
-    char buffer[80];
-    const char *p = inet_ntop (AF_INET, &local_addr.sin_addr, buffer, 80);
-    if (p != NULL)
-    {
-        strcpy (local_ip, buffer);
-        return (int)SocketReturnCodes::STATUS_OK;
-    }
-    return (int)SocketReturnCodes::CONNECT_ERROR;
 }
 
 int SocketClient::send (const char *data, int size)
@@ -138,6 +189,69 @@ void SocketClient::close ()
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
+int SocketClient::get_local_ip_addr (char *connect_ip, int port, char *local_ip)
+{
+    int return_value = (int)SocketReturnCodes::STATUS_OK;
+    struct sockaddr_in serv;
+    char buffer[80];
+    SOCKET sock = INVALID_SOCKET;
+    struct sockaddr_in name;
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        sock = socket (AF_INET, SOCK_DGRAM, 0);
+        if (sock == INVALID_SOCKET)
+        {
+            return_value = (int)SocketReturnCodes::CREATE_SOCKET_ERROR;
+        }
+    }
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        memset (&serv, 0, sizeof (serv));
+        serv.sin_family = AF_INET;
+        if (inet_pton (AF_INET, connect_ip, &serv.sin_addr) == 0)
+        {
+            return_value = (int)SocketReturnCodes::PTON_ERROR;
+        }
+        serv.sin_port = htons (port);
+    }
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        if (::connect (sock, (const struct sockaddr *)&serv, sizeof (serv)) == SOCKET_ERROR)
+        {
+            return_value = (int)SocketReturnCodes::CONNECT_ERROR;
+        }
+    }
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        int namelen = sizeof (name);
+        int err = getsockname (sock, (struct sockaddr *)&name, &namelen);
+        if (err != 0)
+        {
+            return_value = (int)SocketReturnCodes::CONNECT_ERROR;
+        }
+    }
+
+    if (return_value == (int)SocketReturnCodes::STATUS_OK)
+    {
+        const char *p = inet_ntop (AF_INET, &name.sin_addr, buffer, 80);
+        if (p != NULL)
+        {
+            strcpy (local_ip, buffer);
+        }
+        else
+        {
+            return_value = (int)SocketReturnCodes::PTON_ERROR;
+        }
+    }
+
+    close (sock);
+    return return_value;
+}
+
 SocketClient::SocketClient (const char *ip_addr, int port, int socket_type)
 {
     strcpy (this->ip_addr, ip_addr);
@@ -187,26 +301,6 @@ int SocketClient::connect ()
     }
 
     return (int)SocketReturnCodes::STATUS_OK;
-}
-
-int get_local_ip_addr (char *local_ip)
-{
-    struct sockaddr_in local_addr;
-    int size = sizeof (local_addr);
-    int err = getsockname (connect_socket, (struct sockaddr *)&local_addr, &size);
-    if (!err)
-    {
-        return (int)SocketReturnCodes::STATUS_OK;
-    }
-
-    char buffer[80];
-    const char *p = inet_ntop (AF_INET, &local_addr.sin_addr, buffer, 80);
-    if (p != NULL)
-    {
-        strcpy (local_ip, buffer);
-        return (int)SocketReturnCodes::STATUS_OK;
-    }
-    return (int)SocketReturnCodes::CONNECT_ERROR;
 }
 
 int SocketClient::send (const char *data, int size)

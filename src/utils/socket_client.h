@@ -31,6 +31,8 @@ class SocketClient
 {
 
 public:
+    static int get_local_ip_addr (char *connect_ip, int port, char *local_ip);
+
     SocketClient (const char *port_name, int port, int socket_type);
     ~SocketClient ()
     {
