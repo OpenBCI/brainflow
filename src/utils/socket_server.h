@@ -19,22 +19,24 @@ public:
     int accept ();
     int recv (void *data, int size);
     void close ();
-    volatile bool
-        client_connected; // idea - stop accept blocking call by calling close in another thread
+    void accept_worker ();
+
+    volatile bool client_connected; // idea - stop accept blocking call by calling close in
+                                    // another thread
 
 private:
     char local_ip[80];
     int local_port;
     struct sockaddr_in server_addr;
-    struct sockaddr_in client_addr;
+    volatile struct sockaddr_in client_addr;
 
     std::thread accept_thread;
 
 #ifdef _WIN32
-    SOCKET server_socket;
+    volatile SOCKET server_socket;
     volatile SOCKET connected_socket;
 #else
-    int server_socket;
+    volatile int server_socket;
     volatile int connected_socket;
 #endif
 };

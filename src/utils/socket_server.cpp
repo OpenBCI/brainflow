@@ -55,25 +55,26 @@ int SocketServer::bind ()
 
 int SocketServer::accept ()
 {
-    std::thread thread ([this]() {
-        int len = sizeof (this->client_addr);
-        this->connected_socket =
-            ::accept (this->server_socket, (struct sockaddr *)&this->client_addr, &len);
-        if (this->connected_socket != INVALID_SOCKET)
-        {
-            // ensure that library will not hang in blocking recv/send call
-            DWORD timeout = 3000;
-            DWORD value = 1;
-            setsockopt (connected_socket, IPPROTO_TCP, TCP_NODELAY, (char *)&value, sizeof (value));
-            setsockopt (
-                connected_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof (timeout));
-            setsockopt (
-                connected_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
-
-            this->client_connected = true;
-        }
-    });
+    accept_thread = std::thread ([this] { this->accept_worker (); });
     return (int)SocketReturnCodes::STATUS_OK;
+}
+
+int SocketServer::accept_worker ()
+{
+    int len = sizeof (this->client_addr);
+    this->connected_socket =
+        ::accept (this->server_socket, (struct sockaddr *)&this->client_addr, &len);
+    if (this->connected_socket != INVALID_SOCKET)
+    {
+        // ensure that library will not hang in blocking recv/send call
+        DWORD timeout = 3000;
+        DWORD value = 1;
+        setsockopt (connected_socket, IPPROTO_TCP, TCP_NODELAY, (char *)&value, sizeof (value));
+        setsockopt (connected_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof (timeout));
+        setsockopt (connected_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
+
+        this->client_connected = true;
+    }
 }
 
 int SocketServer::recv (void *data, int size)
@@ -94,6 +95,10 @@ void SocketServer::close ()
 {
     closesocket (server_socket);
     server_socket = INVALID_SOCKET;
+    if (accept_thread.joinable ())
+    {
+        accept_thread.join ();
+    }
     WSACleanup ();
 }
 
@@ -104,6 +109,7 @@ void SocketServer::close ()
 
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+
 
 SocketServer::SocketServer (const char *local_ip, int local_port)
 {
@@ -152,25 +158,28 @@ int SocketServer::bind ()
 
 int SocketServer::accept ()
 {
-    std::thread thread ([this]() {
-        unsigned int len = sizeof (this->client_addr);
-        this->connected_socket =
-            ::accept (this->server_socket, (struct sockaddr *)&this->client_addr, &len);
-        if (this->connected_socket > 0)
-        {
-            // ensure that library will not hang in blocking recv/send call
-            struct timeval tv;
-            tv.tv_sec = 3;
-            tv.tv_usec = 0;
-            int value = 1;
-            setsockopt (connected_socket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof (value));
-            setsockopt (connected_socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof (tv));
-            setsockopt (connected_socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&tv, sizeof (tv));
-
-            this->client_connected = true;
-        }
-    });
+    accept_thread = std::thread ([this] { this->accept_worker (); });
     return (int)SocketReturnCodes::STATUS_OK;
+}
+
+void SocketServer::accept_worker ()
+{
+    unsigned int len = sizeof (this->client_addr);
+    this->connected_socket =
+        ::accept (this->server_socket, (struct sockaddr *)&this->client_addr, &len);
+    if (this->connected_socket > 0)
+    {
+        // ensure that library will not hang in blocking recv/send call
+        struct timeval tv;
+        tv.tv_sec = 3;
+        tv.tv_usec = 0;
+        int value = 1;
+        setsockopt (connected_socket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof (value));
+        setsockopt (connected_socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof (tv));
+        setsockopt (connected_socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&tv, sizeof (tv));
+
+        this->client_connected = true;
+    }
 }
 
 int SocketServer::recv (void *data, int size)
@@ -187,5 +196,9 @@ void SocketServer::close ()
 {
     ::close (server_socket);
     server_socket = -1;
+    if (accept_thread.joinable ())
+    {
+        accept_thread.join ();
+    }
 }
 #endif

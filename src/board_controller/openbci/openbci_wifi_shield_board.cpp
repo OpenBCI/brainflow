@@ -167,6 +167,9 @@ int OpenBCIWifiShieldBoard::prepare_session ()
     }
     if (!server_socket->client_connected)
     {
+        server_socket->close ();
+        delete server_socket;
+        server_socket = NULL;
         return BOARD_NOT_READY_ERROR;
     }
 
@@ -267,6 +270,7 @@ int OpenBCIWifiShieldBoard::release_session ()
     {
         server_socket->close ();
         delete server_socket;
+        server_socket = NULL;
     }
     return STATUS_OK;
 }
