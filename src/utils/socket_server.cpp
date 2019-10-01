@@ -10,14 +10,12 @@
 #pragma comment(lib, "Mswsock.lib")
 #pragma comment(lib, "AdvApi32.lib")
 
-SocketServer::SocketServer (
-    const char *local_ip, const char *client_ip, int local_port, int client_port)
+SocketServer::SocketServer (const char *local_ip, int local_port)
 {
-    strcpy (this->client_ip, client_ip);
     strcpy (this->local_ip, local_ip);
-    this->client_port = client_port;
     this->local_port = local_port;
     server_socket = INVALID_SOCKET;
+    connected_socket = INVALID_SOCKET;
 }
 
 int SocketServer::bind ()
@@ -34,7 +32,7 @@ int SocketServer::bind ()
     {
         return (int)SocketReturnCodes::PTON_ERROR;
     }
-    server_socket = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    server_socket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (server_socket == INVALID_SOCKET)
     {
         return (int)SocketReturnCodes::CREATE_SOCKET_ERROR;
@@ -47,16 +45,44 @@ int SocketServer::bind ()
 
     // ensure that library will not hang in blocking recv/send call
     DWORD timeout = 3000;
+    DWORD value = 1;
+    setsockopt (server_socket, IPPROTO_TCP, TCP_NODELAY, (char *)&value, sizeof (value));
     setsockopt (server_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof (timeout));
     setsockopt (server_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
 
     return (int)SocketReturnCodes::STATUS_OK;
 }
 
+int SocketServer::accept ()
+{
+    std::thread thread ([this]() {
+        int len = sizeof (this->client_addr);
+        this->connected_socket =
+            ::accept (this->server_socket, (struct sockaddr *)&this->client_addr, &len);
+        if (this->connected_socket != INVALID_SOCKET)
+        {
+            // ensure that library will not hang in blocking recv/send call
+            DWORD timeout = 3000;
+            DWORD value = 1;
+            setsockopt (connected_socket, IPPROTO_TCP, TCP_NODELAY, (char *)&value, sizeof (value));
+            setsockopt (
+                connected_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof (timeout));
+            setsockopt (
+                connected_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
+
+            this->client_connected = true;
+        }
+    });
+    return (int)SocketReturnCodes::STATUS_OK;
+}
+
 int SocketServer::recv (void *data, int size)
 {
-    int len = sizeof (client_addr);
-    int res = recvfrom (server_socket, (char *)data, size, 0, (sockaddr *)&client_addr, &len);
+    if (connected_socket == INVALID_SOCKET)
+    {
+        return -1;
+    }
+    int res = ::recv (connected_socket, (char *)data, size, 0);
     if (res == SOCKET_ERROR)
     {
         return -1;
@@ -79,19 +105,18 @@ void SocketServer::close ()
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 
-SocketServer::SocketServer (
-    const char *local_ip, const char *client_ip, int local_port, int client_port)
+SocketServer::SocketServer (const char *local_ip, int local_port)
 {
-    strcpy (this->client_ip, client_ip);
     strcpy (this->local_ip, local_ip);
-    this->client_port = client_port;
     this->local_port = local_port;
     server_socket = -1;
+    connected_socket = -1;
+    client_connected = false;
 }
 
 int SocketServer::bind ()
 {
-    server_socket = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    server_socket = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (server_socket < 0)
     {
         return (int)SocketReturnCodes::CREATE_SOCKET_ERROR;
@@ -112,16 +137,49 @@ int SocketServer::bind ()
     struct timeval tv;
     tv.tv_sec = 3;
     tv.tv_usec = 0;
+    int value = 1;
+    setsockopt (server_socket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof (value));
     setsockopt (server_socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof (tv));
     setsockopt (server_socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&tv, sizeof (tv));
 
+    if ((listen (server_socket, 1)) != 0)
+    {
+        return (int)SocketReturnCodes::CONNECT_ERROR;
+    }
+
+    return (int)SocketReturnCodes::STATUS_OK;
+}
+
+int SocketServer::accept ()
+{
+    std::thread thread ([this]() {
+        unsigned int len = sizeof (this->client_addr);
+        this->connected_socket =
+            ::accept (this->server_socket, (struct sockaddr *)&this->client_addr, &len);
+        if (this->connected_socket > 0)
+        {
+            // ensure that library will not hang in blocking recv/send call
+            struct timeval tv;
+            tv.tv_sec = 3;
+            tv.tv_usec = 0;
+            int value = 1;
+            setsockopt (connected_socket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof (value));
+            setsockopt (connected_socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof (tv));
+            setsockopt (connected_socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&tv, sizeof (tv));
+
+            this->client_connected = true;
+        }
+    });
     return (int)SocketReturnCodes::STATUS_OK;
 }
 
 int SocketServer::recv (void *data, int size)
 {
-    unsigned int len = (unsigned int)sizeof (client_addr);
-    int res = recvfrom (server_socket, (char *)data, size, 0, (sockaddr *)&client_addr, &len);
+    if (connected_socket <= 0)
+    {
+        return -1;
+    }
+    int res = ::recv (connected_socket, (char *)data, size, 0);
     return res;
 }
 

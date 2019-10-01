@@ -11,11 +11,10 @@
 #include "http.h"
 
 #define LOCAL_PORT 17982 // just random number lets hope that its free
-#define SHIELD_PORT 123  // TODO
 
 using json = nlohmann::json;
 
-#include <iostream>
+
 OpenBCIWifiShieldBoard::OpenBCIWifiShieldBoard (int num_channels, char *shield_ip) : Board ()
 {
     this->num_channels = num_channels;
@@ -52,6 +51,27 @@ int OpenBCIWifiShieldBoard::config_board (char *config)
     {
         return res;
     }
+
+    std::string url = "http://" + std::string (this->shield_ip) + "/command";
+    json post_data;
+    post_data["command"] = std::string (config);
+    std::string post_str = post_data.dump ();
+    safe_logger (spdlog::level::info, "command string {}", post_str.c_str ());
+    http_t *request = http_post (url.c_str (), post_str.c_str (), strlen (post_str.c_str ()), NULL);
+    if (!request)
+    {
+        safe_logger (spdlog::level::err, "error during request creation, to {}", url.c_str ());
+        return GENERAL_ERROR;
+    }
+    int send_res = wait_for_http_resp (request);
+    safe_logger (spdlog::level::trace, "response data {}", (char const *)request->response_data);
+    if (send_res != STATUS_OK)
+    {
+        http_release (request);
+        return send_res;
+    }
+    http_release (request);
+
     return STATUS_OK;
 }
 
@@ -72,7 +92,7 @@ int OpenBCIWifiShieldBoard::prepare_session ()
     }
     safe_logger (spdlog::level::info, "local ip addr is {}", local_ip);
 
-    server_socket = new SocketServer (local_ip, shield_ip, LOCAL_PORT, SHIELD_PORT);
+    server_socket = new SocketServer (local_ip, LOCAL_PORT);
     res = server_socket->bind ();
     if (res != 0)
     {
@@ -98,7 +118,13 @@ int OpenBCIWifiShieldBoard::prepare_session ()
     safe_logger (spdlog::level::trace, "response data {}", (char const *)request->response_data);
     http_release (request);
 
-    url = "http://" + std::string (this->shield_ip) + "/udp";
+    res = server_socket->accept ();
+    if (res != 0)
+    {
+        safe_logger (spdlog::level::err, "error in accept");
+        return GENERAL_ERROR;
+    }
+    url = "http://" + std::string (this->shield_ip) + "/tcp";
 
     json post_data;
     post_data["ip"] = std::string (local_ip);
@@ -122,6 +148,27 @@ int OpenBCIWifiShieldBoard::prepare_session ()
         return send_res;
     }
     http_release (request);
+
+    // waiting for accept call
+    for (int i = 0; i < 10; i++)
+    {
+        if (server_socket->client_connected)
+        {
+            break;
+        }
+        else
+        {
+#ifdef _WIN32
+            Sleep ((int)(300));
+#else
+            usleep ((int)(300000));
+#endif
+        }
+    }
+    if (!server_socket->client_connected)
+    {
+        return BOARD_NOT_READY_ERROR;
+    }
 
     initialized = true;
     return STATUS_OK;

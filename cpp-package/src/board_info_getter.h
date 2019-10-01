@@ -53,6 +53,14 @@ public:
     static const int first_eeg_channel = 1;
 };
 
+class CYTON_WIFI
+{
+public:
+    static const int fs_hz = 2000;
+    static const int num_eeg_channels = 8;
+    static const int package_length = 12;
+    static const int first_eeg_channel = 1;
+};
 
 // todo: move it to low level api during implementation of signal processing in c++
 class BoardInfoGetter
@@ -72,6 +80,8 @@ public:
                 return CYTON_DAISY::package_length;
             case NOVAXR_BOARD:
                 return NOVAXR::package_length;
+            case CYTON_WIFI_BOARD:
+                return CYTON_WIFI::package_length;
             default:
                 throw BrainFlowException ("Unsupported Board Error", UNSUPPORTED_BOARD_ERROR);
         }
@@ -91,6 +101,8 @@ public:
                 return CYTON_DAISY::num_eeg_channels;
             case NOVAXR_BOARD:
                 return NOVAXR::num_eeg_channels;
+            case CYTON_WIFI_BOARD:
+                return CYTON_WIFI::num_eeg_channels;
             default:
                 throw BrainFlowException ("Unsupported Board Error", UNSUPPORTED_BOARD_ERROR);
         }
@@ -110,6 +122,8 @@ public:
                 return CYTON_DAISY::fs_hz;
             case NOVAXR_BOARD:
                 return NOVAXR::fs_hz;
+            case CYTON_WIFI_BOARD:
+                return CYTON_WIFI::fs_hz;
             default:
                 throw BrainFlowException ("Unsupported Board Error", UNSUPPORTED_BOARD_ERROR);
         }
@@ -129,6 +143,8 @@ public:
                 return CYTON_DAISY::first_eeg_channel;
             case NOVAXR_BOARD:
                 return NOVAXR::first_eeg_channel;
+            case CYTON_WIFI_BOARD:
+                return CYTON_WIFI::first_eeg_channel;
             default:
                 throw BrainFlowException ("Unsupported Board Error", UNSUPPORTED_BOARD_ERROR);
         }
