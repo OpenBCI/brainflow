@@ -1,7 +1,7 @@
 ﻿using System;
 using brainflow;
 
-namespace test
+namespace multithread
 {
     class GetBoardData
     {

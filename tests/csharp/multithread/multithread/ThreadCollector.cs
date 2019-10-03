@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using brainflow;
 
-namespace test
+namespace multithread
 {
     class ThreadCollector
     {
@@ -27,7 +27,7 @@ namespace test
             while (keep_alive)
             {
                 System.Threading.Thread.Sleep (sleep_ms);
-                //Console.WriteLine ("data count: {0}", board_shim.get_board_data_count ());
+                Console.WriteLine ("data count: {0}", board_shim.get_board_data_count ());
             }
             double[,] unprocessed_data = board_shim.get_board_data ();
             // check serialization

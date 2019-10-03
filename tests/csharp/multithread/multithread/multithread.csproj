@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="brainflow">
+      <HintPath>..\..\..\..\..\brainflow-local\csharp-package\brainflow\brainflow\bin\Debug\brainflow.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
