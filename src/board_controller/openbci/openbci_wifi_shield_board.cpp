@@ -29,7 +29,6 @@ OpenBCIWifiShieldBoard::OpenBCIWifiShieldBoard (int num_channels, char *shield_i
                             // mode of wifi shield works ip will always be 192.168.4.1
     }
     server_socket = NULL;
-    is_streaming = false;
     keep_alive = false;
     initialized = false;
 }
@@ -150,36 +149,48 @@ int OpenBCIWifiShieldBoard::prepare_session ()
     http_release (request);
 
     // waiting for accept call
-    for (int i = 0; i < 10; i++)
+    int max_attempts = 10;
+    for (int i = 0; i < max_attempts; i++)
     {
+        safe_logger (spdlog::level::trace, "waiting for accept {}/{}", i, max_attempts);
         if (server_socket->client_connected)
         {
+            safe_logger (spdlog::level::trace, "connected");
             break;
         }
         else
         {
 #ifdef _WIN32
-            Sleep ((int)(300));
+            Sleep (300);
 #else
-            usleep ((int)(300000));
+            usleep (300000);
 #endif
         }
     }
     if (!server_socket->client_connected)
     {
+        safe_logger (spdlog::level::trace, "failed to establish connection");
         server_socket->close ();
         delete server_socket;
         server_socket = NULL;
         return BOARD_NOT_READY_ERROR;
     }
 
+    // freeze sampling rate
     initialized = true;
+    res = config_board ("~4"); // for cyton based boards - 1000 for ganglion - 1600
+    if (res != STATUS_OK)
+    {
+        initialized = false;
+        return res;
+    }
+
     return STATUS_OK;
 }
 
 int OpenBCIWifiShieldBoard::start_stream (int buffer_size)
 {
-    if (is_streaming)
+    if (keep_alive)
     {
         safe_logger (spdlog::level::err, "Streaming thread already running");
         return STREAM_ALREADY_RUN_ERROR;
@@ -221,16 +232,14 @@ int OpenBCIWifiShieldBoard::start_stream (int buffer_size)
 
     keep_alive = true;
     streaming_thread = std::thread ([this] { this->read_thread (); });
-    is_streaming = true;
     return STATUS_OK;
 }
 
 int OpenBCIWifiShieldBoard::stop_stream ()
 {
-    if (is_streaming)
+    if (keep_alive)
     {
         keep_alive = false;
-        is_streaming = false;
         streaming_thread.join ();
         std::string url = "http://" + std::string (this->shield_ip) + "/stream/stop";
         http_t *request = http_get (url.c_str (), NULL);
@@ -260,7 +269,7 @@ int OpenBCIWifiShieldBoard::release_session ()
 {
     if (initialized)
     {
-        if (is_streaming)
+        if (keep_alive)
         {
             stop_stream ();
         }

@@ -6,7 +6,7 @@ import brainflow
 def main ():
     parser = argparse.ArgumentParser ()
     parser.add_argument ('--port', type = str, help  = 'port name, for synthetic board port_name doesnt matter, just pass smth', required = True)
-    parser.add_argument ('--board', type = int, help  = 'board id, Ganglion: 1, Cyton: 0, Synthetic: -1', required = True)
+    parser.add_argument ('--board', type = int, help  = 'board id, check docs to get a list of supported board ids', required = True)
     parser.add_argument ('--log', action = 'store_true')
     args = parser.parse_args ()
 

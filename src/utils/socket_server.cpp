@@ -16,6 +16,7 @@ SocketServer::SocketServer (const char *local_ip, int local_port)
     this->local_port = local_port;
     server_socket = INVALID_SOCKET;
     connected_socket = INVALID_SOCKET;
+    client_connected = false;
 }
 
 int SocketServer::bind ()
@@ -50,6 +51,11 @@ int SocketServer::bind ()
     setsockopt (server_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof (timeout));
     setsockopt (server_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
 
+    if ((listen (server_socket, 1)) != 0)
+    {
+        return (int)SocketReturnCodes::CONNECT_ERROR;
+    }
+
     return (int)SocketReturnCodes::STATUS_OK;
 }
 
@@ -59,12 +65,11 @@ int SocketServer::accept ()
     return (int)SocketReturnCodes::STATUS_OK;
 }
 
-int SocketServer::accept_worker ()
+void SocketServer::accept_worker ()
 {
-    int len = sizeof (this->client_addr);
-    this->connected_socket =
-        ::accept (this->server_socket, (struct sockaddr *)&this->client_addr, &len);
-    if (this->connected_socket != INVALID_SOCKET)
+    int len = sizeof (client_addr);
+    connected_socket = ::accept (server_socket, (struct sockaddr *)&client_addr, &len);
+    if (connected_socket != INVALID_SOCKET)
     {
         // ensure that library will not hang in blocking recv/send call
         DWORD timeout = 3000;
@@ -73,7 +78,7 @@ int SocketServer::accept_worker ()
         setsockopt (connected_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof (timeout));
         setsockopt (connected_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
 
-        this->client_connected = true;
+        client_connected = true;
     }
 }
 
@@ -164,10 +169,9 @@ int SocketServer::accept ()
 
 void SocketServer::accept_worker ()
 {
-    unsigned int len = sizeof (this->client_addr);
-    this->connected_socket =
-        ::accept (this->server_socket, (struct sockaddr *)&this->client_addr, &len);
-    if (this->connected_socket > 0)
+    unsigned int len = sizeof (client_addr);
+    connected_socket = ::accept (server_socket, (struct sockaddr *)&this->client_addr, &len);
+    if (connected_socket > 0)
     {
         // ensure that library will not hang in blocking recv/send call
         struct timeval tv;
@@ -178,7 +182,7 @@ void SocketServer::accept_worker ()
         setsockopt (connected_socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof (tv));
         setsockopt (connected_socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&tv, sizeof (tv));
 
-        this->client_connected = true;
+        client_connected = true;
     }
 }
 

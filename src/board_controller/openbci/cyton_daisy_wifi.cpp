@@ -8,6 +8,7 @@
 
 void CytonDaisyWifi::read_thread ()
 {
+    // format is the same as for cyton but need to join two packages together
     /*
         Byte 1: 0xA0
         Byte 2: Sample Number
@@ -24,7 +25,65 @@ void CytonDaisyWifi::read_thread ()
     */
     int res;
     unsigned char b[32];
+    float package[20]; // 16 eeg channels 3 accel and package num
+    bool first_sample = false;
     while (keep_alive)
     {
+        // check start byte
+        res = server_socket->recv (b, 1);
+        if (res != 1)
+        {
+            safe_logger (spdlog::level::debug, "unable to read 1 byte");
+            continue;
+        }
+        if (b[0] != START_BYTE)
+        {
+            continue;
+        }
+
+        res = server_socket->recv (b, 32);
+        if (res != 32)
+        {
+            safe_logger (spdlog::level::debug, "unable to read 32 bytes");
+            continue;
+        }
+        // check end byte
+        if (b[res - 1] != END_BYTE)
+        {
+            safe_logger (
+                spdlog::level::warn, "Wrong end byte, found {}, required {}", b[res - 1], END_BYTE);
+            continue;
+        }
+
+        if ((b[0] % 2 == 0) && (first_sample))
+        {
+            // eeg
+            for (int i = 0; i < 8; i++)
+            {
+                package[i + 9] = eeg_scale * cast_24bit_to_int32 (b + 1 + 3 * i);
+            }
+            // need to average accel data
+            package[17] += accel_scale * cast_16bit_to_int32 (b + 25);
+            package[18] += accel_scale * cast_16bit_to_int32 (b + 27);
+            package[19] += accel_scale * cast_16bit_to_int32 (b + 29);
+            package[17] /= 2.0f;
+            package[18] /= 2.0f;
+            package[19] /= 2.0f;
+            db->add_data (get_timestamp (), package);
+        }
+        else
+        {
+            first_sample = true;
+            package[0] = (float)b[0];
+            // eeg
+            for (int i = 0; i < 8; i++)
+            {
+                package[i + 1] = eeg_scale * cast_24bit_to_int32 (b + 1 + 3 * i);
+            }
+            // accel
+            package[17] = accel_scale * cast_16bit_to_int32 (b + 25);
+            package[18] = accel_scale * cast_16bit_to_int32 (b + 27);
+            package[19] = accel_scale * cast_16bit_to_int32 (b + 29);
+        }
     }
 }

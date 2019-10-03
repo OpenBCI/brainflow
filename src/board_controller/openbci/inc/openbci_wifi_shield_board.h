@@ -14,12 +14,11 @@ class OpenBCIWifiShieldBoard : public Board
 {
 
 private:
-    int wait_for_http_resp (http_t *request, int max_attempts = 300);
+    int wait_for_http_resp (http_t *request, int max_attempts = 600);
 
 protected:
     volatile bool keep_alive;
     bool initialized;
-    bool is_streaming;
     std::thread streaming_thread;
 
     SocketServer *server_socket;
