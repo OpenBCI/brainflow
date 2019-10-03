@@ -36,7 +36,7 @@ install:
   - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib && cp BoardController.dll ..\..\..\..\tests\csharp\build_single\Release\
   ## 64 multi threads
   - nuget install Accord -OutputDirectory %APPVEYOR_BUILD_FOLDER%/tests/csharp/multithread/packages && nuget install Accord.Math -OutputDirectory %APPVEYOR_BUILD_FOLDER%/tests/csharp/multithread/packages && nuget install MathNet.Filtering -OutputDirectory %APPVEYOR_BUILD_FOLDER%/tests/csharp/multithread/packages
-  - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\multithread && msbuild multithread.sln /p:Configuration=Release /p:ReferencePath="..\..\..\..\csharp-package\brainflow\brainflow\bin\Debug\brainflow.dll" /p:OutDir=..\..\build_multi\Release
+  - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\multithread && msbuild multithread.sln /p:Configuration=Release /p:ReferencePath="..\build_single\Release\brainflow.dll" /p:OutDir=..\..\build_multi\Release
   - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib && cp BoardController.dll %APPVEYOR_BUILD_FOLDER%\tests\csharp\build_multi\Release\
   # install emulator for cyton
   - pip install %APPVEYOR_BUILD_FOLDER%\emulator\
