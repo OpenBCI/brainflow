@@ -55,7 +55,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="brainflow">
-      <HintPath>..\..\..\..\csharp-package\brainflow\brainflow\bin\Debug\brainflow.dll</HintPath>
+      <HintPath>..\..\build_single\Release\brainflow.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
