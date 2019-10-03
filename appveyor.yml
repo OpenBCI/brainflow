@@ -54,7 +54,8 @@ install:
   - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\python-package\brainflow\lib\GanglionLibNative64.dll
   - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\installed64\lib\GanglionLibNative64.dll
   - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\java-package\brainflow\src\main\resources\GanglionLibNative64.dll
-  - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release\
+  - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\tests\csharp\build_single\Release\
+  - cp %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\compiled\Release\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\tests\csharp\build_multi\Release\
   # install python package
   - pip install %APPVEYOR_BUILD_FOLDER%\python-package\
   # build cpp
