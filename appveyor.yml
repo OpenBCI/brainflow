@@ -16,6 +16,9 @@ environment:
 
 clone_depth: 3
 
+before_build:
+  - nuget restore
+
 build: off
 
 init:
