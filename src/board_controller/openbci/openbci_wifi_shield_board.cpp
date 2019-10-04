@@ -63,7 +63,6 @@ int OpenBCIWifiShieldBoard::config_board (char *config)
         return GENERAL_ERROR;
     }
     int send_res = wait_for_http_resp (request);
-    safe_logger (spdlog::level::trace, "response data {}", (char const *)request->response_data);
     if (send_res != STATUS_OK)
     {
         http_release (request);
@@ -114,7 +113,6 @@ int OpenBCIWifiShieldBoard::prepare_session ()
         http_release (request);
         return res;
     }
-    safe_logger (spdlog::level::trace, "response data {}", (char const *)request->response_data);
     http_release (request);
 
     res = server_socket->accept ();
@@ -140,7 +138,6 @@ int OpenBCIWifiShieldBoard::prepare_session ()
         return GENERAL_ERROR;
     }
     int send_res = wait_for_http_resp (request);
-    safe_logger (spdlog::level::trace, "response data {}", (char const *)request->response_data);
     if (send_res != STATUS_OK)
     {
         http_release (request);
@@ -220,7 +217,6 @@ int OpenBCIWifiShieldBoard::start_stream (int buffer_size)
         http_release (request);
         return send_res;
     }
-    safe_logger (spdlog::level::trace, "response data {}", (char const *)request->response_data);
     http_release (request);
 
     db = new DataBuffer (num_channels, buffer_size);
@@ -254,8 +250,6 @@ int OpenBCIWifiShieldBoard::stop_stream ()
             http_release (request);
             return send_res;
         }
-        safe_logger (
-            spdlog::level::trace, "response data {}", (char const *)request->response_data);
         http_release (request);
         return STATUS_OK;
     }
@@ -308,6 +302,11 @@ int OpenBCIWifiShieldBoard::wait_for_http_resp (http_t *request, int max_attempt
 #else
         usleep ((int)(10000));
 #endif
+    }
+    if (request->response_data != NULL)
+    {
+        safe_logger (
+            spdlog::level::trace, "response data {}", (char const *)request->response_data);
     }
     if (status == HTTP_STATUS_FAILED)
     {
