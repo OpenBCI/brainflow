@@ -51,8 +51,8 @@ class Handler (BaseHTTPRequestHandler):
         self.end_headers ()
 
     def _html (self, message):
-        content = f"<html><body><h1>{message}</h1></body></html>"
-        return content.encode("utf8")
+        content = "<html><body><h1>%s</h1></body></html>" % message
+        return content.encode ("utf8")
 
     def do_GET (self):
         global send_sock
