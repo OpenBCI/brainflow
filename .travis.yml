@@ -58,7 +58,6 @@ before_script:
   - cd $TRAVIS_BUILD_DIR && cd java-package/brainflow && mvn package
 
 script:
-  - netstat -antp
   # tests for cyton
   - sudo -H python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/cyton_linux.py python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_get_data.py --log --board 0 --port 
   - sudo -H python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/cyton_linux.py Rscript $TRAVIS_BUILD_DIR/tests/r/brainflow_get_data.R
