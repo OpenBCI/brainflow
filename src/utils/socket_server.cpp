@@ -98,11 +98,19 @@ int SocketServer::recv (void *data, int size)
 
 void SocketServer::close ()
 {
-    closesocket (server_socket);
-    server_socket = INVALID_SOCKET;
+    if (server_socket != INVALID_SOCKET)
+    {
+        closesocket (server_socket);
+        server_socket = INVALID_SOCKET;
+    }
     if (accept_thread.joinable ())
     {
         accept_thread.join ();
+    }
+    if (connected_socket != INVALID_SOCKET)
+    {
+        closesocket (connected_socket);
+        connected_socket = INVALID_SOCKET;
     }
     WSACleanup ();
 }
@@ -198,11 +206,19 @@ int SocketServer::recv (void *data, int size)
 
 void SocketServer::close ()
 {
-    ::close (server_socket);
-    server_socket = -1;
+    if (server_socket != -1)
+    {
+        ::close (server_socket);
+        server_socket = -1;
+    }
     if (accept_thread.joinable ())
     {
         accept_thread.join ();
+    }
+    if (connected_socket != -1)
+    {
+        ::close (connected_socket);
+        connected_socket = -1;
     }
 }
 #endif
