@@ -53,6 +53,13 @@ class NOVAXR (object):
     package_length = 25
 
 
+class GANGLION_WIFI (object):
+    board_id = 4
+    fs_hz = 1600
+    num_eeg_channels = 4
+    package_length = 8
+
+
 class CYTON_WIFI (object):
     board_id = 5
     fs_hz = 1000
@@ -65,13 +72,6 @@ class CYTON_DAISY_WIFI (object):
     fs_hz = 1000
     num_eeg_channels = 16
     package_length = 20
-
-
-class GANGLION_WIFI (object):
-    board_id = 3
-    fs_hz = 1600
-    num_eeg_channels = 4
-    package_length = 8
 
 
 class BoardInfoGetter (object):
