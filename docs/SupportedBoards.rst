@@ -7,7 +7,7 @@ Synthetic Board
 
 This board generates synthetic data and you dont need real hardware to use it.
 
-API params:
+prepare_session args to select this board:
 
 - board Id: -1
 - port: any string
@@ -31,10 +31,9 @@ OpenBCI Cyton
 
 .. image:: https://farm5.staticflickr.com/4817/32567183898_10a4b56659.jpg
 
-
 `Cyton geting started guide from OpenBCI <https://docs.openbci.com/Tutorials/00-Tutorials>`_.
 
-API params:
+prepare_session args to select this board:
 
 - board Id: 0
 - port: serial port (COM3, /dev/ttyUSB0 ....)
@@ -59,7 +58,7 @@ OpenBCI Ganglion
 
 `Ganglion geting started guide from OpenBCI <https://docs.openbci.com/Tutorials/00-Tutorials>`_.
 
-API params:
+prepare_session args to select this board:
 
 - board Id: 1
 - port: for Windows - Ganglion Mac address which you can get using Bluetooth Low Energy Explorer from Microsoft Store (e.g. e6:73:73:18:09:b1) for Windows autodiscovery works so you can pass empty string as well, for Linux/MacOS you need to pass string in format "dongle_port,mac_addr"(e.g./dev/ttyACM0,e6:73:73:18:09:b1) to get mac address on Linux you can use hcitool
@@ -90,7 +89,7 @@ OpenBCI Cyton Daisy
 
 `Cyton Daisy geting started guide from OpenBCI <https://docs.openbci.com/Tutorials/00-Tutorials>`_.
 
-API params:
+prepare_session args to select this board:
 
 - board Id: 2
 - port: serial port (COM3, /dev/ttyUSB0 ....)
