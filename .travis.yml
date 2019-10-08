@@ -91,7 +91,7 @@ script:
   # I dont want to add network restart or timeout, so test only one wifi shield board
   # test is disabled for macOS due to an intermittent failure sending ~4 to the emulator
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      sudo -H python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/wifi_shield_emulator.py python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_get_data.py --log --board 4 --port "127.0.0.1"
+      sudo -H python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/wifi_shield_emulator.py python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_get_data.py --log --board 4 --port "127.0.0.1" ;
     fi
 
 after_success:
