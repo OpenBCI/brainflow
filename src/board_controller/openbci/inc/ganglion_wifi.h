@@ -17,7 +17,7 @@ protected:
 
 public:
     // package num, 4 eeg channels, 3 accel channels
-    GanglionWifi (char *ip_addr) : OpenBCIWifiShieldBoard (8, ip_addr)
+    GanglionWifi (char *ip_addr) : OpenBCIWifiShieldBoard (8, ip_addr, (int)GANGLION_WIFI_BOARD)
     {
     }
 };

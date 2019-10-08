@@ -26,7 +26,7 @@ protected:
     virtual int send_to_board (char *msg);
 
 public:
-    OpenBCISerialBoard (int num_channels, const char *port_name);
+    OpenBCISerialBoard (int num_channels, const char *port_name, int board_id);
     virtual ~OpenBCISerialBoard ();
 
     virtual int prepare_session ();

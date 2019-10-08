@@ -10,7 +10,7 @@ class DataBuffer
     SpinLock lock;
 
     double *timestamps;
-    float *data;
+    double *data;
 
     size_t buffer_size;
     size_t first_used, first_free;

@@ -18,7 +18,7 @@
 #define MAX_ATTEMPTS_TO_GET_DATA 250
 
 
-Ganglion::Ganglion (const char *port_name) : Board ()
+Ganglion::Ganglion (const char *port_name) : Board ((int)GANGLION_BOARD)
 {
     if (port_name == NULL)
     {
@@ -226,7 +226,7 @@ void Ganglion::read_thread ()
                 safe_logger (spdlog::level::debug, "start streaming");
             }
 
-            float package[8] = {0.f};
+            double package[8] = {0.f};
             // delta holds 8 nums because (4 by each package)
             float delta[8] = {0.f};
             int bits_per_num = 0;
@@ -252,16 +252,16 @@ void Ganglion::read_thread ()
                 last_data[7] = cast_24bit_to_int32 (data.data + 10);
 
                 // scale new packet and insert into result
-                package[0] = 0.f;
+                package[0] = 0.;
                 package[1] = this->eeg_scale * last_data[4];
                 package[2] = this->eeg_scale * last_data[5];
                 package[3] = this->eeg_scale * last_data[6];
                 package[4] = this->eeg_scale * last_data[7];
 
                 // I dont understand how to get accel data, for now it's 0
-                package[5] = 0.f;
-                package[6] = 0.f;
-                package[7] = 0.f;
+                package[5] = 0.;
+                package[6] = 0.;
+                package[7] = 0.;
                 this->db->add_data (data.timestamp, package);
                 continue;
             }

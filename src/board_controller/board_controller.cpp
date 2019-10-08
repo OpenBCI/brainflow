@@ -131,8 +131,8 @@ int release_session (int board_id, char *port_name)
     return res;
 }
 
-int get_current_board_data (int num_samples, float *data_buf, double *ts_buf, int *returned_samples,
-    int board_id, char *port_name)
+int get_current_board_data (
+    int num_samples, double *data_buf, int *returned_samples, int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
@@ -143,8 +143,7 @@ int get_current_board_data (int num_samples, float *data_buf, double *ts_buf, in
         return res;
     }
     auto board_it = boards.find (key);
-    return board_it->second->get_current_board_data (
-        num_samples, data_buf, ts_buf, returned_samples);
+    return board_it->second->get_current_board_data (num_samples, data_buf, returned_samples);
 }
 
 int get_board_data_count (int *result, int board_id, char *port_name)
@@ -161,7 +160,7 @@ int get_board_data_count (int *result, int board_id, char *port_name)
     return board_it->second->get_board_data_count (result);
 }
 
-int get_board_data (int data_count, float *data_buf, double *ts_buf, int board_id, char *port_name)
+int get_board_data (int data_count, double *data_buf, int board_id, char *port_name)
 {
     std::lock_guard<std::mutex> lock (mutex);
 
@@ -172,7 +171,7 @@ int get_board_data (int data_count, float *data_buf, double *ts_buf, int board_i
         return res;
     }
     auto board_it = boards.find (key);
-    return board_it->second->get_board_data (data_count, data_buf, ts_buf);
+    return board_it->second->get_board_data (data_count, data_buf);
 }
 
 int set_log_level (int log_level)

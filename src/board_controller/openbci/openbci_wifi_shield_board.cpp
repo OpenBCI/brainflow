@@ -15,7 +15,8 @@
 using json = nlohmann::json;
 
 
-OpenBCIWifiShieldBoard::OpenBCIWifiShieldBoard (int num_channels, char *shield_ip) : Board ()
+OpenBCIWifiShieldBoard::OpenBCIWifiShieldBoard (int num_channels, char *shield_ip, int board_id)
+    : Board (board_id)
 {
     this->num_channels = num_channels;
     if (shield_ip != NULL)

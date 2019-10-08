@@ -45,6 +45,7 @@ typedef enum
 extern "C"
 {
 #endif
+    // data acquisition methods
     SHARED_EXPORT int prepare_session (int board_id, char *port_name);
     SHARED_EXPORT int start_stream (int buffer_size, int board_id, char *port_name);
     SHARED_EXPORT int stop_stream (int board_id, char *port_name);
@@ -57,6 +58,23 @@ extern "C"
     SHARED_EXPORT int set_log_level (int log_level);
     SHARED_EXPORT int config_board (char *config, int board_id, char *port_name);
     SHARED_EXPORT int set_log_file (char *log_file);
+
+    // data desc and board desc methods, these methods return column indexes in data table returned
+    // by get_board_data
+    SHARED_EXPORT int get_sampling_rate (int board_id, int *sampling_rate);
+    SHARED_EXPORT int get_package_num (int board_id, int *package_num);
+    SHARED_EXPORT int get_timestamp_channel (int board_id, int *timestamp_channel);
+    SHARED_EXPORT int get_columns_size (int board_id, int *columns_size);
+    SHARED_EXPORT int get_eeg_channels (int board_id, int *eeg_channels, int *len);
+    SHARED_EXPORT int get_emg_channels (int board_id, int *emg_channels, int *len);
+    SHARED_EXPORT int get_ecg_channels (int board_id, int *ecg_channels, int *len);
+    SHARED_EXPORT int get_eog_channels (int board_id, int *eog_channels, int *len);
+    SHARED_EXPORT int get_ppg_channels (int board_id, int *ppg_channels, int *len);
+    SHARED_EXPORT int get_eda_channels (int board_id, int *eda_channels, int *len);
+    SHARED_EXPORT int get_accel_channels (int board_id, int *accel_channels, int *len);
+    SHARED_EXPORT int get_gyro_channels (int board_id, int *gyro_channels, int *len);
+    SHARED_EXPORT int get_other_channels (int board_id, int *other_channels, int *len);
+
 #ifdef __cplusplus
 }
 #endif

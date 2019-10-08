@@ -4,8 +4,8 @@
 #include "openbci_serial_board.h"
 #include "serial.h"
 
-OpenBCISerialBoard::OpenBCISerialBoard (int num_channels, const char *port_name)
-    : Board (), serial (port_name)
+OpenBCISerialBoard::OpenBCISerialBoard (int num_channels, const char *port_name, int board_id)
+    : Board (board_id), serial (port_name)
 {
     this->num_channels = num_channels;
 

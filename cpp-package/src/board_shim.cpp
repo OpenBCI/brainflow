@@ -135,15 +135,3 @@ void BoardShim::config_board (char *config)
         throw BrainFlowException ("failed to config board", res);
     }
 }
-
-void BoardShim::reshape_data (int data_count, float *data_buf, double *ts_buf, double **output_buf)
-{
-    for (int i = 0; i < data_count; i++)
-    {
-        for (int j = 0; j < num_data_channels; j++)
-        {
-            output_buf[i][j] = data_buf[i * num_data_channels + j];
-        }
-        output_buf[i][num_data_channels] = ts_buf[i]; // add timestamp
-    }
-}

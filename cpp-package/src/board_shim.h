@@ -6,8 +6,6 @@
 class BoardShim
 {
 
-    void reshape_data (int data_count, float *buf, double *ts_buf, double **output_buf);
-
 public:
     static void disable_board_logger ();
     static void enable_board_logger ();

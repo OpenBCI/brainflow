@@ -6,7 +6,8 @@
 #include "novaxr.h"
 #include "openbci_helpers.h"
 
-NovaXR::NovaXR (char *ip_addr) : Board (), socket (ip_addr, 2390, (int)SocketType::UDP)
+NovaXR::NovaXR (char *ip_addr)
+    : Board ((int)NOVAXR_BOARD), socket (ip_addr, 2390, (int)SocketType::UDP)
 {
     this->is_streaming = false;
     this->keep_alive = false;
@@ -204,16 +205,16 @@ void NovaXR::read_thread ()
             }
         }
 
-        float package[25];
+        double package[25];
         // package num
-        package[0] = (float)b[0];
+        package[0] = (double)b[0];
         // eeg and emg
         for (int i = 4; i < 20; i++)
         {
             // put them directly after package num in brainflow
-            package[i - 3] = eeg_scale * (float)cast_24bit_to_int32 (b + 4 + 3 * (i - 4));
+            package[i - 3] = eeg_scale * (double)cast_24bit_to_int32 (b + 4 + 3 * (i - 4));
         }
-        package[17] = (float)b[1];                                // ppg
+        package[17] = (double)b[1];                               // ppg
         package[18] = cast_16bit_to_int32 (b + 2);                // eda todo scale?
         package[19] = accel_scale * cast_16bit_to_int32 (b + 52); // accel x
         package[20] = accel_scale * cast_16bit_to_int32 (b + 54); // accel y

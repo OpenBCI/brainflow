@@ -17,7 +17,7 @@ protected:
 
 public:
     // package num, 8 eeg channels, 3 accel channels
-    Cyton (const char *port_name) : OpenBCISerialBoard (12, port_name)
+    Cyton (const char *port_name) : OpenBCISerialBoard (12, port_name, (int)CYTON_BOARD)
     {
     }
 };
