@@ -50,21 +50,23 @@ extern "C"
     SHARED_EXPORT int start_stream (int buffer_size, int board_id, char *port_name);
     SHARED_EXPORT int stop_stream (int board_id, char *port_name);
     SHARED_EXPORT int release_session (int board_id, char *port_name);
-    SHARED_EXPORT int get_current_board_data (int num_samples, float *data_buf, double *ts_buf,
-        int *returned_samples, int board_id, char *port_name);
+    SHARED_EXPORT int get_current_board_data (
+        int num_samples, double *data_buf, int *returned_samples, int board_id, char *port_name);
     SHARED_EXPORT int get_board_data_count (int *result, int board_id, char *port_name);
     SHARED_EXPORT int get_board_data (
-        int data_count, float *data_buf, double *ts_buf, int board_id, char *port_name);
-    SHARED_EXPORT int set_log_level (int log_level);
+        int data_count, double *data_buf, int board_id, char *port_name);
     SHARED_EXPORT int config_board (char *config, int board_id, char *port_name);
+
+    // logging methods
+    SHARED_EXPORT int set_log_level (int log_level);
     SHARED_EXPORT int set_log_file (char *log_file);
 
     // data desc and board desc methods, these methods return column indexes in data table returned
     // by get_board_data
     SHARED_EXPORT int get_sampling_rate (int board_id, int *sampling_rate);
-    SHARED_EXPORT int get_package_num (int board_id, int *package_num);
+    SHARED_EXPORT int get_package_num_channel (int board_id, int *package_num_channel);
     SHARED_EXPORT int get_timestamp_channel (int board_id, int *timestamp_channel);
-    SHARED_EXPORT int get_columns_size (int board_id, int *columns_size);
+    SHARED_EXPORT int get_num_rows (int board_id, int *num_rows);
     SHARED_EXPORT int get_eeg_channels (int board_id, int *eeg_channels, int *len);
     SHARED_EXPORT int get_emg_channels (int board_id, int *emg_channels, int *len);
     SHARED_EXPORT int get_ecg_channels (int board_id, int *ecg_channels, int *len);

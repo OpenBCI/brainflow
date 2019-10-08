@@ -28,7 +28,7 @@ protected:
     virtual void read_thread () = 0;
 
 public:
-    OpenBCIWifiShieldBoard (int num_channels, char *ip_addr);
+    OpenBCIWifiShieldBoard (int num_channels, char *ip_addr, int board_id);
     virtual ~OpenBCIWifiShieldBoard ();
 
     int prepare_session ();

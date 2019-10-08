@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "board_controller.h"
+#include "board_shim.h"
 #include "data_handler.h"
 
 #ifndef M_PI
@@ -11,62 +12,76 @@
 DataHandler::DataHandler (int board_id)
 {
     this->board_id = board_id;
-    start_eeg = BoardInfoGetter::get_first_eeg_channel (board_id);
-    stop_eeg = BoardInfoGetter::get_num_eeg_channels (board_id) + start_eeg;
-    sample_rate = BoardInfoGetter::get_fs_hz (board_id);
 }
 
-void DataHandler::filter_lowpass (double **data, int data_count, float cutoff)
+void DataHandler::filter_lowpass (
+    double **data, int *channels, int channels_size, int data_count, float cutoff)
 {
+    int sampling_rate = BoardShim::get_sampling_rate (board_id);
     double rc = 1.0 / (cutoff * 2 * M_PI);
-    double dt = 1.0 / sample_rate;
+    double dt = 1.0 / sampling_rate;
     double alpha = dt / (rc + dt);
     double *temp_arr = new double[data_count];
 
-    for (int channel = start_eeg; channel < stop_eeg; channel++)
+    for (int i = 0; i < channels_size; i++)
     {
-        temp_arr[0] = data[0][channel];
-        for (int i = 1; i < data_count; i++)
-            temp_arr[i] = temp_arr[i - 1] + alpha * (data[i][channel] - temp_arr[i - 1]);
-        for (int i = 0; i < data_count; i++)
-            data[i][channel] = temp_arr[i];
+        int channel_num = channels[i];
+        temp_arr[0] = data[channel_num][0];
+        for (int j = 1; j < data_count; j++)
+        {
+            temp_arr[j] = temp_arr[j - 1] + alpha * (data[channel_num][j] - temp_arr[j - 1]);
+        }
+        for (int j = 0; j < data_count; j++)
+        {
+            data[channel_num][j] = temp_arr[j];
+        }
     }
     delete[] temp_arr;
 }
 
-void DataHandler::filter_highpass (double **data, int data_count, float cutoff)
+void DataHandler::filter_highpass (
+    double **data, int *channels, int channels_size, int data_count, float cutoff)
 {
+
+    int sampling_rate = BoardShim::get_sampling_rate (board_id);
     double rc = 1.0 / (cutoff * 2 * M_PI);
-    double dt = 1.0 / sample_rate;
-    double alpha = rc / (rc + dt);
+    double dt = 1.0 / sampling_rate;
+    double alpha = dt / (rc + dt);
     double *temp_arr = new double[data_count];
 
-    for (int channel = start_eeg; channel < stop_eeg; channel++)
+    for (int i = 0; i < channels_size; i++)
     {
-        temp_arr[0] = data[0][channel];
-        for (int i = 1; i < data_count; i++)
-            temp_arr[i] = alpha * (temp_arr[i - 1] + data[i][channel] - data[i - 1][channel]);
-        for (int i = 0; i < data_count; i++)
-            data[i][channel] = temp_arr[i];
+        int channel_num = channels[i];
+        temp_arr[0] = data[channel_num][0];
+        for (int j = 1; j < data_count; j++)
+        {
+            temp_arr[j] =
+                alpha * (temp_arr[j - 1] + data[channel_num][j] - data[channel_num][j - 1]);
+        }
+        for (int j = 0; j < data_count; j++)
+        {
+            data[channel_num][j] = temp_arr[j];
+        }
     }
     delete[] temp_arr;
 }
 
-void DataHandler::filter_bandpass (
-    double **data, int data_count, float min_cutoff, float max_cutoff)
+void DataHandler::filter_bandpass (double **data, int *channels, int channels_size, int data_count,
+    float min_cutoff, float max_cutoff)
 {
-    filter_lowpass (data, data_count, max_cutoff);
-    filter_highpass (data, data_count, min_cutoff);
+    filter_lowpass (data, channels, channels_size, data_count, max_cutoff);
+    filter_highpass (data, channels, channels_size, data_count, min_cutoff);
 }
 
-void DataHandler::remove_dc_offset (double **data, int data_count, float value)
+void DataHandler::remove_dc_offset (
+    double **data, int *channels, int channels_size, int data_count, float value)
 {
-    filter_highpass (data, data_count, value);
+    filter_highpass (data, channels, channels_size, data_count, value);
 }
 
-void DataHandler::preprocess_data (
-    double **data, int data_count, float min_cutoff, float max_cutoff, float dc_offset)
+void DataHandler::preprocess_data (double **data, int *channels, int channels_size, int data_count,
+    float min_cutoff, float max_cutoff, float dc_offset)
 {
-    remove_dc_offset (data, data_count, dc_offset);
-    filter_bandpass (data, data_count, min_cutoff, max_cutoff);
+    remove_dc_offset (data, channels, channels_size, data_count, dc_offset);
+    filter_bandpass (data, channels, channels_size, data_count, min_cutoff, max_cutoff);
 }

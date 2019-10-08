@@ -1,4 +1,3 @@
-#include <fstream>
 #include <iostream>
 #include <stdlib.h>
 
@@ -14,26 +13,26 @@
 using namespace std;
 
 
-void write_csv (const char *filename, double **data_buf, int data_count, int total_channels)
+void print_head (double **data_buf, int num_channels, int num_data_points)
 {
-    ofstream output_file;
-    output_file.open (filename);
-    for (int i = 0; i < data_count; i++)
+    std::cout << "Total Channels for this board: " << num_channels << std::endl;
+    int num_points = (num_data_points < 5) ? num_data_points : 5;
+    for (int i = 0; i < num_channels; i++)
     {
-        for (int j = 0; j < total_channels; j++)
+        std::cout << "Channel " << i << ": ";
+        for (int j = 0; j < num_points; j++)
         {
-            output_file << data_buf[i][j] << ",";
+            std::cout << data_buf[i][j] << ",";
         }
-        output_file << endl;
+        std::cout << std::endl;
     }
-    output_file.close ();
 }
 
 int main (int argc, char *argv[])
 {
     if (argc != 3)
     {
-        cout << "board id and port name are required" << endl;
+        cerr << "board id and port name are required" << endl;
         return -1;
     }
 
@@ -41,42 +40,34 @@ int main (int argc, char *argv[])
 
     int board_id = atoi (argv[1]);
     BoardShim *board = new BoardShim (board_id, argv[2]);
-    int length = BoardInfoGetter::get_package_length (board_id) + 1; // + 1 for timestamp
     DataHandler *dh = new DataHandler (board_id);
-    int buffer_size = 250 * 60;
-    double **data_buf = new double *[buffer_size];
-    for (int i = 0; i < buffer_size; i++)
-    {
-        data_buf[i] = new double[length];
-    }
-    int res = STATUS_OK;
-    int data_count;
+    double **data = NULL;
+    int *eeg_channels = NULL;
+    int num_rows = 0;
+    int res = 0;
 
     try
     {
-        std::cout << "preparing session" << std::endl;
         board->prepare_session ();
-        std::cout << "starting streaming" << std::endl;
-        board->start_stream (buffer_size);
+        board->start_stream ();
 
 #ifdef _WIN32
         Sleep (5000);
 #else
         sleep (5);
 #endif
-        std::cout << "stopping streaming" << std::endl;
         board->stop_stream ();
-        std::cout << "getting data count" << std::endl;
-        board->get_board_data_count (&data_count);
-        std::cout << "there are " << data_count << " packages" << std::endl;
-        std::cout << "getting data" << std::endl;
-        board->get_board_data (data_count, data_buf);
-        std::cout << "releasing session" << std::endl;
+        int data_count = 0;
+        data = board->get_board_data (&data_count);
+        std::cout << "received " << data_count << " packages" << std::endl;
         board->release_session ();
-        std::cout << "preprocessing data" << std::endl;
-        dh->preprocess_data (data_buf, data_count);
+        num_rows = BoardShim::get_num_rows (board_id);
+        print_head (data, num_rows, data_count);
 
-        write_csv ("cpp_test.csv", data_buf, data_count, length);
+        int eeg_num_channels = 0;
+        eeg_channels = BoardShim::get_eeg_channels (board_id, &eeg_num_channels);
+        dh->preprocess_data (data, eeg_channels, eeg_num_channels, data_count);
+        print_head (data, num_rows, data_count);
     }
     catch (const BrainFlowException &err)
     {
@@ -84,12 +75,15 @@ int main (int argc, char *argv[])
         res = err.get_exit_code ();
     }
 
-    std::cout << "completed!" << std::endl;
-
-    for (int i = 0; i < buffer_size; i++)
-        delete[] data_buf[i];
-    delete[] data_buf;
-
+    if (data != NULL)
+    {
+        for (int i = 0; i < num_rows; i++)
+        {
+            delete[] data[i];
+        }
+        delete[] data;
+    }
+    delete[] eeg_channels;
     delete dh;
     delete board;
 

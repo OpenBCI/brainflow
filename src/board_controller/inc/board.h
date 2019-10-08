@@ -67,5 +67,5 @@ protected:
 private:
     // reshapes data from DataBuffer format where all channels are mixed to linear buffer with
     // sorted data
-    void reshape_data (int data_count, float *buf, double *ts_buf, double *output_buf);
+    void reshape_data (int data_count, const double *buf, const double *ts_buf, double *output_buf);
 };
