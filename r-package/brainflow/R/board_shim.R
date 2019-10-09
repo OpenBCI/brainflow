@@ -56,13 +56,6 @@ get_current_board_data <- function(board_shim, num_samples) {
 }
 
 #' @param board_shim
-#' @return immediate board data
-#' @export
-get_immediate_board_data <- function(board_shim) {
-    board_shim$get_immediate_board_data()
-}
-
-#' @param board_shim
 #' @return board data count
 #' @export
 get_board_data_count <- function(board_shim) {

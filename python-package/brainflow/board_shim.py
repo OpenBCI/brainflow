@@ -463,10 +463,6 @@ class BoardShim (object):
         data_arr = data_arr[0:current_size[0] * package_length].reshape (package_length, current_size[0])
         return data_arr
 
-    def get_immediate_board_data (self):
-        """Get the latest package, doesnt remove data from ringbuffer"""
-        return self.get_current_board_data (1)
-
     def get_board_data_count (self):
         """Get num of elements in ringbuffer"""
         data_size = numpy.zeros (1).astype (numpy.int64)
