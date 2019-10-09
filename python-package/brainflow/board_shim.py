@@ -10,138 +10,24 @@ import struct
 from brainflow.exit_codes import StreamExitCodes
 
 
+class BoardIds (enum.Enum):
+    """Enum to store all supported Board Ids"""
+    SYNTHETIC = -1
+    CYTON = 0
+    GANGLION = 1
+    CYTON_DAISY = 2
+    NOVAXR = 3
+    GANGLION_WIFI = 4
+    CYTON_WIFI = 5
+    CYTON_DAISY_WIFI = 6
+
+
 class BrainFlowError (Exception):
     """This exception is raised if non-zero exit code is returned from C code"""
     def __init__ (self, message, exit_code):
         detailed_message = '%s:%d %s' % (StreamExitCodes (exit_code).name, exit_code, message)
         super (BrainFlowError, self).__init__ (detailed_message)
         self.exit_code = exit_code
-
-
-class CYTON (object):
-    board_id = 0
-    fs_hz = 250
-    num_eeg_channels = 8
-    package_length = 12
-
-
-class GANGLION (object):
-    board_id = 1
-    fs_hz = 200
-    num_eeg_channels = 4
-    package_length = 8
-
-
-class SYNTHETIC (object):
-    board_id = -1
-    fs_hz = 256
-    num_eeg_channels = 8
-    package_length = 12
-
-
-class CYTON_DAISY (object):
-    board_id = 2
-    fs_hz = 125
-    num_eeg_channels = 16
-    package_length = 20
-
-
-class NOVAXR (object):
-    board_id = 3
-    fs_hz = 2000
-    num_eeg_channels = 16
-    package_length = 25
-
-
-class GANGLION_WIFI (object):
-    board_id = 4
-    fs_hz = 1600
-    num_eeg_channels = 4
-    package_length = 8
-
-
-class CYTON_WIFI (object):
-    board_id = 5
-    fs_hz = 1000
-    num_eeg_channels = 8
-    package_length = 12
-
-
-class CYTON_DAISY_WIFI (object):
-    board_id = 6
-    fs_hz = 1000
-    num_eeg_channels = 16
-    package_length = 20
-
-
-class BoardInfoGetter (object):
-    """class to get information about boards, it's recommended to use this class instead hardcoded values"""
-
-    @classmethod
-    def get_fs_hz (cls, board_id):
-        """Get sampling rate"""
-        if board_id == CYTON.board_id:
-            return CYTON.fs_hz
-        elif board_id == GANGLION.board_id:
-            return GANGLION.fs_hz
-        elif board_id == SYNTHETIC.board_id:
-            return SYNTHETIC.fs_hz
-        elif board_id == CYTON_DAISY.board_id:
-            return CYTON_DAISY.fs_hz
-        elif board_id == NOVAXR.board_id:
-            return NOVAXR.fs_hz
-        elif board_id == CYTON_WIFI.board_id:
-            return CYTON_WIFI.fs_hz
-        elif board_id == CYTON_DAISY_WIFI.board_id:
-            return CYTON_DAISY_WIFI.fs_hz
-        elif board_id == GANGLION_WIFI.board_id:
-            return GANGLION_WIFI.fs_hz
-        else:
-            raise BrainFlowError ('unsupported board type', StreamExitCodes.UNSUPPORTED_BOARD_ERROR.value)
-
-    @classmethod
-    def get_num_eeg_channels (cls, board_id):
-        """Get number of eeg channels"""
-        if board_id == CYTON.board_id:
-            return CYTON.num_eeg_channels
-        elif board_id == GANGLION.board_id:
-            return GANGLION.num_eeg_channels
-        elif board_id == SYNTHETIC.board_id:
-            return SYNTHETIC.num_eeg_channels
-        elif board_id == CYTON_DAISY.board_id:
-            return CYTON_DAISY.num_eeg_channels
-        elif board_id == NOVAXR.board_id:
-            return NOVAXR.num_eeg_channels
-        elif board_id == CYTON_WIFI.board_id:
-            return CYTON_WIFI.num_eeg_channels
-        elif board_id == CYTON_DAISY_WIFI.board_id:
-            return CYTON_DAISY_WIFI.num_eeg_channels
-        elif board_id == GANGLION_WIFI.board_id:
-            return GANGLION_WIFI.num_eeg_channels
-        else:
-            raise BrainFlowError ('unsupported board type', StreamExitCodes.UNSUPPORTED_BOARD_ERROR.value)
-
-    @classmethod
-    def get_package_length (cls, board_id):
-        """Get package length"""
-        if board_id == CYTON.board_id:
-            return CYTON.package_length
-        elif board_id == GANGLION.board_id:
-            return GANGLION.package_length
-        elif board_id == SYNTHETIC.board_id:
-            return SYNTHETIC.package_length
-        elif board_id == CYTON_DAISY.board_id:
-            return CYTON_DAISY.package_length
-        elif board_id == NOVAXR.board_id:
-            return NOVAXR.package_length
-        elif board_id == CYTON_WIFI.board_id:
-            return CYTON_WIFI.package_length
-        elif board_id == CYTON_DAISY_WIFI.board_id:
-            return CYTON_DAISY_WIFI.package_length
-        elif board_id == GANGLION_WIFI.board_id:
-            return GANGLION_WIFI.package_length
-        else:
-            raise BrainFlowError ('unsupported board type', StreamExitCodes.UNSUPPORTED_BOARD_ERROR.value)
 
 
 class BoardControllerDLL (object):
@@ -196,7 +82,6 @@ class BoardControllerDLL (object):
         self.get_current_board_data.restype = ctypes.c_int
         self.get_current_board_data.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_float),
             ndpointer (ctypes.c_double),
             ndpointer (ctypes.c_int64),
             ctypes.c_int,
@@ -207,7 +92,6 @@ class BoardControllerDLL (object):
         self.get_board_data.restype = ctypes.c_int
         self.get_board_data.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_float),
             ndpointer (ctypes.c_double),
             ctypes.c_int,
             ctypes.c_char_p
@@ -248,6 +132,106 @@ class BoardControllerDLL (object):
             ctypes.c_char_p
         ]
 
+        self.get_sampling_rate = self.lib.get_sampling_rate
+        self.get_sampling_rate.restype = ctypes.c_int
+        self.get_sampling_rate.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_package_num_channel = self.lib.get_package_num_channel
+        self.get_package_num_channel.restype = ctypes.c_int
+        self.get_package_num_channel.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_timestamp_channel = self.lib.get_timestamp_channel
+        self.get_timestamp_channel.restype = ctypes.c_int
+        self.get_timestamp_channel.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_num_rows = self.lib.get_num_rows
+        self.get_num_rows.restype = ctypes.c_int
+        self.get_num_rows.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_eeg_channels = self.lib.get_eeg_channels
+        self.get_eeg_channels.restype = ctypes.c_int
+        self.get_eeg_channels.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_emg_channels = self.lib.get_emg_channels
+        self.get_emg_channels.restype = ctypes.c_int
+        self.get_emg_channels.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_ecg_channels = self.lib.get_ecg_channels
+        self.get_ecg_channels.restype = ctypes.c_int
+        self.get_ecg_channels.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_eog_channels = self.lib.get_eog_channels
+        self.get_eog_channels.restype = ctypes.c_int
+        self.get_eog_channels.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_ppg_channels = self.lib.get_ppg_channels
+        self.get_ppg_channels.restype = ctypes.c_int
+        self.get_ppg_channels.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_eda_channels = self.lib.get_eda_channels
+        self.get_eda_channels.restype = ctypes.c_int
+        self.get_eda_channels.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_accel_channels = self.lib.get_accel_channels
+        self.get_accel_channels.restype = ctypes.c_int
+        self.get_accel_channels.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_gyro_channels = self.lib.get_gyro_channels
+        self.get_gyro_channels.restype = ctypes.c_int
+        self.get_gyro_channels.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int64)
+        ]
+
+        self.get_other_channels = self.lib.get_other_channels
+        self.get_other_channels.restype = ctypes.c_int
+        self.get_other_channels.argtypes = [
+            ctypes.c_int,
+            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int64)
+        ]
+
 
 class BoardShim (object):
     """BoardShim class is a primary interface to all boards"""
@@ -262,9 +246,7 @@ class BoardShim (object):
         else:
             self.port_name = None
         self.board_id = board_id
-        self.package_length = BoardInfoGetter.get_package_length (board_id)
-        self.fs_hz = BoardInfoGetter.get_fs_hz (board_id)
-        self.num_eeg_channels = BoardInfoGetter.get_num_eeg_channels (board_id)
+
 
     @classmethod
     def enable_board_logger (cls):
@@ -297,6 +279,150 @@ class BoardShim (object):
         if res != StreamExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to redirect logs to a file', res)
 
+    @classmethod
+    def get_sampling_rate (cls, board_id):
+        """get sampling rate for a board"""
+        sampling_rate = numpy.zeros (1).astype (numpy.int64)
+        res = BoardControllerDLL.get_instance ().get_sampling_rate (board_id, sampling_rate)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        return sampling_rate[0]
+
+    @classmethod
+    def get_package_num_channel (cls, board_id):
+        """get package num channel for a board"""
+        package_num_channel = numpy.zeros (1).astype (numpy.int64)
+        res = BoardControllerDLL.get_instance ().get_package_num_channel (board_id, package_num_channel)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        return package_num_channel[0]
+
+    @classmethod
+    def get_num_rows (cls, board_id):
+        """get number of rows in resulting data table for a board"""
+        num_rows = numpy.zeros (1).astype (numpy.int64)
+        res = BoardControllerDLL.get_instance ().get_num_rows (board_id, num_rows)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        return num_rows[0]
+
+    @classmethod
+    def get_timestamp_channel (cls, board_id):
+        """get timestamp channel in resulting data table for a board"""
+        timestamp_channel = numpy.zeros (1).astype (numpy.int64)
+        res = BoardControllerDLL.get_instance ().get_timestamp_channel (board_id, timestamp_channel)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        return timestamp_channel[0]
+
+    @classmethod
+    def get_eeg_channels (cls, board_id):
+        """get list of eeg channels in resulting data table for a board"""
+        num_channels = numpy.zeros (1).astype (numpy.int64)
+        eeg_channels = numpy.zeros (512).astype (numpy.int64)
+
+        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, eeg_channels, num_channels)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        result = eeg_channels.tolist () [0:num_channels[0]]
+        return result
+
+    @classmethod
+    def get_emg_channels (cls, board_id):
+        """get list of emg channels in resulting data table for a board"""
+        num_channels = numpy.zeros (1).astype (numpy.int64)
+        emg_channels = numpy.zeros (512).astype (numpy.int64)
+
+        res = BoardControllerDLL.get_instance ().get_emg_channels (board_id, emg_channels, num_channels)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        result = emg_channels.tolist () [0:num_channels[0]]
+        return result
+
+    @classmethod
+    def get_ecg_channels (cls, board_id):
+        """get list of ecg channels in resulting data table for a board"""
+        num_channels = numpy.zeros (1).astype (numpy.int64)
+        ecg_channels = numpy.zeros (512).astype (numpy.int64)
+
+        res = BoardControllerDLL.get_instance ().get_ecg_channels (board_id, ecg_channels, num_channels)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        result = ecg_channels.tolist () [0:num_channels[0]]
+        return result
+
+    @classmethod
+    def get_eog_channels (cls, board_id):
+        """get list of eog channels in resulting data table for a board"""
+        num_channels = numpy.zeros (1).astype (numpy.int64)
+        eog_channels = numpy.zeros (512).astype (numpy.int64)
+
+        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, eog_channels, num_channels)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        result = eog_channels.tolist () [0:num_channels[0]]
+        return result
+
+    @classmethod
+    def get_eda_channels (cls, board_id):
+        """get list of eeg channels in resulting data table for a board"""
+        num_channels = numpy.zeros (1).astype (numpy.int64)
+        eda_channels = numpy.zeros (512).astype (numpy.int64)
+
+        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, eda_channels, num_channels)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        result = eda_channels.tolist () [0:num_channels[0]]
+        return result
+
+    @classmethod
+    def get_ppg_channels (cls, board_id):
+        """get list of ppg channels in resulting data table for a board"""
+        num_channels = numpy.zeros (1).astype (numpy.int64)
+        ppg_channels = numpy.zeros (512).astype (numpy.int64)
+
+        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, ppg_channels, num_channels)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        result = ppg_channels.tolist () [0:num_channels[0]]
+        return result
+
+    @classmethod
+    def get_accel_channels (cls, board_id):
+        """get list of accel channels in resulting data table for a board"""
+        num_channels = numpy.zeros (1).astype (numpy.int64)
+        accel_channels = numpy.zeros (512).astype (numpy.int64)
+
+        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, accel_channels, num_channels)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        result = accel_channels.tolist () [0:num_channels[0]]
+        return result
+
+    @classmethod
+    def get_gyro_channels (cls, board_id):
+        """get list of gyro channels in resulting data table for a board"""
+        num_channels = numpy.zeros (1).astype (numpy.int64)
+        gyro_channels = numpy.zeros (512).astype (numpy.int64)
+
+        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, gyro_channels, num_channels)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        result = gyro_channels.tolist () [0:num_channels[0]]
+        return result
+
+    @classmethod
+    def get_other_channels (cls, board_id):
+        """get list of other channels in resulting data table for a board"""
+        num_channels = numpy.zeros (1).astype (numpy.int64)
+        other_channels = numpy.zeros (512).astype (numpy.int64)
+
+        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, other_channels, num_channels)
+        if res != StreamExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to request info about this board', res)
+        result = other_channels.tolist () [0:num_channels[0]]
+        return result
+
     def prepare_session (self):
         """prepare streaming sesssion, init resources, you need to call it before any other BoardShim object methods"""
         res = BoardControllerDLL.get_instance ().prepare_session (self.board_id, self.port_name)
@@ -323,20 +449,19 @@ class BoardShim (object):
 
     def get_current_board_data (self, num_samples):
         """Get specified amount of data or less if there is not enough data, doesnt remove data from ringbuffer"""
-        data_arr = numpy.zeros (int(num_samples  * self.package_length)).astype (numpy.float32)
-        time_arr = numpy.zeros (num_samples).astype (numpy.float64)
+        package_length = BoardShim.get_num_rows (self.board_id)
+        data_arr = numpy.zeros (int(num_samples  * package_length)).astype (numpy.float64)
         current_size = numpy.zeros (1).astype (numpy.int64)
 
-        res = BoardControllerDLL.get_instance ().get_current_board_data (num_samples, data_arr, time_arr, current_size, self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().get_current_board_data (num_samples, data_arr, current_size, self.board_id, self.port_name)
         if res != StreamExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to get current data', res)
 
         if len (current_size) == 0:
             return None
 
-        data_arr = data_arr[0:current_size[0] * self.package_length].reshape (current_size[0], self.package_length)
-        time_arr = time_arr[0:current_size[0]]
-        return numpy.column_stack ((data_arr, time_arr))
+        data_arr = data_arr[0:current_size[0] * package_length].reshape (package_length, current_size[0])
+        return data_arr
 
     def get_immediate_board_data (self):
         """Get the latest package, doesnt remove data from ringbuffer"""
@@ -354,15 +479,14 @@ class BoardShim (object):
     def get_board_data (self):
         """Get all board data and remove them from ringbuffer"""
         data_size = self.get_board_data_count ()
-        time_arr = numpy.zeros (data_size).astype (numpy.float64)
-        data_arr = numpy.zeros (data_size * self.package_length).astype (numpy.float32)
+        package_length = BoardShim.get_num_rows (self.board_id)
+        data_arr = numpy.zeros (data_size * package_length).astype (numpy.float64)
 
-        res = BoardControllerDLL.get_instance ().get_board_data (data_size, data_arr, time_arr, self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().get_board_data (data_size, data_arr, self.board_id, self.port_name)
         if res != StreamExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to get board data', res)
 
-        data_arr = data_arr.reshape (data_size, self.package_length)
-        return numpy.column_stack ((data_arr, time_arr))
+        return data_arr.reshape (package_length, data_size)
 
     def config_board (self, config):
         """Use this method carefully and only if you understand what you are doing, do NOT use it to start or stop streaming""" 

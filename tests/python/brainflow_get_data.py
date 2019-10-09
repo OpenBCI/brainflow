@@ -1,6 +1,7 @@
 import argparse
 import time
 import brainflow
+import brainflow.board_shim
 
 
 def main ():
@@ -20,9 +21,9 @@ def main ():
     
     # disable second channel, note emulator doesnt handle such commands, run with real board to validate
     # different board have different data formats
-    if args.board == brainflow.CYTON.board_id:
+    if args.board == brainflow.board_shim.BoardIds.CYTON.value:
         board.config_board ('x2100000X')
-    elif args.board == brainflow.GANGLION.board_id:
+    elif args.board == brainflow.board_shim.BoardIds.GANGLION.value:
         board.config_board ('2')
 
     board.start_stream ()
@@ -31,9 +32,7 @@ def main ():
     board.stop_stream ()
     board.release_session ()
 
-    data_handler = brainflow.preprocess.DataHandler (args.board, numpy_data = data)
-    filtered_data = data_handler.preprocess_data (order = 3, start = 1, stop = 50)
-
+    print (data)
 
 if __name__ == "__main__":
     main ()

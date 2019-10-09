@@ -34,7 +34,8 @@ setup (
             os.path.join ('lib', 'GanglionLib.dll'),
             os.path.join ('lib', 'GanglionLibNative64.dll'),
             os.path.join ('lib', 'GanglionLibNative32.dll'),
-            os.path.join ('lib', 'libBoardController.dylib')
+            os.path.join ('lib', 'libBoardController.dylib'),
+            os.path.join ('lib', 'brainflow_boards.json')
         ]
     },
     zip_safe = True,
