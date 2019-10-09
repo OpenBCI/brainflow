@@ -63,7 +63,6 @@ int main (int argc, char *argv[])
         board->release_session ();
         num_rows = BoardShim::get_num_rows (board_id);
         print_head (data, num_rows, data_count);
-
         int eeg_num_channels = 0;
         eeg_channels = BoardShim::get_eeg_channels (board_id, &eeg_num_channels);
         dh->preprocess_data (data, eeg_channels, eeg_num_channels, data_count);

@@ -33,6 +33,7 @@ def main ():
     board.release_session ()
 
     print (data)
+    print (brainflow.board_shim.BoardShim.get_eeg_channels (0))
 
 if __name__ == "__main__":
     main ()

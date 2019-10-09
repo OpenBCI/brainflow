@@ -136,84 +136,84 @@ class BoardControllerDLL (object):
         self.get_sampling_rate.restype = ctypes.c_int
         self.get_sampling_rate.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_package_num_channel = self.lib.get_package_num_channel
         self.get_package_num_channel.restype = ctypes.c_int
         self.get_package_num_channel.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_timestamp_channel = self.lib.get_timestamp_channel
         self.get_timestamp_channel.restype = ctypes.c_int
         self.get_timestamp_channel.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_num_rows = self.lib.get_num_rows
         self.get_num_rows.restype = ctypes.c_int
         self.get_num_rows.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_eeg_channels = self.lib.get_eeg_channels
         self.get_eeg_channels.restype = ctypes.c_int
         self.get_eeg_channels.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64),
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32),
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_emg_channels = self.lib.get_emg_channels
         self.get_emg_channels.restype = ctypes.c_int
         self.get_emg_channels.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64),
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32),
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_ecg_channels = self.lib.get_ecg_channels
         self.get_ecg_channels.restype = ctypes.c_int
         self.get_ecg_channels.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64),
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32),
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_eog_channels = self.lib.get_eog_channels
         self.get_eog_channels.restype = ctypes.c_int
         self.get_eog_channels.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64),
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32),
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_ppg_channels = self.lib.get_ppg_channels
         self.get_ppg_channels.restype = ctypes.c_int
         self.get_ppg_channels.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64),
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32),
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_eda_channels = self.lib.get_eda_channels
         self.get_eda_channels.restype = ctypes.c_int
         self.get_eda_channels.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64),
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32),
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_accel_channels = self.lib.get_accel_channels
         self.get_accel_channels.restype = ctypes.c_int
         self.get_accel_channels.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64),
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32),
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_gyro_channels = self.lib.get_gyro_channels
@@ -282,7 +282,7 @@ class BoardShim (object):
     @classmethod
     def get_sampling_rate (cls, board_id):
         """get sampling rate for a board"""
-        sampling_rate = numpy.zeros (1).astype (numpy.int64)
+        sampling_rate = numpy.zeros (1).astype (numpy.int32)
         res = BoardControllerDLL.get_instance ().get_sampling_rate (board_id, sampling_rate)
         if res != StreamExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
@@ -291,7 +291,7 @@ class BoardShim (object):
     @classmethod
     def get_package_num_channel (cls, board_id):
         """get package num channel for a board"""
-        package_num_channel = numpy.zeros (1).astype (numpy.int64)
+        package_num_channel = numpy.zeros (1).astype (numpy.int32)
         res = BoardControllerDLL.get_instance ().get_package_num_channel (board_id, package_num_channel)
         if res != StreamExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
@@ -300,7 +300,7 @@ class BoardShim (object):
     @classmethod
     def get_num_rows (cls, board_id):
         """get number of rows in resulting data table for a board"""
-        num_rows = numpy.zeros (1).astype (numpy.int64)
+        num_rows = numpy.zeros (1).astype (numpy.int32)
         res = BoardControllerDLL.get_instance ().get_num_rows (board_id, num_rows)
         if res != StreamExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
@@ -309,7 +309,7 @@ class BoardShim (object):
     @classmethod
     def get_timestamp_channel (cls, board_id):
         """get timestamp channel in resulting data table for a board"""
-        timestamp_channel = numpy.zeros (1).astype (numpy.int64)
+        timestamp_channel = numpy.zeros (1).astype (numpy.int32)
         res = BoardControllerDLL.get_instance ().get_timestamp_channel (board_id, timestamp_channel)
         if res != StreamExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
@@ -318,20 +318,21 @@ class BoardShim (object):
     @classmethod
     def get_eeg_channels (cls, board_id):
         """get list of eeg channels in resulting data table for a board"""
-        num_channels = numpy.zeros (1).astype (numpy.int64)
-        eeg_channels = numpy.zeros (512).astype (numpy.int64)
+        num_channels = numpy.zeros (1).astype (numpy.int32)
+        eeg_channels = numpy.zeros (512).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, eeg_channels, num_channels)
         if res != StreamExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
+        print (eeg_channels)
         result = eeg_channels.tolist () [0:num_channels[0]]
         return result
 
     @classmethod
     def get_emg_channels (cls, board_id):
         """get list of emg channels in resulting data table for a board"""
-        num_channels = numpy.zeros (1).astype (numpy.int64)
-        emg_channels = numpy.zeros (512).astype (numpy.int64)
+        num_channels = numpy.zeros (1).astype (numpy.int32)
+        emg_channels = numpy.zeros (512).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_emg_channels (board_id, emg_channels, num_channels)
         if res != StreamExitCodes.STATUS_OK.value:
@@ -342,8 +343,8 @@ class BoardShim (object):
     @classmethod
     def get_ecg_channels (cls, board_id):
         """get list of ecg channels in resulting data table for a board"""
-        num_channels = numpy.zeros (1).astype (numpy.int64)
-        ecg_channels = numpy.zeros (512).astype (numpy.int64)
+        num_channels = numpy.zeros (1).astype (numpy.int32)
+        ecg_channels = numpy.zeros (512).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_ecg_channels (board_id, ecg_channels, num_channels)
         if res != StreamExitCodes.STATUS_OK.value:
@@ -354,8 +355,8 @@ class BoardShim (object):
     @classmethod
     def get_eog_channels (cls, board_id):
         """get list of eog channels in resulting data table for a board"""
-        num_channels = numpy.zeros (1).astype (numpy.int64)
-        eog_channels = numpy.zeros (512).astype (numpy.int64)
+        num_channels = numpy.zeros (1).astype (numpy.int32)
+        eog_channels = numpy.zeros (512).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, eog_channels, num_channels)
         if res != StreamExitCodes.STATUS_OK.value:
@@ -366,8 +367,8 @@ class BoardShim (object):
     @classmethod
     def get_eda_channels (cls, board_id):
         """get list of eeg channels in resulting data table for a board"""
-        num_channels = numpy.zeros (1).astype (numpy.int64)
-        eda_channels = numpy.zeros (512).astype (numpy.int64)
+        num_channels = numpy.zeros (1).astype (numpy.int32)
+        eda_channels = numpy.zeros (512).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, eda_channels, num_channels)
         if res != StreamExitCodes.STATUS_OK.value:
@@ -378,8 +379,8 @@ class BoardShim (object):
     @classmethod
     def get_ppg_channels (cls, board_id):
         """get list of ppg channels in resulting data table for a board"""
-        num_channels = numpy.zeros (1).astype (numpy.int64)
-        ppg_channels = numpy.zeros (512).astype (numpy.int64)
+        num_channels = numpy.zeros (1).astype (numpy.int32)
+        ppg_channels = numpy.zeros (512).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, ppg_channels, num_channels)
         if res != StreamExitCodes.STATUS_OK.value:
@@ -390,8 +391,8 @@ class BoardShim (object):
     @classmethod
     def get_accel_channels (cls, board_id):
         """get list of accel channels in resulting data table for a board"""
-        num_channels = numpy.zeros (1).astype (numpy.int64)
-        accel_channels = numpy.zeros (512).astype (numpy.int64)
+        num_channels = numpy.zeros (1).astype (numpy.int32)
+        accel_channels = numpy.zeros (512).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, accel_channels, num_channels)
         if res != StreamExitCodes.STATUS_OK.value:
@@ -402,8 +403,8 @@ class BoardShim (object):
     @classmethod
     def get_gyro_channels (cls, board_id):
         """get list of gyro channels in resulting data table for a board"""
-        num_channels = numpy.zeros (1).astype (numpy.int64)
-        gyro_channels = numpy.zeros (512).astype (numpy.int64)
+        num_channels = numpy.zeros (1).astype (numpy.int32)
+        gyro_channels = numpy.zeros (512).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, gyro_channels, num_channels)
         if res != StreamExitCodes.STATUS_OK.value:
@@ -414,8 +415,8 @@ class BoardShim (object):
     @classmethod
     def get_other_channels (cls, board_id):
         """get list of other channels in resulting data table for a board"""
-        num_channels = numpy.zeros (1).astype (numpy.int64)
-        other_channels = numpy.zeros (512).astype (numpy.int64)
+        num_channels = numpy.zeros (1).astype (numpy.int32)
+        other_channels = numpy.zeros (512).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, other_channels, num_channels)
         if res != StreamExitCodes.STATUS_OK.value:

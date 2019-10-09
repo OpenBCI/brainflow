@@ -28,6 +28,8 @@ classdef BoardShim
             obj.exit_codes (16) = 'ANOTHER_BOARD_IS_CREATED_ERROR';
             obj.exit_codes (17) = 'GENERAL_ERROR';
             obj.exit_codes (18) = 'SYNC_TIMEOUT_ERROR';
+            obj.exit_codes (19) = 'JSON_NOT_FOUND_ERROR';
+            obj.exit_codes (20) = 'NO_SUCH_DATA_IN_JSON_ERROR';
             
             if ispc
                 obj.libname = 'BoardController';
