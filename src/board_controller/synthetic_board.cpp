@@ -23,9 +23,6 @@ SyntheticBoard::SyntheticBoard (const char *json_config) : Board ((int)SYNTHETIC
     this->is_streaming = false;
     this->keep_alive = false;
     this->initialized = false;
-    // todo as soon as we move data processing to cpp we will be able to make this params
-    // configurable using json file for example, can not do it right now because we will need to
-    // read this json file in all bindigs and pass filename to BoardInfoGetter somehow
     this->num_channels = 8;
     this->amplitude = 1000;
     this->shift = 0.3f;

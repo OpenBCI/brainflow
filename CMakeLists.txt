@@ -49,6 +49,8 @@ if (MSVC)
     configure_msvc_runtime()
 endif ()
 
+SET (BOARDS_JSON "brainflow_boards.json")
+
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     MESSAGE ("64 bits compiler detected")
     SET (PLATFORM_ACH "X64")
@@ -180,6 +182,14 @@ if (UNIX)
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
     )
 endif (UNIX)
+# need to copy json file to bindings
+add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/${BOARDS_JSON}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${BOARDS_JSON}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/${BOARDS_JSON}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${BOARDS_JSON}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/${BOARDS_JSON}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${BOARDS_JSON}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/${BOARDS_JSON}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/${BOARDS_JSON}"
+    COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/${BOARDS_JSON}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${BOARDS_JSON}"
+)
 
 # install
 set (version_config "${CMAKE_HOME_DIRECTORY}/compiled/brainflowConfigVersion.cmake")
@@ -206,10 +216,19 @@ configure_package_config_file (
 install (
     FILES
     "src/board_controller/inc/board_controller.h"
+    "src/board_controller/inc/brainflow_constants.h"
+    "src/board_controller/inc/board_info_getter.h"
     "cpp-package/src/data_handler.h"
     "cpp-package/src/board_shim.h"
     "cpp-package/src/brainflow_exception.h"
     DESTINATION inc
+)
+
+# need to put this file with libraries
+install (
+    FILES
+    ${BOARDS_JSON}
+    DESTINATION lib
 )
 
 install (

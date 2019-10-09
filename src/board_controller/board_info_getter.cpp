@@ -1,441 +1,170 @@
+#include <fstream>
+#include <sstream>
 #include <string.h>
+#include <string>
+#include <vector>
 
-#include "board_controller.h"
+#include "board_info_getter.h"
+#include "brainflow_constants.h"
+#include "get_dll_dir.h"
 
-#define ARRAY_SIZE(a) (sizeof (a) / sizeof (a[0]))
+#include "json.hpp"
 
-// here its the only way to avoid ~1 thousand lines of copypasting, your function argument mush has
-// the same name as class field (even clang format doesnt like it)
+#define JSON_FILE_NAME "brainflow_boards.json"
 
-// clang-format off
-
-#define GENERATE_BODY_SINGLE_ARG(param_name) switch (board_id)                                     \
-    {                                                                                              \
-        case CYTON_BOARD:                                                                          \
-            *param_name = brainflow::detail::CYTON::param_name;                                    \
-            return STATUS_OK;                                                                      \
-        case GANGLION_BOARD:                                                                       \
-            *param_name = brainflow::detail::GANGLION::param_name;                                 \
-            return STATUS_OK;                                                                      \
-        case SYNTHETIC_BOARD:                                                                      \
-            *param_name = brainflow::detail::SYNTHETIC::param_name;                                \
-            return STATUS_OK;                                                                      \
-        case CYTON_DAISY_BOARD:                                                                    \
-            *param_name = brainflow::detail::CYTON_DAISY::param_name;                              \
-            return STATUS_OK;                                                                      \
-        case NOVAXR_BOARD:                                                                         \
-            *param_name = brainflow::detail::NOVAXR::param_name;                                   \
-            return STATUS_OK;                                                                      \
-        case CYTON_WIFI_BOARD:                                                                     \
-            *param_name = brainflow::detail::CYTON_WIFI::param_name;                               \
-            return STATUS_OK;                                                                      \
-        case CYTON_DAISY_WIFI_BOARD:                                                               \
-            *param_name = brainflow::detail::CYTON_DAISY_WIFI::param_name;                         \
-            return STATUS_OK;                                                                      \
-        case GANGLION_WIFI_BOARD:                                                                  \
-            *param_name = brainflow::detail::GANGLION_WIFI::param_name;                            \
-            return STATUS_OK;                                                                      \
-        default:                                                                                   \
-            return UNSUPPORTED_BOARD_ERROR;                                                        \
-    }
-
-#define GENERATE_BODY_ARRAY_ARG(param_name) switch (board_id)                                       \
-    {                                                                                               \
-        case CYTON_BOARD:                                                                           \
-            return brainflow::detail::prepare_board_info_data (                                     \
-                brainflow::detail::CYTON::param_name,                                               \
-                (brainflow::detail::CYTON::param_name[0] == -1) ?                                   \
-                    0 :                                                                             \
-                    ARRAY_SIZE (brainflow::detail::CYTON::param_name),                              \
-                param_name, len);                                                                   \
-        case GANGLION_BOARD:                                                                        \
-            return brainflow::detail::prepare_board_info_data (                                     \
-                brainflow::detail::GANGLION::param_name,                                            \
-                (brainflow::detail::GANGLION::param_name[0] == -1) ?                                \
-                    0 :                                                                             \
-                    ARRAY_SIZE (brainflow::detail::GANGLION::param_name),                           \
-                param_name, len);                                                                   \
-        case SYNTHETIC_BOARD:                                                                       \
-            return brainflow::detail::prepare_board_info_data (                                     \
-                brainflow::detail::SYNTHETIC::param_name,                                           \
-                (brainflow::detail::SYNTHETIC::param_name[0] == -1) ?                               \
-                    0 :                                                                             \
-                    ARRAY_SIZE (brainflow::detail::SYNTHETIC::param_name),                          \
-                param_name, len);                                                                   \
-        case CYTON_DAISY_BOARD:                                                                     \
-            return brainflow::detail::prepare_board_info_data (                                     \
-                brainflow::detail::CYTON_DAISY::param_name,                                         \
-                (brainflow::detail::CYTON_DAISY::param_name[0] == -1) ?                             \
-                    0 :                                                                             \
-                    ARRAY_SIZE (brainflow::detail::CYTON_DAISY::param_name),                        \
-                param_name, len);                                                                   \
-        case NOVAXR_BOARD:                                                                          \
-            return brainflow::detail::prepare_board_info_data (                                     \
-                brainflow::detail::NOVAXR::param_name,                                              \
-                (brainflow::detail::NOVAXR::param_name[0] == -1) ?                                  \
-                    0 :                                                                             \
-                    ARRAY_SIZE (brainflow::detail::NOVAXR::param_name),                             \
-                param_name, len);                                                                   \
-        case CYTON_WIFI_BOARD:                                                                      \
-            return brainflow::detail::prepare_board_info_data (                                     \
-                brainflow::detail::CYTON_WIFI::param_name,                                          \
-                (brainflow::detail::CYTON_WIFI::param_name[0] == -1) ?                              \
-                    0 :                                                                             \
-                    ARRAY_SIZE (brainflow::detail::CYTON_WIFI::param_name),                         \
-                param_name, len);                                                                   \
-        case CYTON_DAISY_WIFI_BOARD:                                                                \
-            return brainflow::detail::prepare_board_info_data (                                     \
-                brainflow::detail::CYTON_DAISY_WIFI::param_name,                                    \
-                (brainflow::detail::CYTON_DAISY_WIFI::param_name[0] == -1) ?                        \
-                    0 :                                                                             \
-                    ARRAY_SIZE (brainflow::detail::CYTON_DAISY_WIFI::param_name),                   \
-                param_name, len);                                                                   \
-        case GANGLION_WIFI_BOARD:                                                                   \
-            return brainflow::detail::prepare_board_info_data (                                     \
-                brainflow::detail::GANGLION_WIFI::param_name,                                       \
-                (brainflow::detail::GANGLION_WIFI::param_name[0] == -1) ?                           \
-                    0 :                                                                             \
-                    ARRAY_SIZE (brainflow::detail::GANGLION_WIFI::param_name),                      \
-                param_name, len);                                                                   \
-        default:                                                                                    \
-            return UNSUPPORTED_BOARD_ERROR;                                                         \
-    }
-// clang-format on
-
-namespace brainflow
-{
-    // just to ensure that novody will use it directly from C++ binding and keep global namespace
-    // cleaner
-    namespace detail
-    {
-        // it looks bad by we need this information to be available staticly so we can not move it
-        // to Board class, also its better than hardcoding values direcltly in get_* methods and
-        // allows to use dirty hack with defines
-        class CYTON
-        {
-        public:
-            static const int sampling_rate = 250;
-            static const int package_num_channel = 0;
-            static const int num_rows = 13;
-            static const int timestamp_channel = 12;
-            static const int eeg_channels[8];
-            static const int emg_channels[8];
-            static const int eog_channels[8];
-            static const int ecg_channels[8];
-            static const int ppg_channels[];
-            static const int eda_channels[];
-            static const int accel_channels[];
-            static const int gyro_channels[];
-            static const int other_channels[];
-        };
-
-        // convention - for majority of boards we can not split emg\eeg\... return the same values
-        // for all of them, use -1 to mark that there is no such channels
-        const int CYTON::eeg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON::emg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON::ecg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON::eog_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON::eda_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON::ppg_channels[] = {-1};
-        const int CYTON::gyro_channels[] = {-1};
-        const int CYTON::accel_channels[] = {9, 10, 11};
-        const int CYTON::other_channels[] = {-1};
+using json = nlohmann::json;
 
 
-        class GANGLION
-        {
-        public:
-            static const int sampling_rate = 200;
-            static const int package_num_channel = 0;
-            static const int num_rows = 9;
-            static const int timestamp_channel = 8;
-            static const int eeg_channels[];
-            static const int emg_channels[];
-            static const int eog_channels[];
-            static const int ecg_channels[];
-            static const int ppg_channels[];
-            static const int eda_channels[];
-            static const int accel_channels[];
-            static const int gyro_channels[];
-            static const int other_channels[];
-        };
-
-        const int GANGLION::eeg_channels[] = {1, 2, 3, 4};
-        const int GANGLION::emg_channels[] = {1, 2, 3, 4};
-        const int GANGLION::ecg_channels[] = {1, 2, 3, 4};
-        const int GANGLION::eog_channels[] = {1, 2, 3, 4};
-        const int GANGLION::eda_channels[] = {1, 2, 3, 4};
-        const int GANGLION::ppg_channels[] = {-1};
-        const int GANGLION::gyro_channels[] = {-1};
-        const int GANGLION::accel_channels[] = {5, 6, 7};
-        const int GANGLION::other_channels[] = {-1};
-
-
-        class CYTON_DAISY
-        {
-        public:
-            static const int sampling_rate = 125;
-            static const int package_num_channel = 0;
-            static const int num_rows = 21;
-            static const int timestamp_channel = 20;
-            static const int eeg_channels[];
-            static const int emg_channels[];
-            static const int eog_channels[];
-            static const int ecg_channels[];
-            static const int ppg_channels[];
-            static const int eda_channels[];
-            static const int accel_channels[];
-            static const int gyro_channels[];
-            static const int other_channels[];
-        };
-
-        const int CYTON_DAISY::eeg_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY::emg_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY::ecg_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY::eog_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY::eda_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY::ppg_channels[] = {-1};
-        const int CYTON_DAISY::gyro_channels[] = {-1};
-        const int CYTON_DAISY::accel_channels[] = {17, 18, 19};
-        const int CYTON_DAISY::other_channels[] = {-1};
-
-
-        class SYNTHETIC
-        {
-        public:
-            static const int sampling_rate = 256;
-            static const int package_num_channel = 0;
-            static const int num_rows = 13;
-            static const int timestamp_channel = 12;
-            static const int eeg_channels[];
-            static const int emg_channels[];
-            static const int eog_channels[];
-            static const int ecg_channels[];
-            static const int ppg_channels[];
-            static const int eda_channels[];
-            static const int accel_channels[];
-            static const int gyro_channels[];
-            static const int other_channels[];
-        };
-
-        const int SYNTHETIC::eeg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int SYNTHETIC::emg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int SYNTHETIC::ecg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int SYNTHETIC::eda_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int SYNTHETIC::eog_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int SYNTHETIC::ppg_channels[] = {-1};
-        const int SYNTHETIC::gyro_channels[] = {-1};
-        const int SYNTHETIC::accel_channels[] = {9, 10, 11};
-        const int SYNTHETIC::other_channels[] = {-1};
-
-
-        class NOVAXR
-        {
-        public:
-            static const int sampling_rate = 2000;
-            static const int package_num_channel = 0;
-            static const int num_rows = 26;
-            static const int timestamp_channel = 25;
-            static const int eeg_channels[];
-            static const int emg_channels[];
-            static const int eog_channels[];
-            static const int ecg_channels[];
-            static const int ppg_channels[];
-            static const int eda_channels[];
-            static const int accel_channels[];
-            static const int gyro_channels[];
-            static const int other_channels[];
-        };
-
-        const int NOVAXR::eeg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-        const int NOVAXR::emg_channels[] = {11, 12, 13, 14, 15, 16};
-        const int NOVAXR::ecg_channels[] = {-1};
-        const int NOVAXR::eog_channels[] = {-1};
-        const int NOVAXR::eda_channels[] = {18};
-        const int NOVAXR::ppg_channels[] = {17};
-        const int NOVAXR::accel_channels[] = {19, 20, 21};
-        const int NOVAXR::gyro_channels[] = {22, 23, 24};
-        const int NOVAXR::other_channels[] = {-1};
-
-
-        class CYTON_WIFI
-        {
-        public:
-            static const int sampling_rate = 1000;
-            static const int package_num_channel = 0;
-            static const int num_rows = 13;
-            static const int timestamp_channel = 12;
-            static const int eeg_channels[];
-            static const int emg_channels[];
-            static const int eog_channels[];
-            static const int ecg_channels[];
-            static const int ppg_channels[];
-            static const int eda_channels[];
-            static const int accel_channels[];
-            static const int gyro_channels[];
-            static const int other_channels[];
-        };
-
-        const int CYTON_WIFI::eeg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON_WIFI::emg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON_WIFI::ecg_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON_WIFI::eda_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON_WIFI::eog_channels[] = {1, 2, 3, 4, 5, 6, 7, 8};
-        const int CYTON_WIFI::ppg_channels[] = {-1};
-        const int CYTON_WIFI::accel_channels[] = {9, 10, 11};
-        const int CYTON_WIFI::gyro_channels[] = {-1};
-        const int CYTON_WIFI::other_channels[] = {-1};
-
-
-        class CYTON_DAISY_WIFI
-        {
-        public:
-            static const int sampling_rate = 1000;
-            static const int package_num_channel = 0;
-            static const int num_rows = 21;
-            static const int timestamp_channel = 20;
-            static const int eeg_channels[];
-            static const int emg_channels[];
-            static const int eog_channels[];
-            static const int ecg_channels[];
-            static const int ppg_channels[];
-            static const int eda_channels[];
-            static const int accel_channels[];
-            static const int gyro_channels[];
-            static const int other_channels[];
-        };
-
-        const int CYTON_DAISY_WIFI::eeg_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY_WIFI::emg_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY_WIFI::ecg_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY_WIFI::eog_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY_WIFI::eda_channels[] = {
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-        const int CYTON_DAISY_WIFI::ppg_channels[] = {-1};
-        const int CYTON_DAISY_WIFI::accel_channels[] = {17, 18, 19};
-        const int CYTON_DAISY_WIFI::gyro_channels[] = {-1};
-        const int CYTON_DAISY_WIFI::other_channels[] = {-1};
-
-
-        class GANGLION_WIFI
-        {
-        public:
-            static const int sampling_rate = 1600;
-            static const int package_num_channel = 0;
-            static const int num_rows = 9;
-            static const int timestamp_channel = 8;
-            static const int eeg_channels[];
-            static const int emg_channels[];
-            static const int eog_channels[];
-            static const int ecg_channels[];
-            static const int ppg_channels[];
-            static const int eda_channels[];
-            static const int accel_channels[];
-            static const int gyro_channels[];
-            static const int other_channels[];
-        };
-
-        const int GANGLION_WIFI::eeg_channels[] = {1, 2, 3, 4};
-        const int GANGLION_WIFI::emg_channels[] = {1, 2, 3, 4};
-        const int GANGLION_WIFI::ecg_channels[] = {1, 2, 3, 4};
-        const int GANGLION_WIFI::eda_channels[] = {1, 2, 3, 4};
-        const int GANGLION_WIFI::eog_channels[] = {1, 2, 3, 4};
-        const int GANGLION_WIFI::ppg_channels[] = {-1};
-        const int GANGLION_WIFI::accel_channels[] = {5, 6, 7};
-        const int GANGLION_WIFI::gyro_channels[] = {-1};
-        const int GANGLION_WIFI::other_channels[] = {-1};
-
-
-        // helper function to pass info to bindings
-        int prepare_board_info_data (
-            const int *initial_array, int intial_array_size, int *target_array, int *len)
-        {
-            if (initial_array[0] != -1)
-            {
-                memcpy (target_array, initial_array, sizeof (int) * intial_array_size);
-            }
-            *len = intial_array_size;
-            return STATUS_OK;
-        }
-
-    } // namespace detail
-} // namespace brainflow
+inline std::string get_json_config ();
+inline bool check_file_exists (const std::string &name);
+inline std::string int_to_string (int val);
+inline int get_single_value (int board_id, const char *param_name, int *value);
+inline int get_array_value (int board_id, const char *param_name, int *output_array, int *len);
 
 
 int get_sampling_rate (int board_id, int *sampling_rate)
 {
-    GENERATE_BODY_SINGLE_ARG (sampling_rate);
+    return get_single_value (board_id, "sampling_rate", sampling_rate);
 }
 
 int get_package_num_channel (int board_id, int *package_num_channel)
 {
-    GENERATE_BODY_SINGLE_ARG (package_num_channel);
+    return get_single_value (board_id, "package_num_channel", package_num_channel);
 }
 
 int get_num_rows (int board_id, int *num_rows)
 {
-    GENERATE_BODY_SINGLE_ARG (num_rows);
+    return get_single_value (board_id, "num_rows", num_rows);
 }
 
 int get_timestamp_channel (int board_id, int *timestamp_channel)
 {
-    GENERATE_BODY_SINGLE_ARG (timestamp_channel);
+    return get_single_value (board_id, "timestamp_channel", timestamp_channel);
 }
 
 int get_eeg_channels (int board_id, int *eeg_channels, int *len)
 {
-    GENERATE_BODY_ARRAY_ARG (eeg_channels);
+    return get_array_value (board_id, "eeg_channels", eeg_channels, len);
 }
 
 int get_emg_channels (int board_id, int *emg_channels, int *len)
 {
-    GENERATE_BODY_ARRAY_ARG (emg_channels);
+    return get_array_value (board_id, "emg_channels", emg_channels, len);
 }
 
 int get_ecg_channels (int board_id, int *ecg_channels, int *len)
 {
-    GENERATE_BODY_ARRAY_ARG (ecg_channels);
+    return get_array_value (board_id, "ecg_channels", ecg_channels, len);
 }
 
 int get_eog_channels (int board_id, int *eog_channels, int *len)
 {
-    GENERATE_BODY_ARRAY_ARG (eog_channels);
+    return get_array_value (board_id, "eog_channels", eog_channels, len);
 }
 
 int get_eda_channels (int board_id, int *eda_channels, int *len)
 {
-    GENERATE_BODY_ARRAY_ARG (eda_channels);
+    return get_array_value (board_id, "eda_channels", eda_channels, len);
 }
 
 int get_ppg_channels (int board_id, int *ppg_channels, int *len)
 {
-    GENERATE_BODY_ARRAY_ARG (ppg_channels);
+    return get_array_value (board_id, "ppg_channels", ppg_channels, len);
 }
 
 int get_accel_channels (int board_id, int *accel_channels, int *len)
 {
-    GENERATE_BODY_ARRAY_ARG (accel_channels);
+    return get_array_value (board_id, "accel_channels", accel_channels, len);
 }
 
 int get_gyro_channels (int board_id, int *gyro_channels, int *len)
 {
-    GENERATE_BODY_ARRAY_ARG (gyro_channels);
+    return get_array_value (board_id, "gyro_channels", gyro_channels, len);
 }
 
 int get_other_channels (int board_id, int *other_channels, int *len)
 {
-    GENERATE_BODY_ARRAY_ARG (other_channels);
+    return get_array_value (board_id, "other_channels", other_channels, len);
 }
 
-#undef ARRAY_SIZE
-#undef GENERATE_BODY_ARRAY_ARG
-#undef GENERATE_BODY_SINGLE_ARG
+inline std::string get_json_config ()
+{
+    char lib_dir[1024];
+    bool res = get_dll_path (lib_dir);
+    std::string json_path = "";
+    if (res)
+    {
+        json_path = std::string (lib_dir) + JSON_FILE_NAME;
+    }
+    else
+    {
+        json_path = JSON_FILE_NAME;
+    }
+    return json_path;
+}
+
+inline bool check_file_exists (const std::string &name)
+{
+    if (FILE *file = fopen (name.c_str (), "r"))
+    {
+        fclose (file);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+inline std::string int_to_string (int val)
+{
+    std::ostringstream ss;
+    ss << val;
+    return ss.str ();
+}
+
+inline int get_single_value (int board_id, const char *param_name, int *value)
+{
+    std::string json_file = get_json_config ();
+    if (!check_file_exists (json_file))
+    {
+        return JSON_NOT_FOUND_ERROR;
+    }
+    try
+    {
+        std::ifstream json_stream (json_file);
+        json config = json::parse (json_stream);
+        int val = (int)config["boards"][int_to_string (board_id)][param_name];
+        *value = val;
+        return STATUS_OK;
+    }
+    catch (json::exception &e)
+    {
+        return NO_SUCH_DATA_IN_JSON_ERROR;
+    }
+}
+
+inline int get_array_value (int board_id, const char *param_name, int *output_array, int *len)
+{
+    std::string json_file = get_json_config ();
+    if (!check_file_exists (json_file))
+    {
+        return JSON_NOT_FOUND_ERROR;
+    }
+    try
+    {
+        std::ifstream json_stream (json_file);
+        json config = json::parse (json_stream);
+        std::vector<int> values = config["boards"][int_to_string (board_id)][param_name];
+        if (!values.empty ())
+        {
+            memcpy (output_array, &values[0], sizeof (int) * values.size ());
+        }
+        *len = values.size ();
+        return STATUS_OK;
+    }
+    catch (json::exception &e)
+    {
+        return NO_SUCH_DATA_IN_JSON_ERROR;
+    }
+}

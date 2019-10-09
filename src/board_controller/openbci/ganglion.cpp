@@ -37,16 +37,24 @@ Ganglion::Ganglion (const char *port_name) : Board ((int)GANGLION_BOARD)
     if (sizeof (void *) == 8)
     {
         if (res)
+        {
             ganglioblib_path = std::string (ganglionlib_dir) + "GanglionLibNative64.dll";
+        }
         else
+        {
             ganglioblib_path = "GanglionLibNative64.dll";
+        }
     }
     else
     {
         if (res)
+        {
             ganglioblib_path = std::string (ganglionlib_dir) + "GanglionLibNative32.dll";
+        }
         else
+        {
             ganglioblib_path = "GanglionLibNative32.dll";
+        }
     }
     safe_logger (spdlog::level::debug, "use dll: {}", ganglioblib_path.c_str ());
     dll_loader = new DLLLoader (ganglioblib_path.c_str ());
