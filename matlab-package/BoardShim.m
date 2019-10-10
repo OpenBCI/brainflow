@@ -1,7 +1,6 @@
 classdef BoardShim
     properties
         libname
-        num_channels
         board_id
         port_name
         exit_codes
@@ -34,40 +33,23 @@ classdef BoardShim
             if ispc
                 obj.libname = 'BoardController';
                 if not (libisloaded ('BoardController'))
-                    loadlibrary ('./lib/BoardController.dll', './inc/board_controller.h');
+                    loadlibrary ('./lib/BoardController.dll', './inc/board_controller.h', 'addheader', './inc/board_info_getter.h');
                 end
             elseif ismac
                 obj.libname = 'libBoardController';
                 if not (libisloaded ('libBoardController'))
-                    loadlibrary ('./lib/libBoardController.dylib', './inc/board_controller.h');
+                    loadlibrary ('./lib/libBoardController.dylib', './inc/board_controller.h', 'addheader', './inc/board_info_getter.h');
                 end
             elseif isunix
                 obj.libname = 'libBoardController';
                 if not (libisloaded ('libBoardController'))
-                    loadlibrary ('./lib/libBoardController.so', './inc/board_controller.h');
+                    loadlibrary ('./lib/libBoardController.so', './inc/board_controller.h', 'addheader', './inc/board_info_getter.h');
                 end
             else
                 error ('OS not supported!')
             end
             obj.port_name = port_name;
             obj.board_id = int32 (board_id);
-            if board_id == int32 (BoardIDs.CYTON_BOARD)
-                obj.num_channels = 12;
-            elseif board_id == int32 (BoardIDs.GANGLION_BOARD)
-                obj.num_channels = 8;
-            elseif board_id == int32 (BoardIDs.SYNTHETIC_BOARD)
-                obj.num_channels = 12;
-            elseif board_id == int32 (BoardIDs.CYTON_DAISY_BOARD)
-                obj.num_channels = 20;
-            elseif board_id == int32 (BoardIDs.NOVAXR_BOARD)
-                obj.num_channels = 25;
-            elseif board_id == int32 (BoardIDs.GANGLION_WIFI)
-                obj.num_channels = 8;
-            elseif board_id == int32 (BoardIDs.CYTON_WIFI)
-                obj.num_channels = 12;
-            elseif board_id == int32 (BoardIDs.CYTON_DAISY_WIFI)
-                obj.num_channels = 20;
-            end
         end
 
         function check_ec (obj, ec, task_name)
@@ -122,15 +104,47 @@ classdef BoardShim
         end
 
         function enable_board_logger (obj)
-            set_log_level (2)
+            obj.set_log_level (2)
         end
 
         function enable_dev_board_logger (obj)
-            set_log_level (0)
+            obj.set_log_level (0)
         end
 
         function disable_board_logger (obj)
-            set_log_level (6)
+            obj.set_log_level (6)
+        end
+
+        function sampling_rate = get_sampling_rate (obj)
+            task_name = 'get_sampling_rate';
+            res = libpointer ('int32Ptr', 0);
+            exit_code = calllib (obj.libname, task_name, obj.board_id, res);
+            obj.check_ec (exit_code, task_name);
+            sampling_rate = res.Value;
+        end
+
+        function package_num_channel = get_package_num_channel (obj)
+            task_name = 'get_package_num_channel';
+            res = libpointer ('int32Ptr', 0);
+            exit_code = calllib (obj.libname, task_name, obj.board_id, res);
+            obj.check_ec (exit_code, task_name);
+            package_num_channel = res.Value;
+        end
+
+        function timestamp_channel = get_timestamp_channel (obj)
+            task_name = 'get_timestamp_channel';
+            res = libpointer ('int32Ptr', 0);
+            exit_code = calllib (obj.libname, task_name, obj.board_id, res);
+            obj.check_ec (exit_code, task_name);
+            timestamp_channel = res.Value;
+        end
+
+        function num_rows = get_num_rows (obj)
+            task_name = 'get_num_rows';
+            res = libpointer ('int32Ptr', 0);
+            exit_code = calllib (obj.libname, task_name, obj.board_id, res);
+            obj.check_ec (exit_code, task_name);
+            num_rows = res.Value;
         end
 
         function num_data_point = get_board_data_count (obj)
@@ -141,26 +155,105 @@ classdef BoardShim
             num_data_point = data_count.value;
         end
 
-        function [data_buf, ts_buf] = get_board_data (obj)
-            task_name = 'get_board_data';
-            data_count = obj.get_board_data_count ();
-            data = libpointer ('singlePtr', zeros (1, data_count * obj.num_channels));
-            ts = libpointer ('doublePtr', zeros (1, data_count));
-            exit_code = calllib (obj.libname, task_name, data_count, data, ts, obj.board_id, obj.port_name);
+        function eeg_channels = get_eeg_channels (obj)
+            task_name = 'get_emg_channels';
+            len = libpointer ('int32Ptr', 0);
+            channels = libpointer ('int32Ptr', zeros (1, 256));
+            exit_code = calllib (obj.libname, task_name, obj.board_id, channels, len);
             obj.check_ec (exit_code, task_name);
-            data_buf = transpose (reshape (data.Value, [obj.num_channels, data_count]));
-            ts_buf = ts.Value;
+            eeg_channels = channels.Value (1, 1:len.Value);
         end
 
-        function [data_buf, ts_buf] = get_current_board_data (obj, num_samples)
+        function emg_channels = get_emg_channels (obj)
+            task_name = 'get_emg_channels';
+            len = libpointer ('int32Ptr', 0);
+            channels = libpointer ('int32Ptr', zeros (1, 256));
+            exit_code = calllib (obj.libname, task_name, obj.board_id, channels, len);
+            obj.check_ec (exit_code, task_name);
+            emg_channels = channels.Value (1, 1:len.Value);
+        end
+
+        function ecg_channels = get_ecg_channels (obj)
+            task_name = 'get_ecg_channels';
+            len = libpointer ('int32Ptr', 0);
+            channels = libpointer ('int32Ptr', zeros (1, 256));
+            exit_code = calllib (obj.libname, task_name, obj.board_id, channels, len);
+            obj.check_ec (exit_code, task_name);
+            ecg_channels = channels.Value (1, 1:len.Value);
+        end
+
+        function eog_channels = get_eog_channels (obj)
+            task_name = 'get_eog_channels';
+            len = libpointer ('int32Ptr', 0);
+            channels = libpointer ('int32Ptr', zeros (1, 256));
+            exit_code = calllib (obj.libname, task_name, obj.board_id, channels, len);
+            obj.check_ec (exit_code, task_name);
+            eog_channels = channels.Value (1, 1:len.Value);
+        end
+
+        function eda_channels = get_eda_channels (obj)
+            task_name = 'get_eda_channels';
+            len = libpointer ('int32Ptr', 0);
+            channels = libpointer ('int32Ptr', zeros (1, 256));
+            exit_code = calllib (obj.libname, task_name, obj.board_id, channels, len);
+            obj.check_ec (exit_code, task_name);
+            eda_channels = channels.Value (1, 1:len.Value);
+        end
+
+        function ppg_channels = get_ppg_channels (obj)
+            task_name = 'get_eda_channels';
+            len = libpointer ('int32Ptr', 0);
+            channels = libpointer ('int32Ptr', zeros (1, 256));
+            exit_code = calllib (obj.libname, task_name, obj.board_id, channels, len);
+            obj.check_ec (exit_code, task_name);
+            ppg_channels = channels.Value (1, 1:len.Value);
+        end
+
+        function accel_channels = get_accel_channels (obj)
+            task_name = 'get_eda_channels';
+            len = libpointer ('int32Ptr', 0);
+            channels = libpointer ('int32Ptr', zeros (1, 256));
+            exit_code = calllib (obj.libname, task_name, obj.board_id, channels, len);
+            obj.check_ec (exit_code, task_name);
+            accel_channels = channels.Value (1, 1:len.Value);
+        end
+
+        function gyro_channels = get_gyro_channels (obj)
+            task_name = 'get_eda_channels';
+            len = libpointer ('int32Ptr', 0);
+            channels = libpointer ('int32Ptr', zeros (1, 256));
+            exit_code = calllib (obj.libname, task_name, obj.board_id, channels, len);
+            obj.check_ec (exit_code, task_name);
+            gyro_channels = channels.Value (1, 1:len.Value);
+        end
+
+        function other_channels = get_other_channels (obj)
+            task_name = 'get_eda_channels';
+            len = libpointer ('int32Ptr', 0);
+            channels = libpointer ('int32Ptr', zeros (1, 256));
+            exit_code = calllib (obj.libname, task_name, obj.board_id, channels, len);
+            obj.check_ec (exit_code, task_name);
+            other_channels = channels.Value (1, 1:len.Value);
+        end
+
+        function data_buf = get_board_data (obj)
+            task_name = 'get_board_data';
+            data_count = obj.get_board_data_count ();
+            num_rows = obj.get_num_rows();
+            data = libpointer ('doublePtr', zeros (1, data_count * num_rows));
+            exit_code = calllib (obj.libname, task_name, data_count, data, obj.board_id, obj.port_name);
+            obj.check_ec (exit_code, task_name);
+            data_buf = transpose(reshape (data.Value, [data_count, num_rows]));
+        end
+
+        function data_buf = get_current_board_data (obj, num_samples)
             task_name = 'get_current_board_data';
             data_count = libpointer ('int32Ptr', 0);
-            data = libpointer ('singlePtr', zeros (1, num_samples * obj.num_channels));
-            ts = libpointer ('doublePtr', zeros (1, num_samples));
-            exit_code = calllib (obj.libname, task_name, num_samples, data, ts, data_count, obj.board_id, obj.port_name);
+            num_rows = obj.get_num_rows();
+            data = libpointer ('doublePtr', zeros (1, num_samples * num_rows));
+            exit_code = calllib (obj.libname, task_name, num_samples, data, data_count, obj.board_id, obj.port_name);
             obj.check_ec (exit_code, task_name);
-            data_buf = transpose (reshape (data.Value (1,1:data_count.Value * obj.num_channels), [obj.num_channels, data_count.Value]));
-            ts_buf = ts.Value (1,1:data_count.Value);
+            data_buf = transpose (reshape (data.Value (1,1:data_count.Value * num_rows), [data_count.Value, num_rows]));
         end
     end
 end
