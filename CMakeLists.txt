@@ -55,13 +55,17 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     MESSAGE ("64 bits compiler detected")
     SET (PLATFORM_ACH "X64")
     SET (BOARD_CONTROLLER_NAME "BoardController")
-    SET (GET_DATA_NAME "GetData")
+    SET (DATA_HANDLER_NAME "DataHandler")
+    SET (BRAINFLOW_CPP_BINDING_NAME "Brainflow")
     if(APPLE)
-        SET (COMPILED_FILE_NAME "libBoardController.dylib")
+        SET (BOARD_CONTROLLER_COMPILED_NAME "libBoardController.dylib")
+        SET (DATA_HANDLER_COMPILED_NAME "libDataHandler.dylib")
     elseif (UNIX)
-        SET (COMPILED_FILE_NAME "libBoardController.so")
+        SET (BOARD_CONTROLLER_COMPILED_NAME "libBoardController.so")
+        SET (DATA_HANDLER_COMPILED_NAME "libDataHandler.so")
     else ()
-        SET (COMPILED_FILE_NAME "BoardController.dll")
+        SET (BOARD_CONTROLLER_COMPILED_NAME "BoardController.dll")
+        SET (DATA_HANDLER_COMPILED_NAME "DataHandler.dll")
         SET (GANGLION_LIB_NATIVE_PATH "${CMAKE_HOME_DIRECTORY}/GanglionBLEAPI/x64/Release/GanglionLibNative64.dll")
         SET (GANGLION_LIB_PATH "${CMAKE_HOME_DIRECTORY}/GanglionBLEAPI/x64/Release/GanglionLib.dll")
         SET (GANGLION_LIB_NATIVE_NAME "GanglionLibNative64.dll")
@@ -71,13 +75,14 @@ else (CMAKE_SIZEOF_VOID_P EQUAL 8)
     MESSAGE ("32 bits compiler detected")
     SET (PLATFORM_ACH "X86")
     SET (BOARD_CONTROLLER_NAME "BoardController32")
-    SET (GET_DATA_NAME "GetData32")
+    SET (DATA_HANDLER_NAME "DataHandler32")
+    SET (BRAINFLOW_CPP_BINDING_NAME "Brainflow32")
     if (APPLE)
-        SET (COMPILED_FILE_NAME "libBoardController32.dylib")
+        SET (BOARD_CONTROLLER_COMPILED_NAME "libBoardController32.dylib")
     elseif (UNIX)
-        SET (COMPILED_FILE_NAME "libBoardController32.so")
+        SET (BOARD_CONTROLLER_COMPILED_NAME "libBoardController32.so")
     else ()
-        SET (COMPILED_FILE_NAME "BoardController32.dll")
+        SET (BOARD_CONTROLLER_COMPILED_NAME "BoardController32.dll")
         SET (GANGLION_LIB_NATIVE_PATH "${CMAKE_HOME_DIRECTORY}/GanglionBLEAPI/Win32/Release/GanglionLibNative32.dll")
         SET (GANGLION_LIB_PATH "${CMAKE_HOME_DIRECTORY}/GanglionBLEAPI/Win32/Release/GanglionLib.dll")
         SET (GANGLION_LIB_NATIVE_NAME "GanglionLibNative32.dll")
@@ -85,8 +90,9 @@ else (CMAKE_SIZEOF_VOID_P EQUAL 8)
     endif (APPLE)
 endif (CMAKE_SIZEOF_VOID_P EQUAL 8)
 
-# boardcontroller
-set (LIBRARY_SRC
+add_subdirectory (third_party/DSPFilters)
+
+set (BOARD_CONTROLLER_SRC
     "src/utils/timestamp.cpp"
     "src/utils/data_buffer.cpp"
     "src/utils/serial.cpp"
@@ -107,18 +113,35 @@ set (LIBRARY_SRC
     "src/board_controller/openbci/novaxr.cpp"
 )
 
+set (DATA_HANDLER_SRC
+    "src/data_handler/data_handler.cpp"
+)
+
 add_library (
     ${BOARD_CONTROLLER_NAME} SHARED
-    ${LIBRARY_SRC}
+    ${BOARD_CONTROLLER_SRC}
+)
+
+add_library (
+    ${DATA_HANDLER_NAME} SHARED
+    ${DATA_HANDLER_SRC}
 )
 
 target_include_directories (
     ${BOARD_CONTROLLER_NAME} PRIVATE
-    inc
+    third_party/inc
     src/utils/
     src/board_controller/inc
     src/board_controller/openbci/inc
     GanglionBLEAPI/Interface
+)
+
+target_include_directories (
+    ${DATA_HANDLER_NAME} PRIVATE
+    third_party/inc
+    src/utils/
+    src/board_controller/inc
+    src/data_handler/inc
 )
 
 set_target_properties (${BOARD_CONTROLLER_NAME}
@@ -128,41 +151,51 @@ set_target_properties (${BOARD_CONTROLLER_NAME}
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/compiled"
 )
 
+set_target_properties (${DATA_HANDLER_NAME}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/compiled"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/compiled"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/compiled"
+)
+
 if (UNIX)
-    target_link_libraries (${BOARD_CONTROLLER_NAME} -lpthread -ldl)
+    target_link_libraries (${BOARD_CONTROLLER_NAME} pthread dl)
+    target_link_libraries (${DATA_HANDLER_NAME} DSPFilters pthread dl)
 endif (UNIX)
 
 # getdata
 # it's impossible to install target from subfolder, so we have to move GetData target to top level or split installation
 # I prefer to move GetData from subfolder to top level CMakeLists.txt
 add_library (
-    ${GET_DATA_NAME} STATIC
+    ${BRAINFLOW_CPP_BINDING_NAME} STATIC
     cpp-package/src/board_shim.cpp
-    cpp-package/src/data_handler.cpp
+    cpp-package/src/data_filter.cpp
 )
 
 target_include_directories (
-    ${GET_DATA_NAME} PRIVATE
+    ${BRAINFLOW_CPP_BINDING_NAME} PRIVATE
     src/board_controller/inc
+    src/data_handler/inc
 )
 
 if (UNIX)
-    target_link_libraries (${GET_DATA_NAME} pthread ${BOARD_CONTROLLER_NAME})
+    target_link_libraries (${BRAINFLOW_CPP_BINDING_NAME} pthread ${BOARD_CONTROLLER_NAME} ${DATA_HANDLER_NAME})
 else (UNIX)
-    target_link_libraries (${GET_DATA_NAME} ${BOARD_CONTROLLER_NAME})
+    target_link_libraries (${BRAINFLOW_CPP_BINDING_NAME} ${BOARD_CONTROLLER_NAME} ${DATA_HANDLER_NAME})
 endif (UNIX)
 
 # copy
 if (MSVC)
     add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD 
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${COMPILED_FILE_NAME}"
+        # copy board controller libs
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${BOARD_CONTROLLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${BOARD_CONTROLLER_COMPILED_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/board_controller.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/inc/board_controller.h"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/board_info_getter.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/inc/board_info_getter.h"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/brainflow_constants.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/inc/brainflow_constants.h"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${COMPILED_FILE_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/lib/${COMPILED_FILE_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${BOARD_CONTROLLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/lib/${BOARD_CONTROLLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${BOARD_CONTROLLER_COMPILED_NAME}"
         # copy libraries which are required for ganglion
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_NATIVE_PATH}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${GANGLION_LIB_NATIVE_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${GANGLION_LIB_NAME}"
@@ -172,20 +205,37 @@ if (MSVC)
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${GANGLION_LIB_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_NATIVE_PATH}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${GANGLION_LIB_NATIVE_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${GANGLION_LIB_NAME}"
+        # copy data handler libs
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${DATA_HANDLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/data_handler/inc/data_handler.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/inc/data_handler.h"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${DATA_HANDLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
+        
     )
 endif (MSVC)
 if (UNIX)
     add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${COMPILED_FILE_NAME}"
+        # copy board controller libs
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${BOARD_CONTROLLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${BOARD_CONTROLLER_COMPILED_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/board_controller.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/inc/board_controller.h"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/brainflow_constants.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/inc/brainflow_constants.h"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/board_info_getter.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/inc/board_info_getter.h"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${COMPILED_FILE_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/${COMPILED_FILE_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${COMPILED_FILE_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${COMPILED_FILE_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${BOARD_CONTROLLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/${BOARD_CONTROLLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${BOARD_CONTROLLER_COMPILED_NAME}"
+        # copy data handler libs
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${DATA_HANDLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/src/data_handler/inc/data_handler.h" "${CMAKE_HOME_DIRECTORY}/matlab-package/inc/data_handler.h"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${DATA_HANDLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/${DATA_HANDLER_COMPILED_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
     )
 endif (UNIX)
+
 # need to copy json file to bindings
 add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD
     COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/${BOARDS_JSON}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${BOARDS_JSON}"
@@ -222,7 +272,8 @@ install (
     "src/board_controller/inc/board_controller.h"
     "src/board_controller/inc/brainflow_constants.h"
     "src/board_controller/inc/board_info_getter.h"
-    "cpp-package/src/data_handler.h"
+    "src/data_handler/inc/data_handler.h"
+    "cpp-package/src/data_filter.h"
     "cpp-package/src/board_shim.h"
     "cpp-package/src/brainflow_exception.h"
     DESTINATION inc
@@ -236,7 +287,7 @@ install (
 )
 
 install (
-    TARGETS ${BOARD_CONTROLLER_NAME} ${GET_DATA_NAME}
+    TARGETS ${BOARD_CONTROLLER_NAME} ${DATA_HANDLER_NAME} ${BRAINFLOW_CPP_BINDING_NAME}
     EXPORT ${targets_export_name}
     RUNTIME DESTINATION lib
     LIBRARY DESTINATION lib
