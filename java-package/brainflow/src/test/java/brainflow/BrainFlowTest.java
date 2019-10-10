@@ -19,8 +19,6 @@ public class BrainFlowTest {
         for (int i = 0; i < num_rows; i++) {
         	System.out.println (Arrays.toString (data[i]));
         }
-        System.out.print ("eeg channels: ");
-        System.out.println (Arrays.toString (BoardShim.get_eeg_channels (board_id)));
         board_shim.release_session ();
     }
 }

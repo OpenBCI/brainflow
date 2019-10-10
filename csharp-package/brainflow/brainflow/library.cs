@@ -53,17 +53,43 @@ namespace brainflow
         [DllImport ("BoardController.dll", SetLastError = true)]
         public static extern int release_session (int board_id, string port_name);
         [DllImport ("BoardController.dll", SetLastError = true)]
-        public static extern int get_current_board_data (int num_samples, float[] data_buf, double[] ts_buf, int[] returned_samples, int board_id, string port_name);
+        public static extern int get_current_board_data (int num_samples, double[] data_buf, int[] returned_samples, int board_id, string port_name);
         [DllImport ("BoardController.dll", SetLastError = true)]
         public static extern int get_board_data_count(int[] result, int board_id, string port_name);
         [DllImport ("BoardController.dll", SetLastError = true)]
-        public static extern int get_board_data (int data_count, float[] data_buf, double[] ts_buf, int board_id, string port_name);
+        public static extern int get_board_data (int data_count, double[] data_buf, int board_id, string port_name);
         [DllImport ("BoardController.dll", SetLastError = true)]
         public static extern int set_log_level (int log_level);
         [DllImport ("BoardController.dll", SetLastError = true)]
         public static extern int config_board (string config, int board_id, string port_name);
         [DllImport ("BoardController.dll", SetLastError = true)]
         public static extern int set_log_file (string log_file);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_sampling_rate (int board_id, int[] sampling_rate);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_timestamp_channel (int board_id, int[] timestamp_channel);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_package_num_channel (int board_id, int[] package_num_channel);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_num_rows (int board_id, int[] num_rows);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_eeg_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_emg_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_ecg_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_eog_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_eda_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_ppg_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_accel_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_gyro_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController.dll", SetLastError = true)]
+        public static extern int get_other_channels (int board_id, int[] channels, int[] len);
     }
 
     public static class Library32
@@ -77,17 +103,43 @@ namespace brainflow
         [DllImport ("BoardController32.dll", SetLastError = true)]
         public static extern int release_session (int board_id, string port_name);
         [DllImport ("BoardController32.dll", SetLastError = true)]
-        public static extern int get_current_board_data (int num_samples, float[] data_buf, double[] ts_buf, int[] returned_samples, int board_id, string port_name);
+        public static extern int get_current_board_data (int num_samples, double[] data_buf, int[] returned_samples, int board_id, string port_name);
         [DllImport ("BoardController32.dll", SetLastError = true)]
         public static extern int get_board_data_count (int[] result, int board_id, string port_name);
         [DllImport ("BoardController32.dll", SetLastError = true)]
-        public static extern int get_board_data (int data_count, float[] data_buf, double[] ts_buf, int board_id, string port_name);
+        public static extern int get_board_data (int data_count, double[] data_buf, int board_id, string port_name);
         [DllImport ("BoardController32.dll", SetLastError = true)]
         public static extern int set_log_level (int log_level);
         [DllImport ("BoardController32.dll", SetLastError = true)]
         public static extern int config_board (string config, int board_id, string port_name);
         [DllImport ("BoardController32.dll", SetLastError = true)]
         public static extern int set_log_file (string log_file);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_sampling_rate (int board_id, int[] sampling_rate);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_timestamp_channel (int board_id, int[] timestamp_channel);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_package_num_channel (int board_id, int[] package_num_channel);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_num_rows (int board_id, int[] num_rows);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_eeg_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_emg_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_ecg_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_eog_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_eda_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_ppg_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_accel_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_gyro_channels (int board_id, int[] channels, int[] len);
+        [DllImport ("BoardController32.dll", SetLastError = true)]
+        public static extern int get_other_channels (int board_id, int[] channels, int[] len);
     }
 
     public static class Library
@@ -124,12 +176,12 @@ namespace brainflow
                 return Library32.release_session (board_id, port_name);
         }
 
-        public static int get_current_board_data (int num_samples, float[] data_buf, double[] ts_buf, int[] returned_samples, int board_id, string port_name)
+        public static int get_current_board_data (int num_samples, double[] data_buf, int[] returned_samples, int board_id, string port_name)
         {
             if (System.Environment.Is64BitProcess)
-                return Library64.get_current_board_data (num_samples, data_buf, ts_buf, returned_samples, board_id, port_name);
+                return Library64.get_current_board_data (num_samples, data_buf, returned_samples, board_id, port_name);
             else
-                return Library32.get_current_board_data (num_samples, data_buf, ts_buf, returned_samples, board_id, port_name);
+                return Library32.get_current_board_data (num_samples, data_buf, returned_samples, board_id, port_name);
         }
 
         public static int get_board_data_count (int[] result, int board_id, string port_name)
@@ -140,12 +192,12 @@ namespace brainflow
                 return Library32.get_board_data_count (result, board_id, port_name);
         }
 
-        public static int get_board_data (int data_count, float[] data_buf, double[] ts_buf, int board_id, string port_name)
+        public static int get_board_data (int data_count, double[] data_buf, int board_id, string port_name)
         {
             if (System.Environment.Is64BitProcess)
-                return Library64.get_board_data (data_count, data_buf, ts_buf, board_id, port_name);
+                return Library64.get_board_data (data_count, data_buf, board_id, port_name);
             else
-                return Library32.get_board_data (data_count, data_buf, ts_buf, board_id, port_name);
+                return Library32.get_board_data (data_count, data_buf, board_id, port_name);
         }
 
         public static int set_log_level (int log_level)
@@ -170,6 +222,110 @@ namespace brainflow
                 return Library64.set_log_file (log_file);
             else
                 return Library32.set_log_file (log_file);
+        }
+   
+        public static int get_sampling_rate (int board_id, int[] sampling_rate)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_sampling_rate (board_id, sampling_rate);
+            else
+                return Library32.get_sampling_rate (board_id, sampling_rate);
+        }
+
+        public static int get_package_num_channel (int board_id, int[] package_num)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_package_num_channel (board_id, package_num);
+            else
+                return Library32.get_package_num_channel (board_id, package_num);
+        }
+
+        public static int get_num_rows (int board_id, int[] num_rows)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_num_rows (board_id, num_rows);
+            else
+                return Library32.get_num_rows (board_id, num_rows);
+        }
+
+        public static int get_timestamp_channel (int board_id, int[] timestamp_channel)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_timestamp_channel (board_id, timestamp_channel);
+            else
+                return Library32.get_timestamp_channel (board_id, timestamp_channel);
+        }
+
+        public static int get_eeg_channels (int board_id, int[] channels, int[] len)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_eeg_channels (board_id, channels, len);
+            else
+                return Library32.get_eeg_channels (board_id, channels, len);
+        }
+
+        public static int get_emg_channels (int board_id, int[] channels, int[] len)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_emg_channels (board_id, channels, len);
+            else
+                return Library32.get_emg_channels (board_id, channels, len);
+        }
+
+        public static int get_ecg_channels (int board_id, int[] channels, int[] len)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_ecg_channels (board_id, channels, len);
+            else
+                return Library32.get_ecg_channels (board_id, channels, len);
+        }
+
+        public static int get_eog_channels (int board_id, int[] channels, int[] len)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_eog_channels (board_id, channels, len);
+            else
+                return Library32.get_eog_channels (board_id, channels, len);
+        }
+
+        public static int get_eda_channels (int board_id, int[] channels, int[] len)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_eda_channels (board_id, channels, len);
+            else
+                return Library32.get_eda_channels (board_id, channels, len);
+        }
+
+        public static int get_ppg_channels (int board_id, int[] channels, int[] len)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_ppg_channels (board_id, channels, len);
+            else
+                return Library32.get_ppg_channels (board_id, channels, len);
+        }
+
+        public static int get_accel_channels (int board_id, int[] channels, int[] len)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_accel_channels (board_id, channels, len);
+            else
+                return Library32.get_accel_channels (board_id, channels, len);
+        }
+
+        public static int get_gyro_channels (int board_id, int[] channels, int[] len)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_gyro_channels (board_id, channels, len);
+            else
+                return Library32.get_gyro_channels (board_id, channels, len);
+        }
+
+        public static int get_other_channels (int board_id, int[] channels, int[] len)
+        {
+            if (System.Environment.Is64BitProcess)
+                return Library64.get_other_channels (board_id, channels, len);
+            else
+                return Library32.get_other_channels (board_id, channels, len);
         }
     }
 }

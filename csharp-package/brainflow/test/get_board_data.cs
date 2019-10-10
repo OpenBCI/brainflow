@@ -1,6 +1,8 @@
 ﻿using System;
 using brainflow;
 
+using Accord.Math;
+
 namespace test
 {
     class GetBoardData
@@ -15,30 +17,16 @@ namespace test
                 board_shim = new BoardShim (Int32.Parse (args[0]), null);
 
             board_shim.prepare_session ();
-            Console.WriteLine ("Session is ready");
-
             board_shim.start_stream (3600);
-            Console.WriteLine ("Started");
             System.Threading.Thread.Sleep (5000);
-
             board_shim.stop_stream ();
-            Console.WriteLine ("Stopped");
-
             Console.WriteLine ("data count: {0}", board_shim.get_board_data_count ());
-            double[,] unprocessed_data = board_shim.get_board_data ();
-
-            // check serialization
-            DataHandler dh = new DataHandler (Int32.Parse(args[0]), data_from_board: unprocessed_data);
-            dh.save_csv ("before_processing.csv");
-            dh = new DataHandler (Int32.Parse(args[0]), csv_file: "before_processing.csv");
-            dh.save_csv ("before_preprocessing2.csv");
-            // check preprocessing
-            dh.remove_dc_offset ();
-            dh.bandpass (1.0, 50.0);
-            dh.save_csv ("after_preprocessing.csv");
+            double[,] unprocessed_data = board_shim.get_current_board_data (10);
+            int[] eeg_channels = BoardShim.get_eeg_channels (Int32.Parse (args[0]));
+            foreach (var index in eeg_channels)
+                Console.WriteLine ("[{0}]", string.Join (", ", unprocessed_data.GetRow(index)));
 
             board_shim.release_session ();
-            Console.WriteLine ("Released");
         }
     }
 }

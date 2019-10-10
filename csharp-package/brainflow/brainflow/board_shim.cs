@@ -1,5 +1,8 @@
 ﻿using System;
 
+using Accord.Math;
+
+
 namespace brainflow
 {
 
@@ -7,19 +10,208 @@ namespace brainflow
     {
         public int board_id;
         public string port_name;
-        public int fs_hz;
-        public int num_eeg_channels;
-        public int first_eeg_channel;
-        public int package_length;
 
         public BoardShim (int board_id, string port_name)
         {
             this.board_id = board_id;
             this.port_name = port_name;
-            this.package_length = BoardInfoGetter.get_package_length (board_id);
-            this.fs_hz = BoardInfoGetter.get_fs_hz (board_id);
-            this.num_eeg_channels = BoardInfoGetter.get_num_eeg_channels (board_id);
-            this.first_eeg_channel = BoardInfoGetter.get_first_eeg_channel (board_id);
+        }
+
+        public static int get_sampling_rate (int board_id)
+        {
+            int[] val = new int[1];
+            int res = Library.get_sampling_rate (board_id, val);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            return val[0];
+        }
+
+        public static int get_package_num_channel (int board_id)
+        {
+            int[] val = new int[1];
+            int res = Library.get_package_num_channel (board_id, val);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            return val[0];
+        }
+
+        public static int get_timestamp_channel (int board_id)
+        {
+            int[] val = new int[1];
+            int res = Library.get_timestamp_channel (board_id, val);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            return val[0];
+        }
+
+        public static int get_num_rows (int board_id)
+        {
+            int[] val = new int[1];
+            int res = Library.get_num_rows (board_id, val);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            return val[0];
+        }
+
+        public static int[] get_eeg_channels (int board_id)
+        {
+            int[] len = new int[1];
+            int[] channels = new int[512];
+            int res = Library.get_eeg_channels (board_id, channels, len);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            int[] result = new int[len[0]];
+            for (int i = 0; i < len[0]; i++)
+            {
+                result[i] = channels[i];
+            }
+            return result;
+        }
+
+        public static int[] get_emg_channels (int board_id)
+        {
+            int[] len = new int[1];
+            int[] channels = new int[512];
+            int res = Library.get_emg_channels (board_id, channels, len);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            int[] result = new int[len[0]];
+            for (int i = 0; i < len[0]; i++)
+            {
+                result[i] = channels[i];
+            }
+            return result;
+        }
+
+        public static int[] get_ecg_channels (int board_id)
+        {
+            int[] len = new int[1];
+            int[] channels = new int[512];
+            int res = Library.get_ecg_channels (board_id, channels, len);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            int[] result = new int[len[0]];
+            for (int i = 0; i < len[0]; i++)
+            {
+                result[i] = channels[i];
+            }
+            return result;
+        }
+
+        public static int[] get_eog_channels (int board_id)
+        {
+            int[] len = new int[1];
+            int[] channels = new int[512];
+            int res = Library.get_eog_channels (board_id, channels, len);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            int[] result = new int[len[0]];
+            for (int i = 0; i < len[0]; i++)
+            {
+                result[i] = channels[i];
+            }
+            return result;
+        }
+
+        public static int[] get_eda_channels (int board_id)
+        {
+            int[] len = new int[1];
+            int[] channels = new int[512];
+            int res = Library.get_eda_channels (board_id, channels, len);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            int[] result = new int[len[0]];
+            for (int i = 0; i < len[0]; i++)
+            {
+                result[i] = channels[i];
+            }
+            return result;
+        }
+
+        public static int[] get_ppg_channels (int board_id)
+        {
+            int[] len = new int[1];
+            int[] channels = new int[512];
+            int res = Library.get_ppg_channels (board_id, channels, len);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            int[] result = new int[len[0]];
+            for (int i = 0; i < len[0]; i++)
+            {
+                result[i] = channels[i];
+            }
+            return result;
+        }
+
+        public static int[] get_accel_channels (int board_id)
+        {
+            int[] len = new int[1];
+            int[] channels = new int[512];
+            int res = Library.get_accel_channels (board_id, channels, len);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            int[] result = new int[len[0]];
+            for (int i = 0; i < len[0]; i++)
+            {
+                result[i] = channels[i];
+            }
+            return result;
+        }
+
+        public static int[] get_gyro_channels (int board_id)
+        {
+            int[] len = new int[1];
+            int[] channels = new int[512];
+            int res = Library.get_gyro_channels (board_id, channels, len);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            int[] result = new int[len[0]];
+            for (int i = 0; i < len[0]; i++)
+            {
+                result[i] = channels[i];
+            }
+            return result;
+        }
+
+        public static int[] get_other_channels (int board_id)
+        {
+            int[] len = new int[1];
+            int[] channels = new int[512];
+            int res = Library.get_other_channels (board_id, channels, len);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowExceptioin (res);
+            }
+            int[] result = new int[len[0]];
+            for (int i = 0; i < len[0]; i++)
+            {
+                result[i] = channels[i];
+            }
+            return result;
         }
 
         public static void enable_board_logger ()
@@ -116,16 +308,22 @@ namespace brainflow
 
         public double[,] get_current_board_data (int num_samples)
         {
-            float[] data_arr = new float[num_samples * package_length];
-            double[] ts_arr = new double[num_samples];
+            int num_rows = BoardShim.get_num_rows (board_id); 
+            double[] data_arr = new double[num_samples * num_rows];
             int[] current_size = new int[1];
-            int ec = Library.get_current_board_data (num_samples, data_arr, ts_arr, current_size, board_id, port_name);
+            int ec = Library.get_current_board_data (num_samples, data_arr, current_size, board_id, port_name);
 		    if (ec != (int) CustomExitCodes.STATUS_OK) {
 			    throw new BrainFlowExceptioin (ec);
             }
-            Array.Resize (ref data_arr, current_size[0] * package_length);
-            Array.Resize (ref ts_arr, current_size[0]);
-            return new BoardData (this.board_id, data_arr, ts_arr).get_board_data ();
+            double[,] result = new double[num_rows, current_size[0]];
+            for (int i = 0; i < num_rows; i++)
+            {
+                for (int j = 0; j < current_size[0]; j++)
+                {
+                    result[i, j] = data_arr[i * current_size[0] + j];
+                }
+            }
+            return result;
 	    }
 
         public double[,] get_immediate_board_data ()
@@ -136,13 +334,21 @@ namespace brainflow
         public double[,] get_board_data ()
         {
 		    int size = get_board_data_count ();
-		    float[] data_arr = new float[size * package_length];
-		    double[] ts_arr = new double[size];
-            int ec = Library.get_board_data (size, data_arr, ts_arr, board_id, port_name);
+            int num_rows = BoardShim.get_num_rows (board_id);
+            double[] data_arr = new double[size * num_rows];
+            int ec = Library.get_board_data (size, data_arr, board_id, port_name);
 		    if (ec != (int) CustomExitCodes.STATUS_OK) {
                 throw new BrainFlowExceptioin (ec);
             }
-		    return new BoardData (this.board_id, data_arr, ts_arr).get_board_data ();
-	    }
+            double[,] result = new double[num_rows, size];
+            for (int i = 0; i < num_rows; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    result[i, j] = data_arr[i * size + j];
+                }
+            }
+            return result;
+        }
     }
 }
