@@ -25,6 +25,7 @@
           <include>GanglionLib.dll</include>
           <include>GanglionLibNative64.dll</include>
           <include>libBoardController.dylib</include>
+          <include>brainflow_boards.json</include>
         </includes>
       </resource>
     </resources>

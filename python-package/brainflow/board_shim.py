@@ -12,14 +12,14 @@ from brainflow.exit_codes import StreamExitCodes
 
 class BoardIds (enum.Enum):
     """Enum to store all supported Board Ids"""
-    SYNTHETIC = -1
-    CYTON = 0
-    GANGLION = 1
-    CYTON_DAISY = 2
-    NOVAXR = 3
-    GANGLION_WIFI = 4
-    CYTON_WIFI = 5
-    CYTON_DAISY_WIFI = 6
+    SYNTHETIC_BOARD = -1
+    CYTON_BOARD = 0
+    GANGLION_BOARD = 1
+    CYTON_DAISY_BOARD = 2
+    NOVAXR_BOARD = 3
+    GANGLION_WIFI_BOARD = 4
+    CYTON_WIFI_BOARD = 5
+    CYTON_DAISY_WIFI_BOARD = 6
 
 
 class BrainFlowError (Exception):

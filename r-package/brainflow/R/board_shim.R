@@ -1,14 +1,14 @@
 #' @export
 Boards <- function() {
     list(
-        Synthetic = c(Id = as.integer(-1)),
-        Cyton = c(Id = as.integer(0)),
-        Ganglion = c(Id = as.integer(1)),
-        CytonDaisy = c(Id = as.integer(2)),
-        NovaXR = c(Id = as.integer(3)),
-        GanglionWifi = c(Id = as.integer(4)),
-        CytonWifi = c(Id = as.integer(5)),
-        CytonDaisyWifi = c(Id = as.integer(6))
+        SYNTHETIC_BOARD = c(Id = as.integer(-1)),
+        CYTON_BOARD = c(Id = as.integer(0)),
+        GANGLION_BOARD = c(Id = as.integer(1)),
+        CYTON_DAISY_BOARD = c(Id = as.integer(2)),
+        NOVAXR_BOARD = c(Id = as.integer(3)),
+        GANGLION_WIFI_BOARD = c(Id = as.integer(4)),
+        CYTON_WIFI_BOARD = c(Id = as.integer(5)),
+        CYTON_DAISY_WIFI_BOARD = c(Id = as.integer(6))
     )
 }
 
