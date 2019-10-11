@@ -142,6 +142,7 @@ target_include_directories (
     src/utils/
     src/board_controller/inc
     src/data_handler/inc
+    third_party/DSPFilters/include
 )
 
 set_target_properties (${BOARD_CONTROLLER_NAME}
@@ -161,6 +162,8 @@ set_target_properties (${DATA_HANDLER_NAME}
 if (UNIX)
     target_link_libraries (${BOARD_CONTROLLER_NAME} pthread dl)
     target_link_libraries (${DATA_HANDLER_NAME} DSPFilters pthread dl)
+else (UNIX)
+    target_link_libraries (${DATA_HANDLER_NAME} DSPFilters)
 endif (UNIX)
 
 # getdata
@@ -204,7 +207,9 @@ if (MSVC)
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_NATIVE_PATH}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${GANGLION_LIB_NATIVE_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${GANGLION_LIB_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_NATIVE_PATH}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${GANGLION_LIB_NATIVE_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${GANGLION_LIB_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${GANGLION_LIB_NAME}"    
+    )
+    add_custom_command (TARGET ${DATA_HANDLER_NAME} POST_BUILD 
         # copy data handler libs
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${DATA_HANDLER_COMPILED_NAME}"
@@ -226,6 +231,8 @@ if (UNIX)
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${BOARD_CONTROLLER_COMPILED_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/${BOARD_CONTROLLER_COMPILED_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${BOARD_CONTROLLER_COMPILED_NAME}"
+    )
+    add_custom_command (TARGET ${DATA_HANDLER_NAME} POST_BUILD
         # copy data handler libs
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/matlab-package/lib/${DATA_HANDLER_COMPILED_NAME}"
