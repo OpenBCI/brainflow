@@ -2,6 +2,7 @@
 
 #include "DspFilters/Dsp.h"
 
+
 int perform_lowpass (double *data, int data_len, int sampling_rate, double cutoff, int order,
     int filter_type, double ripple)
 {
@@ -10,7 +11,7 @@ int perform_lowpass (double *data, int data_len, int sampling_rate, double cutof
     filter_data[0] = data;
 
     Dsp::Filter *f = NULL;
-    if ((order < 1) || (order > 7) || (!data))
+    if ((order < 1) || (order > MAX_FILTER_ORDER) || (!data))
     {
         return GENERAL_ERROR;
     }
@@ -18,15 +19,15 @@ int perform_lowpass (double *data, int data_len, int sampling_rate, double cutof
     {
         case BUTTERWORTH:
             // "1024" is the number of samples over which to fade parameter changes
-            f = new Dsp::SmoothedFilterDesign<Dsp::Butterworth::Design::LowPass<7>, 1,
-                Dsp::DirectFormII> (1024);
+            f = new Dsp::SmoothedFilterDesign<Dsp::Butterworth::Design::LowPass<MAX_FILTER_ORDER>,
+                1, Dsp::DirectFormII> (1024);
             break;
-        case CHEBYSHEV:
-            f = new Dsp::SmoothedFilterDesign<Dsp::ChebyshevI::Design::LowPass<7>, 1,
+        case CHEBYSHEV_TYPE_1:
+            f = new Dsp::SmoothedFilterDesign<Dsp::ChebyshevI::Design::LowPass<MAX_FILTER_ORDER>, 1,
                 Dsp::DirectFormII> (1024);
             break;
         case BESSEL:
-            f = new Dsp::SmoothedFilterDesign<Dsp::Bessel::Design::LowPass<7>, 1,
+            f = new Dsp::SmoothedFilterDesign<Dsp::Bessel::Design::LowPass<MAX_FILTER_ORDER>, 1,
                 Dsp::DirectFormII> (1024);
             break;
         default:
@@ -37,7 +38,7 @@ int perform_lowpass (double *data, int data_len, int sampling_rate, double cutof
     params[0] = sampling_rate; // sample rate
     params[1] = order;         // order
     params[2] = cutoff;        // cutoff
-    if (filter_type == CHEBYSHEV)
+    if (filter_type == CHEBYSHEV_TYPE_1)
     {
         params[3] = ripple; // ripple
     }
@@ -55,7 +56,7 @@ int perform_highpass (double *data, int data_len, int sampling_rate, double cuto
     double *filter_data[1];
     filter_data[0] = data;
 
-    if ((order < 1) || (order > 7) || (!data))
+    if ((order < 1) || (order > MAX_FILTER_ORDER) || (!data))
     {
         return INVALID_ARGUMENTS_ERROR;
     }
@@ -63,15 +64,15 @@ int perform_highpass (double *data, int data_len, int sampling_rate, double cuto
     {
         case BUTTERWORTH:
             // "1024" is the number of samples over which to fade parameter changes
-            f = new Dsp::SmoothedFilterDesign<Dsp::Butterworth::Design::HighPass<7>, 1,
-                Dsp::DirectFormII> (1024);
+            f = new Dsp::SmoothedFilterDesign<Dsp::Butterworth::Design::HighPass<MAX_FILTER_ORDER>,
+                1, Dsp::DirectFormII> (1024);
             break;
-        case CHEBYSHEV:
-            f = new Dsp::SmoothedFilterDesign<Dsp::ChebyshevI::Design::HighPass<7>, 1,
-                Dsp::DirectFormII> (1024);
+        case CHEBYSHEV_TYPE_1:
+            f = new Dsp::SmoothedFilterDesign<Dsp::ChebyshevI::Design::HighPass<MAX_FILTER_ORDER>,
+                1, Dsp::DirectFormII> (1024);
             break;
         case BESSEL:
-            f = new Dsp::SmoothedFilterDesign<Dsp::Bessel::Design::HighPass<7>, 1,
+            f = new Dsp::SmoothedFilterDesign<Dsp::Bessel::Design::HighPass<MAX_FILTER_ORDER>, 1,
                 Dsp::DirectFormII> (1024);
             break;
         default:
@@ -81,7 +82,7 @@ int perform_highpass (double *data, int data_len, int sampling_rate, double cuto
     params[0] = sampling_rate; // sample rate
     params[1] = order;         // order
     params[2] = cutoff;        // cutoff
-    if (filter_type == CHEBYSHEV)
+    if (filter_type == CHEBYSHEV_TYPE_1)
     {
         params[3] = ripple; // ripple
     }
@@ -99,7 +100,7 @@ int perform_bandpass (double *data, int data_len, int sampling_rate, double cent
     double *filter_data[1];
     filter_data[0] = data;
 
-    if ((order < 1) || (order > 7) || (!data))
+    if ((order < 1) || (order > MAX_FILTER_ORDER) || (!data))
     {
         return INVALID_ARGUMENTS_ERROR;
     }
@@ -107,15 +108,15 @@ int perform_bandpass (double *data, int data_len, int sampling_rate, double cent
     {
         case BUTTERWORTH:
             // "1024" is the number of samples over which to fade parameter changes
-            f = new Dsp::SmoothedFilterDesign<Dsp::Butterworth::Design::BandPass<7>, 1,
-                Dsp::DirectFormII> (1024);
+            f = new Dsp::SmoothedFilterDesign<Dsp::Butterworth::Design::BandPass<MAX_FILTER_ORDER>,
+                1, Dsp::DirectFormII> (1024);
             break;
-        case CHEBYSHEV:
-            f = new Dsp::SmoothedFilterDesign<Dsp::ChebyshevI::Design::BandPass<7>, 1,
-                Dsp::DirectFormII> (1024);
+        case CHEBYSHEV_TYPE_1:
+            f = new Dsp::SmoothedFilterDesign<Dsp::ChebyshevI::Design::BandPass<MAX_FILTER_ORDER>,
+                1, Dsp::DirectFormII> (1024);
             break;
         case BESSEL:
-            f = new Dsp::SmoothedFilterDesign<Dsp::Bessel::Design::BandPass<7>, 1,
+            f = new Dsp::SmoothedFilterDesign<Dsp::Bessel::Design::BandPass<MAX_FILTER_ORDER>, 1,
                 Dsp::DirectFormII> (1024);
             break;
         default:
@@ -127,7 +128,7 @@ int perform_bandpass (double *data, int data_len, int sampling_rate, double cent
     params[1] = order;         // order
     params[2] = center_freq;   // center freq
     params[3] = band_width;
-    if (filter_type == CHEBYSHEV)
+    if (filter_type == CHEBYSHEV_TYPE_1)
     {
         params[4] = ripple; // ripple
     }
@@ -146,7 +147,7 @@ int perform_bandstop (double *data, int data_len, int sampling_rate, double cent
     double *filter_data[1];
     filter_data[0] = data;
 
-    if ((order < 1) || (order > 7) || (!data))
+    if ((order < 1) || (order > MAX_FILTER_ORDER) || (!data))
     {
         return INVALID_ARGUMENTS_ERROR;
     }
@@ -154,15 +155,15 @@ int perform_bandstop (double *data, int data_len, int sampling_rate, double cent
     {
         case BUTTERWORTH:
             // "1024" is the number of samples over which to fade parameter changes
-            f = new Dsp::SmoothedFilterDesign<Dsp::Butterworth::Design::BandStop<7>, 1,
-                Dsp::DirectFormII> (1024);
+            f = new Dsp::SmoothedFilterDesign<Dsp::Butterworth::Design::BandStop<MAX_FILTER_ORDER>,
+                1, Dsp::DirectFormII> (1024);
             break;
-        case CHEBYSHEV:
-            f = new Dsp::SmoothedFilterDesign<Dsp::ChebyshevI::Design::BandStop<7>, 1,
-                Dsp::DirectFormII> (1024);
+        case CHEBYSHEV_TYPE_1:
+            f = new Dsp::SmoothedFilterDesign<Dsp::ChebyshevI::Design::BandStop<MAX_FILTER_ORDER>,
+                1, Dsp::DirectFormII> (1024);
             break;
         case BESSEL:
-            f = new Dsp::SmoothedFilterDesign<Dsp::Bessel::Design::BandStop<7>, 1,
+            f = new Dsp::SmoothedFilterDesign<Dsp::Bessel::Design::BandStop<MAX_FILTER_ORDER>, 1,
                 Dsp::DirectFormII> (1024);
             break;
         default:
@@ -174,7 +175,7 @@ int perform_bandstop (double *data, int data_len, int sampling_rate, double cent
     params[1] = order;         // order
     params[2] = center_freq;   // center freq
     params[3] = band_width;
-    if (filter_type == CHEBYSHEV)
+    if (filter_type == CHEBYSHEV_TYPE_1)
     {
         params[4] = ripple; // ripple
     }

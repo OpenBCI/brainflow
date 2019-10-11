@@ -77,7 +77,7 @@ int main (int argc, char *argv[])
                     break;
                 case 1:
                     DataFilter::perform_highpass (data[eeg_channels[i]], data_count,
-                        BoardShim::get_sampling_rate (board_id), 1.0, 5, CHEBYSHEV, 1);
+                        BoardShim::get_sampling_rate (board_id), 1.0, 5, CHEBYSHEV_TYPE_1, 1);
                     break;
                 case 2:
                     DataFilter::perform_bandpass (data[eeg_channels[i]], data_count,

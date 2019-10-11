@@ -1,11 +1,15 @@
 import argparse
 import time
 import brainflow
+import numpy as np
 
+import pandas as pd
 import matplotlib
 matplotlib.use ('Agg')
 import matplotlib.pyplot as plt
 
+from brainflow.board_shim import BoardShim
+from brainflow.data_filter import DataFilter, FilterTypes
 
 def main ():
     parser = argparse.ArgumentParser ()
@@ -15,33 +19,45 @@ def main ():
     args = parser.parse_args ()
 
     if (args.log):
-        brainflow.board_shim.BoardShim.enable_dev_board_logger ()
+        BoardShim.enable_dev_board_logger ()
     else:
-        brainflow.board_shim.BoardShim.disable_board_logger ()
+        BoardShim.disable_board_logger ()
 
-    board = brainflow.board_shim.BoardShim (args.board, args.port)
+    # demo how to read data as 2d numpy array
+    board = BoardShim (args.board, args.port)
     board.prepare_session ()
     board.start_stream ()
-    time.sleep (25)
-    data = board.get_board_data ()
+    time.sleep (10)
+    # data = board.get_current_board_data (256) # get latest 256 packages or less, doesnt remove them from internal buffer
+    data = board.get_board_data () # get all data and remove it from internal buffer
     board.stop_stream ()
     board.release_session ()
 
-    data_handler = brainflow.preprocess.DataHandler (args.board, numpy_data = data)
-    data_handler.remove_dc_offset ()
-    data_handler.notch_interference ()
-    filtered_data = data_handler.get_data ()
-    #filtered_data = data_handler.preprocess_data (order = 3, start = 1, stop = 50)
-    # plot eeg channels
-    eeg_columns = list ()
-    for col_name in filtered_data.columns:
-        if col_name.startswith ('eeg'):
-            eeg_columns.append (col_name)
+    # demo how to convert it to pandas DF and plot data
+    eeg_channels = BoardShim.get_eeg_channels (args.board)
+    df = pd.DataFrame (np.transpose (data))
+    print (df.head ())
     plt.figure ()
-    filtered_data[eeg_columns].plot (subplots = True)
-    plt.savefig('plot.png')
-    data_handler.save_csv ('results.csv')
-    print (filtered_data.head ())
+    df[eeg_channels].plot (subplots = True)
+    plt.savefig ('before_processing.png')
+
+    # demo how to perform signal processing
+    for count, channel in enumerate (eeg_channels):
+        # e.g. apply bessel bandpass filter, order - 4, central freq - 15.0, band width - 6
+        if count == 0:
+            DataFilter.perform_bandpass (data[channel], BoardShim.get_sampling_rate (args.board), 15.0, 6.0, 4, FilterTypes.BESSEL, 0)
+        elif count == 1:
+            DataFilter.perform_bandstop (data[channel], BoardShim.get_sampling_rate (args.board), 5.0, 1.0, 3, FilterTypes.BUTTERWORTH, 0)
+        elif count == 2:
+            DataFilter.perform_lowpass (data[channel], BoardShim.get_sampling_rate (args.board), 9.0, 5, FilterTypes.CHEBYSHEV_TYPE_1, 1)
+        elif count == 3:
+            DataFilter.perform_highpass (data[channel], BoardShim.get_sampling_rate (args.board), 3.0, 4, FilterTypes.BUTTERWORTH, 0)
+
+    df = pd.DataFrame (np.transpose (data))
+    print (df.head ())
+    plt.figure ()
+    df[eeg_channels].plot (subplots = True)
+    plt.savefig ('after_processing.png')
 
 
 if __name__ == "__main__":
