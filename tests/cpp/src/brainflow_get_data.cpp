@@ -8,7 +8,7 @@
 #endif
 
 #include "board_shim.h"
-#include "data_handler.h"
+#include "data_filter.h"
 
 using namespace std;
 
@@ -40,7 +40,6 @@ int main (int argc, char *argv[])
 
     int board_id = atoi (argv[1]);
     BoardShim *board = new BoardShim (board_id, argv[2]);
-    DataHandler *dh = new DataHandler (board_id);
     double **data = NULL;
     int *eeg_channels = NULL;
     int num_rows = 0;
@@ -65,13 +64,37 @@ int main (int argc, char *argv[])
         print_head (data, num_rows, data_count);
         int eeg_num_channels = 0;
         eeg_channels = BoardShim::get_eeg_channels (board_id, &eeg_num_channels);
-        dh->preprocess_data (data, eeg_channels, eeg_num_channels, data_count);
+        print_head (data, num_rows, data_count);
+
+        // just for test and demo - apply different filters to different eeg channels
+        for (int i = 0; i < eeg_num_channels; i++)
+        {
+            switch (i)
+            {
+                case 0:
+                    DataFilter::perform_lowpass (data[eeg_channels[i]], data_count,
+                        BoardShim::get_sampling_rate (board_id), 20.0, 3, BUTTERWORTH, 0);
+                    break;
+                case 1:
+                    DataFilter::perform_highpass (data[eeg_channels[i]], data_count,
+                        BoardShim::get_sampling_rate (board_id), 1.0, 5, CHEBYSHEV, 1);
+                    break;
+                case 2:
+                    DataFilter::perform_bandpass (data[eeg_channels[i]], data_count,
+                        BoardShim::get_sampling_rate (board_id), 15.0, 5.0, 3, BESSEL, 0);
+                    break;
+                case 3:
+                    DataFilter::perform_bandstop (data[eeg_channels[i]], data_count,
+                        BoardShim::get_sampling_rate (board_id), 5.0, 1.5, 4, BUTTERWORTH, 0);
+                    break;
+            }
+        }
         print_head (data, num_rows, data_count);
     }
     catch (const BrainFlowException &err)
     {
         std::cout << err.what () << std::endl;
-        res = err.get_exit_code ();
+        res = err.exit_code;
     }
 
     if (data != NULL)
@@ -83,7 +106,6 @@ int main (int argc, char *argv[])
         delete[] data;
     }
     delete[] eeg_channels;
-    delete dh;
     delete board;
 
     return res;

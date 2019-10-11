@@ -1,23 +1,19 @@
 #pragma once
 
+// include it here to allow user include only this single file
+#include "brainflow_constants.h"
 #include "brainflow_exception.h"
+#include "data_handler.h"
 
-class DataHandler
+class DataFilter
 {
 public:
-    DataHandler (int board_id);
-
-    void filter_lowpass (
-        double **data, int *channels, int channels_size, int data_count, float cutoff);
-    void filter_highpass (
-        double **data, int *channels, int channels_size, int data_count, float cutoff);
-    void filter_bandpass (double **data, int *channels, int channels_size, int data_count,
-        float min_cutoff, float max_cutoff);
-    void remove_dc_offset (
-        double **data, int *channels, int channels_size, int data_count, float value = 1.0);
-    void preprocess_data (double **data, int *channels, int channels_size, int data_count,
-        float min_cutoff = 1.0, float max_cutoff = 50.0, float dc_offset = 1.0);
-
-private:
-    int board_id;
+    static void perform_lowpass (double *data, int data_len, int sampling_rate, double cutoff,
+        int order, int filter_type, double ripple);
+    static void perform_highpass (double *data, int data_len, int sampling_rate, double cutoff,
+        int order, int filter_type, double ripple);
+    static void perform_bandpass (double *data, int data_len, int sampling_rate, double center_freq,
+        double band_width, int order, int filter_type, double ripple);
+    static void perform_bandstop (double *data, int data_len, int sampling_rate, double center_freq,
+        double band_width, int order, int filter_type, double ripple);
 };

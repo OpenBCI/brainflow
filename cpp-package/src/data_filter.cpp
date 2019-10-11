@@ -1,87 +1,45 @@
-#include <math.h>
-#include <stdlib.h>
-
-#include "board_controller.h"
-#include "board_shim.h"
+#include "data_filter.h"
 #include "data_handler.h"
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
-
-DataHandler::DataHandler (int board_id)
+void DataFilter::perform_lowpass (double *data, int data_len, int sampling_rate, double cutoff,
+    int order, int filter_type, double ripple)
 {
-    this->board_id = board_id;
-}
-
-void DataHandler::filter_lowpass (
-    double **data, int *channels, int channels_size, int data_count, float cutoff)
-{
-    int sampling_rate = BoardShim::get_sampling_rate (board_id);
-    double rc = 1.0 / (cutoff * 2 * M_PI);
-    double dt = 1.0 / sampling_rate;
-    double alpha = dt / (rc + dt);
-    double *temp_arr = new double[data_count];
-
-    for (int i = 0; i < channels_size; i++)
+    int res = ::perform_lowpass (data, data_len, sampling_rate, cutoff, order, filter_type, ripple);
+    if (res != STATUS_OK)
     {
-        int channel_num = channels[i];
-        temp_arr[0] = data[channel_num][0];
-        for (int j = 1; j < data_count; j++)
-        {
-            temp_arr[j] = temp_arr[j - 1] + alpha * (data[channel_num][j] - temp_arr[j - 1]);
-        }
-        for (int j = 0; j < data_count; j++)
-        {
-            data[channel_num][j] = temp_arr[j];
-        }
+        throw BrainFlowException ("failed to filter signal", res);
     }
-    delete[] temp_arr;
 }
 
-void DataHandler::filter_highpass (
-    double **data, int *channels, int channels_size, int data_count, float cutoff)
+void DataFilter::perform_highpass (double *data, int data_len, int sampling_rate, double cutoff,
+    int order, int filter_type, double ripple)
 {
-
-    int sampling_rate = BoardShim::get_sampling_rate (board_id);
-    double rc = 1.0 / (cutoff * 2 * M_PI);
-    double dt = 1.0 / sampling_rate;
-    double alpha = dt / (rc + dt);
-    double *temp_arr = new double[data_count];
-
-    for (int i = 0; i < channels_size; i++)
+    int res =
+        ::perform_highpass (data, data_len, sampling_rate, cutoff, order, filter_type, ripple);
+    if (res != STATUS_OK)
     {
-        int channel_num = channels[i];
-        temp_arr[0] = data[channel_num][0];
-        for (int j = 1; j < data_count; j++)
-        {
-            temp_arr[j] =
-                alpha * (temp_arr[j - 1] + data[channel_num][j] - data[channel_num][j - 1]);
-        }
-        for (int j = 0; j < data_count; j++)
-        {
-            data[channel_num][j] = temp_arr[j];
-        }
+        throw BrainFlowException ("failed to filter signal", res);
     }
-    delete[] temp_arr;
 }
 
-void DataHandler::filter_bandpass (double **data, int *channels, int channels_size, int data_count,
-    float min_cutoff, float max_cutoff)
+void DataFilter::perform_bandpass (double *data, int data_len, int sampling_rate,
+    double center_freq, double band_width, int order, int filter_type, double ripple)
 {
-    filter_lowpass (data, channels, channels_size, data_count, max_cutoff);
-    filter_highpass (data, channels, channels_size, data_count, min_cutoff);
+    int res = ::perform_bandpass (
+        data, data_len, sampling_rate, center_freq, band_width, order, filter_type, ripple);
+    if (res != STATUS_OK)
+    {
+        throw BrainFlowException ("failed to filter signal", res);
+    }
 }
 
-void DataHandler::remove_dc_offset (
-    double **data, int *channels, int channels_size, int data_count, float value)
+void DataFilter::perform_bandstop (double *data, int data_len, int sampling_rate,
+    double center_freq, double band_width, int order, int filter_type, double ripple)
 {
-    filter_highpass (data, channels, channels_size, data_count, value);
-}
-
-void DataHandler::preprocess_data (double **data, int *channels, int channels_size, int data_count,
-    float min_cutoff, float max_cutoff, float dc_offset)
-{
-    remove_dc_offset (data, channels, channels_size, data_count, dc_offset);
-    filter_bandpass (data, channels, channels_size, data_count, min_cutoff, max_cutoff);
+    int res = ::perform_bandstop (
+        data, data_len, sampling_rate, center_freq, band_width, order, filter_type, ripple);
+    if (res != STATUS_OK)
+    {
+        throw BrainFlowException ("failed to filter signal", res);
+    }
 }

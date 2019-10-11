@@ -10,3 +10,4 @@ cmake -DCMAKE_INSTALL_PREFIX=../installed_linux -DCMAKE_BUILD_TYPE=Debug ..
 make
 make install
 cd ..
+

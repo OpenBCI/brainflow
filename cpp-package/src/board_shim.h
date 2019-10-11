@@ -1,5 +1,7 @@
 #pragma once
 
+// include it here to allow user include only this single file
+#include "brainflow_constants.h"
 #include "brainflow_exception.h"
 
 class BoardShim
