@@ -103,8 +103,8 @@ int main (int argc, char *argv[])
         {
             delete[] data[i];
         }
-        delete[] data;
     }
+    delete[] data;
     delete[] eeg_channels;
     delete board;
 

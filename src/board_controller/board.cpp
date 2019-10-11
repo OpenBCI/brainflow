@@ -103,6 +103,7 @@ void Board::reshape_data (
 {
     int num_data_channels = 0;
     get_num_rows (board_id, &num_data_channels); // here we know that board id is valid
+    num_data_channels--;                         // -1 because of timestamp
 
     // todo speed up this code for better perf, also I dont like that we need to allocate 2x times
     // more memory
@@ -110,13 +111,12 @@ void Board::reshape_data (
     {
         for (int j = 0; j < num_data_channels; j++)
         {
-            output_buf[j * data_count + i] =
-                buf[i * (num_data_channels - 1) + j]; // -1 because of timestamp
+            output_buf[j * data_count + i] = buf[i * num_data_channels + j];
         }
     }
     // add timestamp to resulting data table
     for (int i = 0; i < data_count; i++)
     {
-        output_buf[(num_data_channels - 1) * data_count + i] = ts_buf[i];
+        output_buf[num_data_channels * data_count + i] = ts_buf[i];
     }
 }

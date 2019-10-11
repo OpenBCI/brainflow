@@ -106,7 +106,7 @@ int BoardShim::get_board_data_count ()
 double **BoardShim::get_board_data (int *num_data_points)
 {
     int num_samples = get_board_data_count ();
-    int num_data_channels = get_board_data_count ();
+    int num_data_channels = get_num_rows (board_id);
     double *buf = new double[num_samples * num_data_channels];
     int res = ::get_board_data (num_samples, buf, board_id, port_name);
     if (res != STATUS_OK)
