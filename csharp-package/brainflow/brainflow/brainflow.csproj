@@ -116,8 +116,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="board_shim.cs" />
-    <Compile Include="library.cs" />
+    <Compile Include="board_controller_library.cs" />
     <Compile Include="brainflow_exception.cs" />
+    <Compile Include="data_filter.cs" />
+    <Compile Include="data_handler_library.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

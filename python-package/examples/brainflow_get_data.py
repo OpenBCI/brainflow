@@ -43,7 +43,6 @@ def main ():
 
     # demo how to perform signal processing
     for count, channel in enumerate (eeg_channels):
-        # e.g. apply bessel bandpass filter, order - 4, central freq - 15.0, band width - 6
         if count == 0:
             DataFilter.perform_bandpass (data[channel], BoardShim.get_sampling_rate (args.board), 15.0, 6.0, 4, FilterTypes.BESSEL.value, 0)
         elif count == 1:
