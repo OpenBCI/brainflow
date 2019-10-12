@@ -1,5 +1,5 @@
 #' @export
-Boards <- function() {
+BoardIds <- function() {
     list(
         SYNTHETIC_BOARD = c(Id = as.integer(-1)),
         CYTON_BOARD = c(Id = as.integer(0)),
