@@ -36,7 +36,7 @@ def main ():
     board.prepare_session ()
 
     # disable 2nd channel for cyton use real board to check it, emulator ignores commands
-    if args.board_id == brainflow.board_shim.BoardIds.CYTON.value:
+    if args.board_id == brainflow.board_shim.BoardIds.CYTON_BOARD.value:
         board.config_board ('x2100000X')
 
     board.start_stream ()
