@@ -30,10 +30,10 @@ install:
   - mkdir %APPVEYOR_BUILD_FOLDER%\build64 && cd %APPVEYOR_BUILD_FOLDER%\build64 && cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_SYSTEM_VERSION=8.1 -DCMAKE_INSTALL_PREFIX=..\installed64\ .. && cmake --build . --target install --config Release > brainflow_build64_stdout.txt
   # build csharp (in order for copy ganglion mock into csharp test folder)
   ## nuget package for csharp
-  - nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages && nuget install MathNet.Filtering -OutputDirectory ../csharp-package/brainflow/packages
+  - nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages
   ## 64
   - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform=x64 /p:OutDir=..\..\..\tests\csharp\build\Release
-  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib && cp BoardController.dll ..\..\..\..\tests\csharp\build\Release\
+  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib && cp BoardController.dll ..\..\..\..\tests\csharp\build\Release\ && cp brainflow_boards.json ..\..\..\..\tests\csharp\build\Release\
   # install emulator for cyton
   - pip install %APPVEYOR_BUILD_FOLDER%\emulator\
   - cd %APPVEYOR_BUILD_FOLDER% && %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\certmgr.exe  /add %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\com0com.cer /s /r localMachine root
