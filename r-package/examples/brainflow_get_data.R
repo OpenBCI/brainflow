@@ -1,6 +1,7 @@
 library(brainflow)
 
-board_shim <- get_board_shim_object(BoardIds()$SYNTHETIC_BOARD["Id"], "")
+params <- get_brainflow_input_params()
+board_shim <- get_board_shim_object(BoardIds()$SYNTHETIC_BOARD["Id"], params)
 board_shim$prepare_session()
 board_shim$start_stream()
 Sys.sleep(time = 5)

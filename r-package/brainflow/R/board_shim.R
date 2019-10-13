@@ -25,3 +25,9 @@ get_board_shim_object <- function(board_id, port_name) {
 get_board_shim_class <- function() {
     brainflow$BoardShim
 }
+
+#' @return BrainFlowInputParams class
+#' @export
+get_brainflow_input_params <- function() {
+    brainflow$BrainFlowInputParams()
+}
