@@ -7,6 +7,8 @@ import os
 import platform
 import sys
 import struct
+import json
+
 from brainflow.exit_codes import BrainflowExitCodes
 
 
@@ -21,6 +23,27 @@ class BoardIds (enum.Enum):
     CYTON_WIFI_BOARD = 5
     CYTON_DAISY_WIFI_BOARD = 6
 
+
+class IpProtocolType (enum.Enum):
+    """Enum to store Ip protocol types"""
+    NONE = 0
+    UDP = 1
+    TCP = 2
+
+
+class BrainFlowInputParams (object):
+
+    def __init__ (self):
+        self.serial_port = ''
+        self.mac_address = ''
+        self.ip_address = ''
+        self.ip_port = 0
+        self.ip_protocol = IpProtocolType.NONE.value
+        self.other_info = ''
+
+    def to_json (self):
+        return json.dumps (self, default = lambda o: o.__dict__, 
+            sort_keys = True, indent = 4)
 
 class BrainFlowError (Exception):
     """This exception is raised if non-zero exit code is returned from C code"""
@@ -236,13 +259,11 @@ class BoardControllerDLL (object):
 class BoardShim (object):
     """BoardShim class is a primary interface to all boards"""
 
-    def __init__ (self, board_id, port_name):
-        if port_name:
-            # handle bytes and str objects
-            try:
-                self.port_name = port_name.encode ()
-            except:
-                self.port_name = port_name
+    def __init__ (self, board_id, input_params):
+        try:
+            self.input_json = input_params.to_json ().encode ()
+        except:
+            self.input_json = input_params.to_json ()
         else:
             self.port_name = None
         self.board_id = board_id
@@ -425,25 +446,25 @@ class BoardShim (object):
 
     def prepare_session (self):
         """prepare streaming sesssion, init resources, you need to call it before any other BoardShim object methods"""
-        res = BoardControllerDLL.get_instance ().prepare_session (self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().prepare_session (self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to prepare streaming session', res)
 
     def start_stream (self, num_samples = 1800*250):
         """Start streaming data, this methods stores data in ringbuffer"""
-        res = BoardControllerDLL.get_instance ().start_stream (num_samples, self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().start_stream (num_samples, self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to start streaming session', res)
 
     def stop_stream (self):
         """Stop streaming data"""
-        res = BoardControllerDLL.get_instance ().stop_stream (self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().stop_stream (self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to stop streaming session', res)
 
     def release_session (self):
         """release all resources"""
-        res = BoardControllerDLL.get_instance ().release_session (self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().release_session (self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to release streaming session', res)
 
@@ -453,7 +474,7 @@ class BoardShim (object):
         data_arr = numpy.zeros (int(num_samples  * package_length)).astype (numpy.float64)
         current_size = numpy.zeros (1).astype (numpy.int64)
 
-        res = BoardControllerDLL.get_instance ().get_current_board_data (num_samples, data_arr, current_size, self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().get_current_board_data (num_samples, data_arr, current_size, self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to get current data', res)
 
@@ -467,7 +488,7 @@ class BoardShim (object):
         """Get num of elements in ringbuffer"""
         data_size = numpy.zeros (1).astype (numpy.int64)
 
-        res = BoardControllerDLL.get_instance ().get_board_data_count (data_size, self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().get_board_data_count (data_size, self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to obtain buffer size', res)
         return data_size[0]
@@ -478,7 +499,7 @@ class BoardShim (object):
         package_length = BoardShim.get_num_rows (self.board_id)
         data_arr = numpy.zeros (data_size * package_length).astype (numpy.float64)
 
-        res = BoardControllerDLL.get_instance ().get_board_data (data_size, data_arr, self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().get_board_data (data_size, data_arr, self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to get board data', res)
 
@@ -491,6 +512,6 @@ class BoardShim (object):
         except:
             config_string = config
 
-        res = BoardControllerDLL.get_instance ().config_board (config_string, self.board_id, self.port_name)
+        res = BoardControllerDLL.get_instance ().config_board (config_string, self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to config board', res)

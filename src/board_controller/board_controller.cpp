@@ -297,6 +297,7 @@ int string_to_brainflow_input_params (
     {
         json config = json::parse (std::string (json_brainflow_input_params));
         *params = config.get<struct BrainFlowInputParams> ();
+        return STATUS_OK;
     }
     catch (json::exception &e)
     {
