@@ -49,6 +49,8 @@ if (MSVC)
     configure_msvc_runtime()
 endif ()
 
+add_subdirectory (third_party/DSPFilters)
+
 SET (BOARDS_JSON "brainflow_boards.json")
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -92,8 +94,6 @@ else (CMAKE_SIZEOF_VOID_P EQUAL 8)
         SET (GANGLION_LIB_NAME "GanglionLib.dll")
     endif (APPLE)
 endif (CMAKE_SIZEOF_VOID_P EQUAL 8)
-
-add_subdirectory ("${CMAKE_HOME_DIRECTORY}/third_party/DSPFilters")
 
 set (BOARD_CONTROLLER_SRC
     "src/utils/timestamp.cpp"
