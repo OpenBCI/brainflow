@@ -32,7 +32,7 @@ class IpProtocolType (enum.Enum):
 
 
 class BrainFlowInputParams (object):
-
+    """ inputs parameters for prepare_session method"""
     def __init__ (self):
         self.serial_port = ''
         self.mac_address = ''
