@@ -165,7 +165,7 @@ bool parse_args (int argc, char *argv[], struct BrainFlowInputParams *params, in
             if (i + 1 < argc)
             {
                 i++;
-                params->serial_port = std::stoi (std::string (argv[i]));
+                params->serial_port = std::string (argv[i]);
             }
             else
             {
