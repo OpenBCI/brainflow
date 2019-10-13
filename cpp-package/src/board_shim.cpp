@@ -1,10 +1,30 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "board_controller.h"
 #include "board_shim.h"
 
-#define MAX_CHANNELS 256
+#define MAX_CHANNELS 512
+
+/////////////////////////////////////////
+/////// serialize struct to json ////////
+/////////////////////////////////////////
+
+void to_json (json &j, const struct BrainFlowInputParams &params)
+{
+    j = json {{"serial_port", params.serial_port}, {"ip_address", params.ip_address},
+        {"mac_address", params.mac_address}, {"ip_protocol", params.ip_protocol},
+        {"other_info", params.other_info}, {"ip_port", params.ip_port}};
+}
+
+void from_json (const json &j, struct BrainFlowInputParams &params)
+{
+    j.at ("serial_port").get_to (params.serial_port);
+    j.at ("ip_protocol").get_to (params.ip_protocol);
+    j.at ("ip_address").get_to (params.ip_address);
+    j.at ("other_info").get_to (params.other_info);
+    j.at ("mac_address").get_to (params.mac_address);
+    j.at ("ip_port").get_to (params.ip_port);
+}
 
 /////////////////////////////////////////
 //////////// logging methods ////////////
@@ -50,15 +70,16 @@ void BoardShim::set_log_file (char *log_file)
 /////// data acquisition methods /////////
 //////////////////////////////////////////
 
-BoardShim::BoardShim (int board_id, const char *port_name)
+BoardShim::BoardShim (int board_id, struct BrainFlowInputParams params)
 {
-    strcpy (this->port_name, port_name);
+    json j = params;
+    input_params = j.dump ();
     this->board_id = board_id;
 }
 
 void BoardShim::prepare_session ()
 {
-    int res = ::prepare_session (board_id, port_name);
+    int res = ::prepare_session (board_id, const_cast<char *> (input_params.c_str ()));
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to prepare session", res);
@@ -67,7 +88,7 @@ void BoardShim::prepare_session ()
 
 void BoardShim::start_stream (int buffer_size)
 {
-    int res = ::start_stream (buffer_size, board_id, port_name);
+    int res = ::start_stream (buffer_size, board_id, const_cast<char *> (input_params.c_str ()));
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to start stream", res);
@@ -76,7 +97,7 @@ void BoardShim::start_stream (int buffer_size)
 
 void BoardShim::stop_stream ()
 {
-    int res = ::stop_stream (board_id, port_name);
+    int res = ::stop_stream (board_id, const_cast<char *> (input_params.c_str ()));
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to stop stream", res);
@@ -85,7 +106,7 @@ void BoardShim::stop_stream ()
 
 void BoardShim::release_session ()
 {
-    int res = ::release_session (board_id, port_name);
+    int res = ::release_session (board_id, const_cast<char *> (input_params.c_str ()));
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to release session", res);
@@ -95,7 +116,8 @@ void BoardShim::release_session ()
 int BoardShim::get_board_data_count ()
 {
     int data_count = 0;
-    int res = ::get_board_data_count (&data_count, board_id, port_name);
+    int res =
+        ::get_board_data_count (&data_count, board_id, const_cast<char *> (input_params.c_str ()));
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to get board data count", res);
@@ -108,7 +130,8 @@ double **BoardShim::get_board_data (int *num_data_points)
     int num_samples = get_board_data_count ();
     int num_data_channels = get_num_rows (board_id);
     double *buf = new double[num_samples * num_data_channels];
-    int res = ::get_board_data (num_samples, buf, board_id, port_name);
+    int res =
+        ::get_board_data (num_samples, buf, board_id, const_cast<char *> (input_params.c_str ()));
     if (res != STATUS_OK)
     {
         delete[] buf;
@@ -130,7 +153,8 @@ double **BoardShim::get_current_board_data (int num_samples, int *num_data_point
 {
     int num_data_channels = BoardShim::get_num_rows (board_id);
     double *buf = new double[num_samples * num_data_channels];
-    int res = ::get_current_board_data (num_samples, buf, num_data_points, board_id, port_name);
+    int res = ::get_current_board_data (
+        num_samples, buf, num_data_points, board_id, const_cast<char *> (input_params.c_str ()));
     if (res != STATUS_OK)
     {
         delete[] buf;
@@ -150,7 +174,7 @@ double **BoardShim::get_current_board_data (int num_samples, int *num_data_point
 
 void BoardShim::config_board (char *config)
 {
-    int res = ::config_board (config, board_id, port_name);
+    int res = ::config_board (config, board_id, const_cast<char *> (input_params.c_str ()));
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to config board", res);

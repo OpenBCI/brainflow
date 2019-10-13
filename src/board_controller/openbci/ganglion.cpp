@@ -18,15 +18,14 @@
 #define MAX_ATTEMPTS_TO_GET_DATA 250
 
 
-Ganglion::Ganglion (const char *port_name) : Board ((int)GANGLION_BOARD)
+Ganglion::Ganglion (struct BrainFlowInputParams params) : Board ((int)GANGLION_BOARD, params)
 {
-    if (port_name == NULL)
+    if (params.mac_address.empty ())
     {
         this->use_mac_addr = false;
     }
     else
     {
-        strcpy (this->mac_addr, port_name);
         this->use_mac_addr = true;
     }
     // get full path of ganglioblibnative with assumption that this lib is in the same folder
@@ -419,7 +418,7 @@ int Ganglion::call_open ()
     int res = GanglionLibNative::CustomExitCodesNative::STATUS_OK;
     if (this->use_mac_addr)
     {
-        safe_logger (spdlog::level::info, "search for {}", this->mac_addr);
+        safe_logger (spdlog::level::info, "search for {}", this->params.mac_address.c_str ());
         DLLFunc func = this->dll_loader->get_address ("open_ganglion_mac_addr_native");
         if (func == NULL)
         {
@@ -427,7 +426,7 @@ int Ganglion::call_open ()
                 "failed to get function address for open_ganglion_mac_addr_native");
             return GENERAL_ERROR;
         }
-        res = (func) (this->mac_addr);
+        res = (func) (const_cast<char *> (params.mac_address.c_str ()));
     }
     else
     {

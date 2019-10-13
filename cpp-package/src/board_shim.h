@@ -1,13 +1,24 @@
 #pragma once
 
+#include <string>
+
 // include it here to allow user include only this single file
+#include "board_controller.h"
 #include "brainflow_constants.h"
 #include "brainflow_exception.h"
+
+#include "json.hpp"
+
+using json = nlohmann::json;
+
+void to_json (json &j, const struct BrainFlowInputParams &params);
+void from_json (const json &j, struct BrainFlowInputParams &params);
 
 class BoardShim
 {
 
     void reshape_data (int data_points, double *linear_buffer, double **output_buf);
+    std::string input_params;
 
 public:
     // logging methods
@@ -32,9 +43,8 @@ public:
     static int *get_other_channels (int board_id, int *len);
 
     int board_id;
-    char port_name[1024];
 
-    BoardShim (int board_id, const char *port_name);
+    BoardShim (int board_id, struct BrainFlowInputParams params);
     ~BoardShim ()
     {
     }

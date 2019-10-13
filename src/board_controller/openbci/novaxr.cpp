@@ -6,9 +6,9 @@
 #include "novaxr.h"
 #include "openbci_helpers.h"
 
-NovaXR::NovaXR (char *ip_addr)
-    : Board ((int)NOVAXR_BOARD), socket (ip_addr, 2390, (int)SocketType::UDP)
+NovaXR::NovaXR (struct BrainFlowInputParams params) : Board ((int)NOVAXR_BOARD, params)
 {
+    this->socket = NULL;
     this->is_streaming = false;
     this->keep_alive = false;
     this->initialized = false;
@@ -29,7 +29,20 @@ int NovaXR::prepare_session ()
         safe_logger (spdlog::level::info, "Session is already prepared");
         return STATUS_OK;
     }
-    int res = socket.connect ();
+    if ((params.ip_address.empty ()) || (params.ip_protocol == (int)IpProtocolType::NONE))
+    {
+        safe_logger (spdlog::level::err, "ip address or ip protocol is empty");
+        return INVALID_ARGUMENTS_ERROR;
+    }
+    if (params.ip_protocol == (int)IpProtocolType::UDP)
+    {
+        socket = new SocketClient (params.ip_address.c_str (), 2390, (int)SocketType::UDP);
+    }
+    else
+    {
+        socket = new SocketClient (params.ip_address.c_str (), 2390, (int)SocketType::TCP);
+    }
+    int res = socket->connect ();
     if (res != 0)
     {
         safe_logger (spdlog::level::err, "failed to init socket: {}", res);
@@ -48,7 +61,7 @@ int NovaXR::config_board (char *config)
         return res;
     }
     int len = strlen (config);
-    res = socket.send (config, len);
+    res = socket->send (config, len);
     if (len != res)
     {
         safe_logger (spdlog::level::err, "Failed to config a board");
@@ -77,7 +90,7 @@ int NovaXR::start_stream (int buffer_size)
     }
 
     // start streaming
-    if (socket.send ("b", 1) != 1)
+    if (socket->send ("b", 1) != 1)
     {
         safe_logger (spdlog::level::err, "Failed to send a command to board");
         return BOARD_WRITE_ERROR;
@@ -119,7 +132,7 @@ int NovaXR::stop_stream ()
         is_streaming = false;
         streaming_thread.join ();
         this->state = SYNC_TIMEOUT_ERROR;
-        if (socket.send ("s", 1) != 1)
+        if (socket->send ("s", 1) != 1)
         {
             safe_logger (spdlog::level::err, "Failed to send a command to board");
             return BOARD_WRITE_ERROR;
@@ -141,7 +154,12 @@ int NovaXR::release_session ()
             stop_stream ();
         }
         initialized = false;
-        socket.close ();
+        if (socket)
+        {
+            socket->close ();
+            delete socket;
+            socket = NULL;
+        }
     }
     return STATUS_OK;
 }
@@ -181,7 +199,7 @@ void NovaXR::read_thread ()
     unsigned char b[72];
     while (keep_alive)
     {
-        res = socket.recv (b, 72);
+        res = socket->recv (b, 72);
         if (res != 72)
         {
             safe_logger (spdlog::level::trace, "unable to read 72 bytes, read {}", res);

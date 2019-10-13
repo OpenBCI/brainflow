@@ -18,7 +18,8 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-SyntheticBoard::SyntheticBoard (const char *json_config) : Board ((int)SYNTHETIC_BOARD)
+SyntheticBoard::SyntheticBoard (struct BrainFlowInputParams params)
+    : Board ((int)SYNTHETIC_BOARD, params)
 {
     this->is_streaming = false;
     this->keep_alive = false;

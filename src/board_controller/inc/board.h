@@ -1,5 +1,6 @@
 #pragma once
 
+#include "board_controller.h"
 #include "data_buffer.h"
 #include "spdlog/spdlog.h"
 
@@ -23,11 +24,12 @@ public:
             db = NULL;
         }
     }
-    Board (int board_id)
+    Board (int board_id, struct BrainFlowInputParams params)
     {
         skip_logs = false;
         db = NULL; // should be initialized in start_stream
         this->board_id = board_id;
+        this->params = params;
     }
     virtual int prepare_session () = 0;
     virtual int start_stream (int buffer_size) = 0;
@@ -63,6 +65,7 @@ protected:
     DataBuffer *db;
     bool skip_logs;
     int board_id;
+    struct BrainFlowInputParams params;
 
 private:
     // reshapes data from DataBuffer format where all channels are mixed to linear buffer with

@@ -182,6 +182,7 @@ target_include_directories (
     ${BRAINFLOW_CPP_BINDING_NAME} PRIVATE
     src/board_controller/inc
     src/data_handler/inc
+    third_party/inc
 )
 
 if (UNIX)
@@ -220,7 +221,6 @@ if (MSVC)
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${DATA_HANDLER_COMPILED_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/$<CONFIG>/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
-        
     )
 endif (MSVC)
 if (UNIX)
@@ -286,6 +286,7 @@ install (
     "cpp-package/src/data_filter.h"
     "cpp-package/src/board_shim.h"
     "cpp-package/src/brainflow_exception.h"
+    "third_party/inc/json.hpp"
     DESTINATION inc
 )
 
