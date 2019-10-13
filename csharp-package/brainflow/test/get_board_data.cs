@@ -10,16 +10,11 @@ namespace test
         static void Main (string[] args)
         {
             BoardShim.enable_dev_board_logger ();
-            BoardShim board_shim;
-            // use it to run from VS solution wo cmd line args
-            // int board_id = (int)BoardIds.SYNTHETIC_BOARD;
-            // board_shim = new BoardShim (board_id, "");
-            int board_id = Int32.Parse (args[0]);
-            if (args.Length == 2)
-                board_shim = new BoardShim (board_id, args[1]);
-            else
-                board_shim = new BoardShim (board_id, null);
 
+            BrainFlowInputParams input_params = new BrainFlowInputParams ();
+            int board_id = parse_args (args, input_params);
+
+            BoardShim board_shim = new BoardShim (board_id, input_params);
             board_shim.prepare_session ();
             board_shim.start_stream (3600);
             System.Threading.Thread.Sleep (5000);
@@ -60,6 +55,44 @@ namespace test
                         break;
                 }
             }
+        }
+
+        static int parse_args (string[] args, BrainFlowInputParams input_params)
+        {
+            int board_id = (int)BoardIds.SYNTHETIC_BOARD; //assume synthetic board by default
+            // use docs to get params for your specific board, e.g. set serial_port for Cyton
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].Equals ("--ip-address"))
+                {
+                    input_params.ip_address = args[i + 1];
+                }
+                if (args[i].Equals ("--mac-address"))
+                {
+                    input_params.mac_address = args[i + 1];
+                }
+                if (args[i].Equals ("--serial-port"))
+                {
+                    input_params.serial_port = args[i + 1];
+                }
+                if (args[i].Equals ("--other-info"))
+                {
+                    input_params.other_info = args[i + 1];
+                }
+                if (args[i].Equals ("--ip-port"))
+                {
+                    input_params.ip_port = Convert.ToInt32 (args[i + 1]);
+                }
+                if (args[i].Equals ("--ip-protocol"))
+                {
+                    input_params.ip_protocol = Convert.ToInt32 (args[i + 1]);
+                }
+                if (args[i].Equals ("--board"))
+                {
+                    board_id = Convert.ToInt32 (args[i + 1]);
+                }
+            }
+            return board_id;
         }
     }
 }

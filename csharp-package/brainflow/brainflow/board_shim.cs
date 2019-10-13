@@ -9,12 +9,12 @@ namespace brainflow
     public class BoardShim
     {
         public int board_id;
-        public string port_name;
+        public string input_json;
 
-        public BoardShim (int board_id, string port_name)
+        public BoardShim (int board_id, BrainFlowInputParams input_params)
         {
             this.board_id = board_id;
-            this.port_name = port_name;
+            this.input_json = input_params.to_json ();
         }
 
         public static int get_sampling_rate (int board_id)
@@ -252,7 +252,7 @@ namespace brainflow
 
         public void prepare_session ()
         {
-            int res = BoardControllerLibrary.prepare_session (board_id, port_name);
+            int res = BoardControllerLibrary.prepare_session (board_id, input_json);
             if (res != (int) CustomExitCodes.STATUS_OK)
             {
                 throw new BrainFlowExceptioin (res);
@@ -261,7 +261,7 @@ namespace brainflow
 
         public void config_board (string config)
         {
-            int res = BoardControllerLibrary.config_board (config, board_id, port_name);
+            int res = BoardControllerLibrary.config_board (config, board_id, input_json);
             if (res != (int)CustomExitCodes.STATUS_OK)
             {
                 throw new BrainFlowExceptioin (res);
@@ -270,7 +270,7 @@ namespace brainflow
 
         public void start_stream (int num_samples = 3600 * 250)
         {
-            int res = BoardControllerLibrary.start_stream (num_samples, board_id, port_name);
+            int res = BoardControllerLibrary.start_stream (num_samples, board_id, input_json);
             if (res != (int) CustomExitCodes.STATUS_OK)
             {
                 throw new BrainFlowExceptioin (res);
@@ -279,7 +279,7 @@ namespace brainflow
 
         public void stop_stream ()
         {
-            int res = BoardControllerLibrary.stop_stream (board_id, port_name);
+            int res = BoardControllerLibrary.stop_stream (board_id, input_json);
             if (res != (int) CustomExitCodes.STATUS_OK)
             {
                 throw new BrainFlowExceptioin (res);
@@ -288,7 +288,7 @@ namespace brainflow
 
         public void release_session ()
         {
-            int res = BoardControllerLibrary.release_session (board_id, port_name);
+            int res = BoardControllerLibrary.release_session (board_id, input_json);
             if (res != (int) CustomExitCodes.STATUS_OK)
             {
                 throw new BrainFlowExceptioin (res);
@@ -298,7 +298,7 @@ namespace brainflow
         public int get_board_data_count ()
         {
             int[] res = new int[1];
-            int ec = BoardControllerLibrary.get_board_data_count (res, board_id, port_name);
+            int ec = BoardControllerLibrary.get_board_data_count (res, board_id, input_json);
             if (ec != (int) CustomExitCodes.STATUS_OK)
             {
                 throw new BrainFlowExceptioin (ec);
@@ -311,7 +311,7 @@ namespace brainflow
             int num_rows = BoardShim.get_num_rows (board_id); 
             double[] data_arr = new double[num_samples * num_rows];
             int[] current_size = new int[1];
-            int ec = BoardControllerLibrary.get_current_board_data (num_samples, data_arr, current_size, board_id, port_name);
+            int ec = BoardControllerLibrary.get_current_board_data (num_samples, data_arr, current_size, board_id, input_json);
 		    if (ec != (int) CustomExitCodes.STATUS_OK) {
 			    throw new BrainFlowExceptioin (ec);
             }
@@ -336,7 +336,7 @@ namespace brainflow
 		    int size = get_board_data_count ();
             int num_rows = BoardShim.get_num_rows (board_id);
             double[] data_arr = new double[size * num_rows];
-            int ec = BoardControllerLibrary.get_board_data (size, data_arr, board_id, port_name);
+            int ec = BoardControllerLibrary.get_board_data (size, data_arr, board_id, input_json);
 		    if (ec != (int) CustomExitCodes.STATUS_OK) {
                 throw new BrainFlowExceptioin (ec);
             }

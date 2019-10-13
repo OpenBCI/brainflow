@@ -47,23 +47,23 @@ namespace brainflow
     public static class BoardControllerLibrary64
     {
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int prepare_session (int board_id, string port_name);
+        public static extern int prepare_session (int board_id, string input_json);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int start_stream (int buffer_size, int board_id, string port_name);
+        public static extern int start_stream (int buffer_size, int board_id, string input_json);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int stop_stream (int board_id, string port_name);
+        public static extern int stop_stream (int board_id, string input_json);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int release_session (int board_id, string port_name);
+        public static extern int release_session (int board_id, string input_json);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_current_board_data (int num_samples, double[] data_buf, int[] returned_samples, int board_id, string port_name);
+        public static extern int get_current_board_data (int num_samples, double[] data_buf, int[] returned_samples, int board_id, string input_json);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_board_data_count(int[] result, int board_id, string port_name);
+        public static extern int get_board_data_count(int[] result, int board_id, string input_json);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_board_data (int data_count, double[] data_buf, int board_id, string port_name);
+        public static extern int get_board_data (int data_count, double[] data_buf, int board_id, string input_json);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
         public static extern int set_log_level (int log_level);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int config_board (string config, int board_id, string port_name);
+        public static extern int config_board (string config, int board_id, string input_json);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
         public static extern int set_log_file (string log_file);
         [DllImport ("BoardController.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
@@ -97,23 +97,23 @@ namespace brainflow
     public static class BoardControllerLibrary32
     {
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int prepare_session (int board_id, string port_name);
+        public static extern int prepare_session (int board_id, string input_json);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int start_stream (int buffer_size, int board_id, string port_name);
+        public static extern int start_stream (int buffer_size, int board_id, string input_json);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int stop_stream (int board_id, string port_name);
+        public static extern int stop_stream (int board_id, string input_json);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int release_session (int board_id, string port_name);
+        public static extern int release_session (int board_id, string input_json);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_current_board_data (int num_samples, double[] data_buf, int[] returned_samples, int board_id, string port_name);
+        public static extern int get_current_board_data (int num_samples, double[] data_buf, int[] returned_samples, int board_id, string input_json);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_board_data_count (int[] result, int board_id, string port_name);
+        public static extern int get_board_data_count (int[] result, int board_id, string input_json);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_board_data (int data_count, double[] data_buf, int board_id, string port_name);
+        public static extern int get_board_data (int data_count, double[] data_buf, int board_id, string input_json);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
         public static extern int set_log_level (int log_level);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int config_board (string config, int board_id, string port_name);
+        public static extern int config_board (string config, int board_id, string input_json);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
         public static extern int set_log_file (string log_file);
         [DllImport ("BoardController32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
@@ -146,60 +146,60 @@ namespace brainflow
 
     public static class BoardControllerLibrary
     {
-        public static int prepare_session (int board_id, string port_name)
+        public static int prepare_session (int board_id, string input_json)
         {
             if (System.Environment.Is64BitProcess)
-                return BoardControllerLibrary64.prepare_session (board_id, port_name);
+                return BoardControllerLibrary64.prepare_session (board_id, input_json);
             else
-                return BoardControllerLibrary32.prepare_session (board_id, port_name);
+                return BoardControllerLibrary32.prepare_session (board_id, input_json);
         }
 
-        public static int start_stream (int buffer_size, int board_id, string port_name)
+        public static int start_stream (int buffer_size, int board_id, string input_json)
         {
             if (System.Environment.Is64BitProcess)
-                return BoardControllerLibrary64.start_stream (buffer_size, board_id, port_name);
+                return BoardControllerLibrary64.start_stream (buffer_size, board_id, input_json);
             else
-                return BoardControllerLibrary32.start_stream (buffer_size, board_id, port_name);
+                return BoardControllerLibrary32.start_stream (buffer_size, board_id, input_json);
         }
 
-        public static int stop_stream (int board_id, string port_name)
+        public static int stop_stream (int board_id, string input_json)
         {
             if (System.Environment.Is64BitProcess)
-                return BoardControllerLibrary64.stop_stream (board_id, port_name);
+                return BoardControllerLibrary64.stop_stream (board_id, input_json);
             else
-                return BoardControllerLibrary32.stop_stream (board_id, port_name);
+                return BoardControllerLibrary32.stop_stream (board_id, input_json);
         }
 
-        public static int release_session (int board_id, string port_name)
+        public static int release_session (int board_id, string input_json)
         {
             if (System.Environment.Is64BitProcess)
-                return BoardControllerLibrary64.release_session (board_id, port_name);
+                return BoardControllerLibrary64.release_session (board_id, input_json);
             else
-                return BoardControllerLibrary32.release_session (board_id, port_name);
+                return BoardControllerLibrary32.release_session (board_id, input_json);
         }
 
-        public static int get_current_board_data (int num_samples, double[] data_buf, int[] returned_samples, int board_id, string port_name)
+        public static int get_current_board_data (int num_samples, double[] data_buf, int[] returned_samples, int board_id, string input_json)
         {
             if (System.Environment.Is64BitProcess)
-                return BoardControllerLibrary64.get_current_board_data (num_samples, data_buf, returned_samples, board_id, port_name);
+                return BoardControllerLibrary64.get_current_board_data (num_samples, data_buf, returned_samples, board_id, input_json);
             else
-                return BoardControllerLibrary32.get_current_board_data (num_samples, data_buf, returned_samples, board_id, port_name);
+                return BoardControllerLibrary32.get_current_board_data (num_samples, data_buf, returned_samples, board_id, input_json);
         }
 
-        public static int get_board_data_count (int[] result, int board_id, string port_name)
+        public static int get_board_data_count (int[] result, int board_id, string input_json)
         {
             if (System.Environment.Is64BitProcess)
-                return BoardControllerLibrary64.get_board_data_count (result, board_id, port_name);
+                return BoardControllerLibrary64.get_board_data_count (result, board_id, input_json);
             else
-                return BoardControllerLibrary32.get_board_data_count (result, board_id, port_name);
+                return BoardControllerLibrary32.get_board_data_count (result, board_id, input_json);
         }
 
-        public static int get_board_data (int data_count, double[] data_buf, int board_id, string port_name)
+        public static int get_board_data (int data_count, double[] data_buf, int board_id, string input_json)
         {
             if (System.Environment.Is64BitProcess)
-                return BoardControllerLibrary64.get_board_data (data_count, data_buf, board_id, port_name);
+                return BoardControllerLibrary64.get_board_data (data_count, data_buf, board_id, input_json);
             else
-                return BoardControllerLibrary32.get_board_data (data_count, data_buf, board_id, port_name);
+                return BoardControllerLibrary32.get_board_data (data_count, data_buf, board_id, input_json);
         }
 
         public static int set_log_level (int log_level)
@@ -210,12 +210,12 @@ namespace brainflow
                 return BoardControllerLibrary32.set_log_level (log_level);
         }
 
-        public static int config_board (string config, int board_id, string port_name)
+        public static int config_board (string config, int board_id, string input_json)
         {
             if (System.Environment.Is64BitProcess)
-                return BoardControllerLibrary64.config_board (config, board_id, port_name);
+                return BoardControllerLibrary64.config_board (config, board_id, input_json);
             else
-                return BoardControllerLibrary32.config_board (config, board_id, port_name);
+                return BoardControllerLibrary32.config_board (config, board_id, input_json);
         }
 
         public static int set_log_file (string log_file)
