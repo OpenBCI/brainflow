@@ -93,7 +93,7 @@ else (CMAKE_SIZEOF_VOID_P EQUAL 8)
     endif (APPLE)
 endif (CMAKE_SIZEOF_VOID_P EQUAL 8)
 
-add_subdirectory (third_party/DSPFilters)
+add_subdirectory ("${CMAKE_HOME_DIRECTORY}/third_party/DSPFilters")
 
 set (BOARD_CONTROLLER_SRC
     "src/utils/timestamp.cpp"
