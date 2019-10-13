@@ -87,7 +87,7 @@ namespace test
                 {
                     input_params.ip_protocol = Convert.ToInt32 (args[i + 1]);
                 }
-                if (args[i].Equals ("--board"))
+                if (args[i].Equals ("--board-id"))
                 {
                     board_id = Convert.ToInt32 (args[i + 1]);
                 }

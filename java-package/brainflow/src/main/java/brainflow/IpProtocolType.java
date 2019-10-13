@@ -27,12 +27,12 @@ public enum IpProtocolType {
     }
  
     IpProtocolType(final int code) {
-    	protocol = code;
+        protocol = code;
     }
 
     static {
         for (final IpProtocolType ec : IpProtocolType.values ()) {
-        	ip_map.put(ec.get_code(), ec);
+            ip_map.put(ec.get_code(), ec);
         }
     }
 

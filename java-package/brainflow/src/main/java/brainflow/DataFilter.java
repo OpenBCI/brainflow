@@ -14,15 +14,15 @@ import com.sun.jna.Native;
 
 public class DataFilter {
 
-	private interface DllInterface extends Library {
-		int perform_lowpass (double[] data, int data_len,
-		        int sampling_rate, double cutoff, int order, int filter_type, double ripple);
-		int perform_highpass (double[] data, int data_len,
-		        int sampling_rate, double cutoff, int order, int filter_type, double ripple);
-		int perform_bandpass (double[] data, int data_len,
-		        int sampling_rate, double center_freq, double band_width, int order, int filter_type, double ripple);
-		int perform_bandstop (double[] data, int data_len,
-		        int sampling_rate, double center_freq, double band_width, int order, int filter_type, double ripple);
+    private interface DllInterface extends Library {
+        int perform_lowpass (double[] data, int data_len,
+                int sampling_rate, double cutoff, int order, int filter_type, double ripple);
+        int perform_highpass (double[] data, int data_len,
+                int sampling_rate, double cutoff, int order, int filter_type, double ripple);
+        int perform_bandpass (double[] data, int data_len,
+                int sampling_rate, double center_freq, double band_width, int order, int filter_type, double ripple);
+        int perform_bandstop (double[] data, int data_len,
+                int sampling_rate, double center_freq, double band_width, int order, int filter_type, double ripple);
     }
     private static DllInterface instance;
 
