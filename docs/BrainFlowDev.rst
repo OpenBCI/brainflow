@@ -41,7 +41,7 @@ Instructions to add new boards to brainflow
 - add new object creation to board_controller.cpp
 - add new board Id to BoardIds enum in C++ code and in all bindings
 - inherit your board from Board class and implement all pure virtual methods, store data in DataBuffer object, use synthetic board as a reference, try to reuse code from utils folder
-- update board_info_getter.cpp with information about your board and data format
+- add information about your board to brainflow_bords.json
 - add new files to CmakeLists.txt
 
 You've just written Python, Java, C#, Matlab, R, C++ ... SDKs for your board!

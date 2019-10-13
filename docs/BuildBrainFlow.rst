@@ -76,9 +76,3 @@ Unity Integration
 - copy managed DLLs to the Assets folder of your Unity project
 - copy unmanaged DLLS to project folder to use it with Unity player
 - after building Unity project copy unmanaged DLLs to exe folder
-
-Matlab
--------
-
-- Compile BrainFlow's core module
-- run samples
