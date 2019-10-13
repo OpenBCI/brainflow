@@ -236,43 +236,43 @@ public class BoardShim {
     }
     
     public int board_id;
-    public String port_name;
+    public String input_json;
     
-    public BoardShim (int board_id, String port_name) throws BrainFlowError, IOException, ReflectiveOperationException {
+    public BoardShim (int board_id, BrainFlowInputParams params) throws BrainFlowError, IOException, ReflectiveOperationException {
         this.board_id = board_id;
-        this.port_name = port_name;
+        this.input_json = params.to_json();
     }
 
     public void prepare_session () throws BrainFlowError {
-        int ec = instance.prepare_session (board_id, port_name);
+        int ec = instance.prepare_session (board_id, input_json);
         if (ec != ExitCode.STATUS_OK.get_code ()) {
             throw new BrainFlowError ("Error in prepare_session", ec);
         }
     }
 
     public void config_board (String config) throws BrainFlowError {
-        int ec = instance.config_board (config, board_id, port_name);
+        int ec = instance.config_board (config, board_id, input_json);
         if (ec != ExitCode.STATUS_OK.get_code ()) {
             throw new BrainFlowError ("Error in config_board", ec);
         }
     }
 
     public void start_stream (int buffer_size) throws BrainFlowError {
-        int ec = instance.start_stream (buffer_size, board_id, port_name);
+        int ec = instance.start_stream (buffer_size, board_id, input_json);
         if (ec != ExitCode.STATUS_OK.get_code ()) {
             throw new BrainFlowError ("Error in start_stream", ec);
         }
     }
 
     public void stop_stream () throws BrainFlowError {
-        int ec = instance.stop_stream (board_id, port_name);
+        int ec = instance.stop_stream (board_id, input_json);
         if (ec != ExitCode.STATUS_OK.get_code ()) {
             throw new BrainFlowError ("Error in stop_stream", ec);
         }
     }
 
     public void release_session () throws BrainFlowError {
-        int ec = instance.release_session (board_id, port_name);
+        int ec = instance.release_session (board_id, input_json);
         if (ec != ExitCode.STATUS_OK.get_code ()) {
             throw new BrainFlowError ("Error in release_session", ec);
         }
@@ -280,7 +280,7 @@ public class BoardShim {
 
     public int get_board_data_count () throws BrainFlowError {
         int[] res = new int[1];
-        int ec = instance.get_board_data_count (res, board_id, port_name);
+        int ec = instance.get_board_data_count (res, board_id, input_json);
         if (ec != ExitCode.STATUS_OK.get_code ()) {
             throw new BrainFlowError ("Error in get_board_data_count", ec);
         }
@@ -291,7 +291,7 @@ public class BoardShim {
     	int num_rows = BoardShim.get_num_rows(board_id);
         double[] data_arr = new double[num_samples * num_rows];
         int[] current_size = new int[1];
-        int ec = instance.get_current_board_data (num_samples, data_arr, current_size, board_id, port_name);
+        int ec = instance.get_current_board_data (num_samples, data_arr, current_size, board_id, input_json);
         if (ec != ExitCode.STATUS_OK.get_code ()) {
             throw new BrainFlowError ("Error in get_current_board_data", ec);
         }
@@ -306,7 +306,7 @@ public class BoardShim {
         int size = get_board_data_count ();
         int num_rows = BoardShim.get_num_rows(board_id);
         double[] data_arr = new double[size * num_rows];
-        int ec = instance.get_board_data (size, data_arr, board_id, port_name);
+        int ec = instance.get_board_data (size, data_arr, board_id, input_json);
         if (ec != ExitCode.STATUS_OK.get_code ()) {
             throw new BrainFlowError ("Error in get_board_data", ec);
         }
