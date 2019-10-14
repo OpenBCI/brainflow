@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from brainflow.board_shim import BoardShim, BrainFlowInputParams
 from brainflow.data_filter import DataFilter, FilterTypes
 
+
 def main ():
     parser = argparse.ArgumentParser ()
     # use docs to check which parameters are required for specific board, e.g. for Cyton - set serial port,
@@ -20,7 +21,7 @@ def main ():
     parser.add_argument ('--serial-port', type = str, help  = 'serial port', required = False, default = '')
     parser.add_argument ('--mac-address', type = str, help  = 'mac address', required = False, default = '')
     parser.add_argument ('--other-info', type = str, help  = 'other info', required = False, default = '')
-    parser.add_argument ('--board', type = int, help  = 'board id, check docs to get a list of supported boards', required = True)
+    parser.add_argument ('--board-id', type = int, help  = 'board id, check docs to get a list of supported boards', required = True)
     parser.add_argument ('--log', action = 'store_true')
     args = parser.parse_args ()
 
@@ -38,7 +39,7 @@ def main ():
         BoardShim.disable_board_logger ()
 
     # demo how to read data as 2d numpy array
-    board = BoardShim (args.board, params)
+    board = BoardShim (args.board_id, params)
     board.prepare_session ()
     board.start_stream ()
     time.sleep (10)
@@ -48,7 +49,7 @@ def main ():
     board.release_session ()
 
     # demo how to convert it to pandas DF and plot data
-    eeg_channels = BoardShim.get_eeg_channels (args.board)
+    eeg_channels = BoardShim.get_eeg_channels (args.board_id)
     df = pd.DataFrame (np.transpose (data))
     print (df.head ())
     plt.figure ()
@@ -58,13 +59,13 @@ def main ():
     # demo how to perform signal processing
     for count, channel in enumerate (eeg_channels):
         if count == 0:
-            DataFilter.perform_bandpass (data[channel], BoardShim.get_sampling_rate (args.board), 15.0, 6.0, 4, FilterTypes.BESSEL.value, 0)
+            DataFilter.perform_bandpass (data[channel], BoardShim.get_sampling_rate (args.board_id), 15.0, 6.0, 4, FilterTypes.BESSEL.value, 0)
         elif count == 1:
-            DataFilter.perform_bandstop (data[channel], BoardShim.get_sampling_rate (args.board), 5.0, 1.0, 3, FilterTypes.BUTTERWORTH.value, 0)
+            DataFilter.perform_bandstop (data[channel], BoardShim.get_sampling_rate (args.board_id), 5.0, 1.0, 3, FilterTypes.BUTTERWORTH.value, 0)
         elif count == 2:
-            DataFilter.perform_lowpass (data[channel], BoardShim.get_sampling_rate (args.board), 9.0, 5, FilterTypes.CHEBYSHEV_TYPE_1.value, 1)
+            DataFilter.perform_lowpass (data[channel], BoardShim.get_sampling_rate (args.board_id), 9.0, 5, FilterTypes.CHEBYSHEV_TYPE_1.value, 1)
         elif count == 3:
-            DataFilter.perform_highpass (data[channel], BoardShim.get_sampling_rate (args.board), 3.0, 4, FilterTypes.BUTTERWORTH.value, 0)
+            DataFilter.perform_highpass (data[channel], BoardShim.get_sampling_rate (args.board_id), 3.0, 4, FilterTypes.BUTTERWORTH.value, 0)
 
     df = pd.DataFrame (np.transpose (data))
     print (df.head ())
