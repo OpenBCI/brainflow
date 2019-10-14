@@ -49,7 +49,12 @@ if (MSVC)
     configure_msvc_runtime()
 endif ()
 
-add_subdirectory (third_party/DSPFilters)
+# add_subfolder doesnt work if you need to istall packages, add it in top level file
+SET (DSPFilters "DSPFilters")
+aux_source_directory (${CMAKE_HOME_DIRECTORY}/third_party/DSPFilters/source DSPFILTERS_SOURCE_LIB)
+add_library (${DSPFilters} STATIC ${DSPFILTERS_SOURCE_LIB})
+target_include_directories (${DSPFilters} PUBLIC $<BUILD_INTERFACE:${CMAKE_HOME_DIRECTORY}/third_party/DSPFilters/include>)
+set_property (TARGET ${DSPFilters} PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 SET (BOARDS_JSON "brainflow_boards.json")
 
@@ -164,9 +169,9 @@ set_target_properties (${DATA_HANDLER_NAME}
 
 if (UNIX)
     target_link_libraries (${BOARD_CONTROLLER_NAME} pthread dl)
-    target_link_libraries (${DATA_HANDLER_NAME} DSPFilters pthread dl)
+    target_link_libraries (${DATA_HANDLER_NAME} ${DSPFilters} pthread dl)
 else (UNIX)
-    target_link_libraries (${DATA_HANDLER_NAME} DSPFilters)
+    target_link_libraries (${DATA_HANDLER_NAME} ${DSPFilters})
 endif (UNIX)
 
 # getdata
@@ -298,7 +303,7 @@ install (
 )
 
 install (
-    TARGETS ${BOARD_CONTROLLER_NAME} ${DATA_HANDLER_NAME} DSPFilters ${BRAINFLOW_CPP_BINDING_NAME}
+    TARGETS ${BOARD_CONTROLLER_NAME} ${DATA_HANDLER_NAME} ${DSPFilters} ${BRAINFLOW_CPP_BINDING_NAME}
     EXPORT ${targets_export_name}
     RUNTIME DESTINATION lib
     LIBRARY DESTINATION lib
