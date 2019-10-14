@@ -64,7 +64,8 @@ target_include_directories (
 
 target_link_libraries (
     test_get_data PUBLIC
+    # for some systems(ubuntu for example) order matters
+    ${BrainflowPath}
     ${DataHandlerPath}
     ${BoardControllerPath}
-    ${BrainflowPath}
 )
