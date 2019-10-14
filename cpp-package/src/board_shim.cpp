@@ -5,25 +5,25 @@
 
 #define MAX_CHANNELS 512
 
+#include "json.hpp"
+
+using json = nlohmann::json;
+
 /////////////////////////////////////////
 /////// serialize struct to json ////////
 /////////////////////////////////////////
 
-void to_json (json &j, const struct BrainFlowInputParams &params)
+std::string params_to_string (struct BrainFlowInputParams params)
 {
-    j = json {{"serial_port", params.serial_port}, {"ip_address", params.ip_address},
-        {"mac_address", params.mac_address}, {"ip_protocol", params.ip_protocol},
-        {"other_info", params.other_info}, {"ip_port", params.ip_port}};
-}
-
-void from_json (const json &j, struct BrainFlowInputParams &params)
-{
-    j.at ("serial_port").get_to (params.serial_port);
-    j.at ("ip_protocol").get_to (params.ip_protocol);
-    j.at ("ip_address").get_to (params.ip_address);
-    j.at ("other_info").get_to (params.other_info);
-    j.at ("mac_address").get_to (params.mac_address);
-    j.at ("ip_port").get_to (params.ip_port);
+    json j;
+    j["serial_port"] = params.serial_port;
+    j["ip_protocol"] = params.ip_protocol;
+    j["ip_port"] = params.ip_port;
+    j["ip_address"] = params.ip_address;
+    j["mac_address"] = params.mac_address;
+    j["other_info"] = params.other_info;
+    std::string post_str = j.dump ();
+    return post_str;
 }
 
 /////////////////////////////////////////
@@ -72,8 +72,7 @@ void BoardShim::set_log_file (char *log_file)
 
 BoardShim::BoardShim (int board_id, struct BrainFlowInputParams params)
 {
-    json j = params;
-    input_params = j.dump ();
+    input_params = params_to_string (params);
     this->board_id = board_id;
 }
 

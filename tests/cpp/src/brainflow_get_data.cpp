@@ -7,8 +7,6 @@
 #include <unistd.h>
 #endif
 
-#include "json.hpp"
-
 #include "board_shim.h"
 #include "data_filter.h"
 
@@ -27,8 +25,8 @@ int main (int argc, char *argv[])
     }
 
     BoardShim::enable_dev_board_logger ();
-
-    BoardShim *board = new BoardShim (board_id, params);
+    char asd[] = "as";
+    BoardShim *board = new BoardShim (board_id, &params, asd);
     double **data = NULL;
     int *eeg_channels = NULL;
     int num_rows = 0;

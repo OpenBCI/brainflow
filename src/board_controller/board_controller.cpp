@@ -32,10 +32,8 @@ std::mutex mutex;
 
 std::pair<int, struct BrainFlowInputParams> get_key (
     int board_id, struct BrainFlowInputParams params);
-int check_board_session (std::pair<int, struct BrainFlowInputParams> key);
-void to_json (json &j, const struct BrainFlowInputParams &p);
-void from_json (const json &j, struct BrainFlowInputParams &p);
-int string_to_brainflow_input_params (
+static int check_board_session (std::pair<int, struct BrainFlowInputParams> key);
+static int string_to_brainflow_input_params (
     const char *json_brainflow_input_params, struct BrainFlowInputParams *params);
 
 
@@ -297,7 +295,12 @@ int string_to_brainflow_input_params (
     try
     {
         json config = json::parse (std::string (json_brainflow_input_params));
-        *params = config.get<struct BrainFlowInputParams> ();
+        params->serial_port = config["serial_port"];
+        params->ip_protocol = config["ip_protocol"];
+        params->ip_port = config["ip_port"];
+        params->other_info = config["other_info"];
+        params->mac_address = config["mac_address"];
+        params->ip_address = config["ip_address"];
         return STATUS_OK;
     }
     catch (json::exception &e)
@@ -305,21 +308,4 @@ int string_to_brainflow_input_params (
         Board::board_logger->error ("invalid input json, {}", e.what ());
         return GENERAL_ERROR;
     }
-}
-
-void to_json (json &j, const struct BrainFlowInputParams &params)
-{
-    j = json {{"serial_port", params.serial_port}, {"ip_address", params.ip_address},
-        {"mac_address", params.mac_address}, {"ip_protocol", params.ip_protocol},
-        {"other_info", params.other_info}, {"ip_port", params.ip_port}};
-}
-
-void from_json (const json &j, struct BrainFlowInputParams &params)
-{
-    j.at ("serial_port").get_to (params.serial_port);
-    j.at ("ip_protocol").get_to (params.ip_protocol);
-    j.at ("ip_address").get_to (params.ip_address);
-    j.at ("other_info").get_to (params.other_info);
-    j.at ("mac_address").get_to (params.mac_address);
-    j.at ("ip_port").get_to (params.ip_port);
 }

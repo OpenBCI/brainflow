@@ -34,7 +34,7 @@ addons:
 
 install:
   - sudo pip3 install --upgrade pip
-  - sudo pip3 install cmake
+  - sudo pip3 install cmake==3.13.0
   - sudo -H pip3 install --upgrade setuptools wheel virtualenv
   - sudo -H pip3 install $TRAVIS_BUILD_DIR/emulator
   # install required packages for R
@@ -46,8 +46,14 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       docker pull dockcross/manylinux-x64 ;
     fi
+    # for all tests except C++ we need libraries built inside docker and we need them for production
+    # for C++ test we need libs to be compiled in the same env as test
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       docker run -e TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR -v $TRAVIS_BUILD_DIR:$TRAVIS_BUILD_DIR dockcross/manylinux-x64 /bin/bash -c "/opt/python/cp36-cp36m/bin/pip3.6 install cmake==3.13.0 && cd $TRAVIS_BUILD_DIR && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/installed .. && make && make install" ;
+    fi
+  # build outside docker - dont do make install!
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      cd $TRAVIS_BUILD_DIR && sudo -H rm -rf build && mkdir build && cd build && cmake .. && make ;
     fi
   # build for mac
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
@@ -89,6 +95,7 @@ script:
 
 after_success:
   - sudo -H pip3 install awscli
+  # push libraries from docker!
   - aws s3 cp $TRAVIS_BUILD_DIR/installed/lib/ s3://brainflow-artifacts/$TRAVIS_COMMIT/$TRAVIS_OS_NAME --recursive
   # notify that everything is ok
   - echo success > ${TRAVIS_OS_NAME}_success && aws s3 cp ${TRAVIS_OS_NAME}_success s3://brainflow-artifacts/$TRAVIS_COMMIT/
