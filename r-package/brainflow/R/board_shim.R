@@ -13,10 +13,10 @@ BoardIds <- function() {
 }
 
 #' @param board_id
-#' @param port_name
+#' @param input_params
 #' @return BoardShim object
 #' @export
-get_board_shim_object <- function(board_id, port_name) {
+get_board_shim_object <- function(board_id, input_params) {
     brainflow$BoardShim(board_id, port_name)
 }
 
