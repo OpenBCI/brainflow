@@ -25,8 +25,8 @@ int main (int argc, char *argv[])
     }
 
     BoardShim::enable_dev_board_logger ();
-    char asd[] = "as";
-    BoardShim *board = new BoardShim (board_id, &params, asd);
+
+    BoardShim *board = new BoardShim (board_id, params);
     double **data = NULL;
     int *eeg_channels = NULL;
     int num_rows = 0;
