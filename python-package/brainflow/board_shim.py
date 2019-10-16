@@ -243,16 +243,16 @@ class BoardControllerDLL (object):
         self.get_gyro_channels.restype = ctypes.c_int
         self.get_gyro_channels.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64),
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32),
+            ndpointer (ctypes.c_int32)
         ]
 
         self.get_other_channels = self.lib.get_other_channels
         self.get_other_channels.restype = ctypes.c_int
         self.get_other_channels.argtypes = [
             ctypes.c_int,
-            ndpointer (ctypes.c_int64),
-            ndpointer (ctypes.c_int64)
+            ndpointer (ctypes.c_int32),
+            ndpointer (ctypes.c_int32)
         ]
 
 
@@ -378,7 +378,7 @@ class BoardShim (object):
         num_channels = numpy.zeros (1).astype (numpy.int32)
         eog_channels = numpy.zeros (512).astype (numpy.int32)
 
-        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, eog_channels, num_channels)
+        res = BoardControllerDLL.get_instance ().get_eog_channels (board_id, eog_channels, num_channels)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
         result = eog_channels.tolist () [0:num_channels[0]]
@@ -390,7 +390,7 @@ class BoardShim (object):
         num_channels = numpy.zeros (1).astype (numpy.int32)
         eda_channels = numpy.zeros (512).astype (numpy.int32)
 
-        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, eda_channels, num_channels)
+        res = BoardControllerDLL.get_instance ().get_eda_channels (board_id, eda_channels, num_channels)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
         result = eda_channels.tolist () [0:num_channels[0]]
@@ -402,7 +402,7 @@ class BoardShim (object):
         num_channels = numpy.zeros (1).astype (numpy.int32)
         ppg_channels = numpy.zeros (512).astype (numpy.int32)
 
-        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, ppg_channels, num_channels)
+        res = BoardControllerDLL.get_instance ().get_ppg_channels (board_id, ppg_channels, num_channels)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
         result = ppg_channels.tolist () [0:num_channels[0]]
@@ -414,7 +414,7 @@ class BoardShim (object):
         num_channels = numpy.zeros (1).astype (numpy.int32)
         accel_channels = numpy.zeros (512).astype (numpy.int32)
 
-        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, accel_channels, num_channels)
+        res = BoardControllerDLL.get_instance ().get_accel_channels (board_id, accel_channels, num_channels)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
         result = accel_channels.tolist () [0:num_channels[0]]
@@ -426,7 +426,7 @@ class BoardShim (object):
         num_channels = numpy.zeros (1).astype (numpy.int32)
         gyro_channels = numpy.zeros (512).astype (numpy.int32)
 
-        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, gyro_channels, num_channels)
+        res = BoardControllerDLL.get_instance ().get_gyro_channels (board_id, gyro_channels, num_channels)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
         result = gyro_channels.tolist () [0:num_channels[0]]
@@ -438,7 +438,7 @@ class BoardShim (object):
         num_channels = numpy.zeros (1).astype (numpy.int32)
         other_channels = numpy.zeros (512).astype (numpy.int32)
 
-        res = BoardControllerDLL.get_instance ().get_eeg_channels (board_id, other_channels, num_channels)
+        res = BoardControllerDLL.get_instance ().get_other_channels (board_id, other_channels, num_channels)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to request info about this board', res)
         result = other_channels.tolist () [0:num_channels[0]]
