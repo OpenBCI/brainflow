@@ -12,7 +12,7 @@ namespace brainflow
             int res = DataHandlerLibrary.perform_lowpass (filtered_data, data.Length, sampling_rate, cutoff, order, filter_type, ripple);
             if (res != (int)CustomExitCodes.STATUS_OK)
             {
-                throw new BrainFlowExceptioin (res);
+                throw new BrainFlowException (res);
             }
             return filtered_data;
         }
@@ -24,7 +24,7 @@ namespace brainflow
             int res = DataHandlerLibrary.perform_highpass (filtered_data, data.Length, sampling_rate, cutoff, order, filter_type, ripple);
             if (res != (int)CustomExitCodes.STATUS_OK)
             {
-                throw new BrainFlowExceptioin (res);
+                throw new BrainFlowException (res);
             }
             return filtered_data;
         }
@@ -36,7 +36,7 @@ namespace brainflow
             int res = DataHandlerLibrary.perform_bandpass (filtered_data, data.Length, sampling_rate, center_freq, band_width, order, filter_type, ripple);
             if (res != (int)CustomExitCodes.STATUS_OK)
             {
-                throw new BrainFlowExceptioin (res);
+                throw new BrainFlowException (res);
             }
             return filtered_data;
         }
@@ -48,7 +48,7 @@ namespace brainflow
             int res = DataHandlerLibrary.perform_bandstop (filtered_data, data.Length, sampling_rate, center_freq, band_width, order, filter_type, ripple);
             if (res != (int)CustomExitCodes.STATUS_OK)
             {
-                throw new BrainFlowExceptioin (res);
+                throw new BrainFlowException (res);
             }
             return filtered_data;
         }
