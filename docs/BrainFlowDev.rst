@@ -44,6 +44,6 @@ Instructions to add new boards to brainflow
 - add information about your board to brainflow_boards.json
 - add new files to CmakeLists.txt
 
-You've just written Python, Java, C#, Matlab, R, C++ ... SDKs for your board!
+You've just written Python, Java, C#, R, C++ ... SDKs for your board!
 
 To enable automation testing you should develop a simple emulator for your new board and add tests to .travis.yml and appveyour.yml, also make sure that all current tests are passed and feel free to send PR

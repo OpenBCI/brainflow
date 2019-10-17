@@ -23,7 +23,7 @@ Install emulator package::
 
 Run tests for Linux\MacOS and Windows (port argument will be added by Emulator!) ::
 
-    python brainflow_emulator/cyton_linux.py python ../python-package/examples/brainflow_get_data.py --log --board 0 --port
+    python brainflow_emulator/cyton_linux.py python ../python-package/examples/brainflow_get_data.py --log --board-id 0 --serial-port
     python brainflow_emulator/cyton_windows.py python ..\python-package\examples\brainflow_get_data.py --log --board-id 0 --serial-port
 
 Ganglion
@@ -44,7 +44,7 @@ Install emulator package::
 
 Run tests::
 
-    python brainflow_emulator/novaxr_udp.py python ../python-package/examples/brainflow_get_data.py --log --ip-address 127.0.0.1 --board-id 3
+    python brainflow_emulator/novaxr_udp.py python ../python-package/examples/brainflow_get_data.py --log --ip-address 127.0.0.1 --board-id 3 --ip-protocol 1
 
 Wifi shield based boards
 --------------------------
