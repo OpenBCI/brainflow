@@ -941,6 +941,7 @@ EXCLUDE_PATTERNS       =
 # exclude all test directories use the pattern */test/*
 
 # disable documentation for C++ -> C# interface, I dont know how it should be spelled so try with and without namespace
+# also disable test which is in the same package
 EXCLUDE_SYMBOLS        = BoardControllerLibrary64 \
                          BoardControllerLibrary32 \
                          BoardControllerLibrary \
@@ -952,7 +953,9 @@ EXCLUDE_SYMBOLS        = BoardControllerLibrary64 \
                          brainflow::BoardControllerLibrary \
                          brainflow::DataHandlerLibrary64 \
                          brainflow::DataHandlerLibrary32 \
-                         brainflow::DataHandlerLibrary
+                         brainflow::DataHandlerLibrary \
+                         BrainFlowTest \
+                         brainflow::BrainFlowTest
 
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
