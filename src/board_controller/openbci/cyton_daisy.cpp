@@ -27,7 +27,7 @@ void CytonDaisy::read_thread ()
     */
     int res;
     unsigned char b[32];
-    double package[27];
+    double package[27] = {0.};
     bool first_sample = false;
     while (keep_alive)
     {
