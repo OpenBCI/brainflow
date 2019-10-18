@@ -1,5 +1,3 @@
-.. _brainflow_emulator_link:
-
 Brainflow Emulator
 ==================
 
