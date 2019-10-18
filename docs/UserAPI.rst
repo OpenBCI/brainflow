@@ -45,7 +45,7 @@ brainflow.data\_filter
 Cpp API Reference
 -------------------
 
-Here we describe only high level API, to get information about structures, classes and enums from low level API check `BrainFlow Core API`_
+Here we describe only high level API, to get information about structures, classes and enums from low level API check Brainflow Core API
 
 BoardShim class
 ~~~~~~~~~~~~~~~~
@@ -111,7 +111,7 @@ There are a few methods which allows you to create python objects and call their
 
 But reticulate translates numpy arrays to R arrays in a tricky way, and it prevents us to implement signal processing in R, so you for R you have to perform signal processing by yourself.
 
-Use this example as a reference `R sample`_.
+Check R sample to see how to use it.
 
 Full code for R binding:
 
