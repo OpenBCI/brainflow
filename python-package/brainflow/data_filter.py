@@ -14,6 +14,7 @@ from brainflow.exit_codes import BrainflowExitCodes
 
 class FilterTypes (enum.Enum):
     """Enum to store all supported Filter Types"""
+
     BUTTERWORTH = 0 #:
     CHEBYSHEV_TYPE_1 = 1 #:
     BESSEL = 2 #:
@@ -102,6 +103,7 @@ class DataFilter (object):
     @classmethod
     def perform_lowpass (cls, data, sampling_rate, cutoff, order, filter_type, ripple):
         """apply low pass filter to provided data
+
         :param data: data to filter, filter works in-place
         :type data: numpy array
         :param sampling_rate: board's sampling rate
@@ -126,6 +128,7 @@ class DataFilter (object):
     @classmethod
     def perform_highpass (cls, data, sampling_rate, cutoff, order, filter_type, ripple):
         """apply high pass filter to provided data
+
         :param data: data to filter, filter works in-place
         :type data: numpy array
         :param sampling_rate: board's sampling rate
@@ -150,6 +153,7 @@ class DataFilter (object):
     @classmethod
     def perform_bandpass (cls, data, sampling_rate, center_freq, band_width, order, filter_type, ripple):
         """apply band pass filter to provided data
+
         :param data: data to filter, filter works in-place
         :type data: numpy array
         :param sampling_rate: board's sampling rate
@@ -176,6 +180,7 @@ class DataFilter (object):
     @classmethod
     def perform_bandstop (cls, data, sampling_rate, center_freq, band_width, order, filter_type, ripple):
         """apply band stop filter to provided data
+
         :param data: data to filter, filter works in-place
         :type data: numpy array
         :param sampling_rate: board's sampling rate

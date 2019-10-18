@@ -14,6 +14,7 @@ from brainflow.exit_codes import BrainflowExitCodes
 
 class BoardIds (enum.Enum):
     """Enum to store all supported Board Ids"""
+
     SYNTHETIC_BOARD = -1 #:
     CYTON_BOARD = 0 #:
     GANGLION_BOARD = 1 #:
@@ -26,6 +27,7 @@ class BoardIds (enum.Enum):
 
 class IpProtocolType (enum.Enum):
     """Enum to store Ip Protocol types"""
+
     NONE = 0 #:
     UDP = 1 #:
     TCP = 2 #:
@@ -33,6 +35,7 @@ class IpProtocolType (enum.Enum):
 
 class BrainFlowInputParams (object):
     """ inputs parameters for prepare_session method
+
     :param serial_port: serial port name is used for boards which reads data from serial port
     :type serial_port: str
     :param mac_address: mac address for example its used for bluetooth based boards
@@ -60,6 +63,7 @@ class BrainFlowInputParams (object):
 
 class BrainFlowError (Exception):
     """This exception is raised if non-zero exit code is returned from C code
+
     :param message: exception message
     :type message: str
     :param exit_code: exit code flow low level API
@@ -276,6 +280,7 @@ class BoardControllerDLL (object):
 
 class BoardShim (object):
     """BoardShim class is a primary interface to all boards
+
     :param board_id: Id of your board
     :type board_id: int
     :param input_params: board specific structure to pass required arguments
@@ -314,6 +319,7 @@ class BoardShim (object):
     @classmethod
     def set_log_file (cls, log_file):
         """redirect logger from stderr to file, can be called any time
+
         :param log_file: log file name
         :type log_file: str
         """
@@ -328,6 +334,7 @@ class BoardShim (object):
     @classmethod
     def get_sampling_rate (cls, board_id):
         """get sampling rate for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: sampling rate for this board id
@@ -342,6 +349,7 @@ class BoardShim (object):
     @classmethod
     def get_package_num_channel (cls, board_id):
         """get package num channel for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: number of package num channel
@@ -356,6 +364,7 @@ class BoardShim (object):
     @classmethod
     def get_num_rows (cls, board_id):
         """get number of rows in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: number of rows in returned numpy array
@@ -370,6 +379,7 @@ class BoardShim (object):
     @classmethod
     def get_timestamp_channel (cls, board_id):
         """get timestamp channel in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: number of timestamp channel in returned numpy array
@@ -384,6 +394,7 @@ class BoardShim (object):
     @classmethod
     def get_eeg_channels (cls, board_id):
         """get list of eeg channels in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: list of eeg channels in returned numpy array
@@ -401,6 +412,7 @@ class BoardShim (object):
     @classmethod
     def get_emg_channels (cls, board_id):
         """get list of emg channels in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: list of eeg channels in returned numpy array
@@ -418,6 +430,7 @@ class BoardShim (object):
     @classmethod
     def get_ecg_channels (cls, board_id):
         """get list of ecg channels in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: list of ecg channels in returned numpy array
@@ -435,6 +448,7 @@ class BoardShim (object):
     @classmethod
     def get_eog_channels (cls, board_id):
         """get list of eog channels in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: list of eog channels in returned numpy array
@@ -452,6 +466,7 @@ class BoardShim (object):
     @classmethod
     def get_eda_channels (cls, board_id):
         """get list of eda channels in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: list of eda channels in returned numpy array
@@ -469,6 +484,7 @@ class BoardShim (object):
     @classmethod
     def get_ppg_channels (cls, board_id):
         """get list of ppg channels in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: list of ppg channels in returned numpy array
@@ -486,6 +502,7 @@ class BoardShim (object):
     @classmethod
     def get_accel_channels (cls, board_id):
         """get list of accel channels in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: list of accel channels in returned numpy array
@@ -503,6 +520,7 @@ class BoardShim (object):
     @classmethod
     def get_gyro_channels (cls, board_id):
         """get list of gyro channels in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: list of gyro channels in returned numpy array
@@ -520,6 +538,7 @@ class BoardShim (object):
     @classmethod
     def get_other_channels (cls, board_id):
         """get list of other channels in resulting data table for a board
+
         :param board_id: Board Id
         :type board_id: int
         :return: list of other channels in returned numpy array
@@ -536,12 +555,14 @@ class BoardShim (object):
 
     def prepare_session (self):
         """prepare streaming sesssion, init resources, you need to call it before any other BoardShim object methods"""
+
         res = BoardControllerDLL.get_instance ().prepare_session (self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to prepare streaming session', res)
 
     def start_stream (self, num_samples = 1800*250):
         """Start streaming data, this methods stores data in ringbuffer
+
         :param num_samples: size of ring buffer to keep data
         :type num_samples: int
         """
@@ -551,18 +572,21 @@ class BoardShim (object):
 
     def stop_stream (self):
         """Stop streaming data"""
+
         res = BoardControllerDLL.get_instance ().stop_stream (self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to stop streaming session', res)
 
     def release_session (self):
         """release all resources"""
+
         res = BoardControllerDLL.get_instance ().release_session (self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to release streaming session', res)
 
     def get_current_board_data (self, num_samples):
         """Get specified amount of data or less if there is not enough data, doesnt remove data from ringbuffer
+
         :param num_samples: max number of samples
         :type num_samples: int
         :return: latest data from a board
@@ -584,6 +608,7 @@ class BoardShim (object):
 
     def get_board_data_count (self):
         """Get num of elements in ringbuffer
+
         :return: number of elements in ring buffer
         :rtype: int
         """
@@ -596,6 +621,7 @@ class BoardShim (object):
 
     def get_board_data (self):
         """Get all board data and remove them from ringbuffer
+
         :return: all data from a board
         :rtype: numpy 2d array
         """
@@ -611,6 +637,7 @@ class BoardShim (object):
 
     def config_board (self, config):
         """Use this method carefully and only if you understand what you are doing, do NOT use it to start or stop streaming
+
         :param config: string to send to a board
         :type config: str
         """
