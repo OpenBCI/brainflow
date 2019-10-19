@@ -1,9 +1,30 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 
 namespace brainflow
 {
     public class DataFilter
     {
+        static DataFilter ()
+        {
+            // in nuget we can put unmanaged libraries to 'lib' folder and this folder is on top level from brainflow.dll
+            // set PATH env variable to this folder and unmanaged libraries will be loaded wo copypaste
+            // need to dubplicate this code for all classes which loads c++ libs
+            string assembly_folder = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
+            DirectoryInfo directory_info = new DirectoryInfo (assembly_folder);
+            foreach (var dir in directory_info.Parent.EnumerateDirectories ())
+            {
+                string lib_location = "lib";
+                if (dir.ToString ().EndsWith (lib_location))
+                {
+                    string path_var = Environment.GetEnvironmentVariable ("PATH");
+                    Environment.SetEnvironmentVariable ("PATH", path_var + ";" + dir.FullName);
+                    path_var = Environment.GetEnvironmentVariable ("PATH");
+                }
+            }
+        }
+
         // accord GetRow returns a copy instead pointer, so we can not easily update data in place like in other bindings
         public static double[] perform_lowpass (double[] data, int sampling_rate, double cutoff, int order, int filter_type, double ripple)
         {

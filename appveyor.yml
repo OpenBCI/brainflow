@@ -93,6 +93,8 @@ test_script:
 after_test:
   - cp %APPVEYOR_BUILD_FOLDER%\compiled\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\python-package\brainflow\lib\GanglionLibNative64.dll
   - cp %APPVEYOR_BUILD_FOLDER%\compiled\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\java-package\brainflow\src\main\resources\GanglionLibNative64.dll
+  - cp %APPVEYOR_BUILD_FOLDER%\compiled\GanglionLibNative64.dll %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib\GanglionLibNative64.dll
+  - cp %APPVEYOR_BUILD_FOLDER%\compiled\GanglionLibNative32.dll %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib\GanglionLibNative32.dll
 
 deploy_script:
   - python -m pip install wheel > wheel_install.txt
@@ -104,6 +106,16 @@ deploy_script:
   - aws s3 cp %APPVEYOR_BUILD_FOLDER%\installed64\lib\ s3://brainflow-artifacts/%APPVEYOR_REPO_COMMIT%/lib64 --recursive
   # download files from travis using S3 create package and publish it
   - ps: >-
+      cd $env:APPVEYOR_BUILD_FOLDER\csharp-package\brainflow\brainflow
+      If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
+        (gc .\brainflow.nuspec).replace('VERSION_PLACEHOLDER',$env:APPVEYOR_REPO_TAG_NAME) | Out-File -encoding ASCII brainflow.nuspec
+      }
+      Else {
+        (gc .\brainflow.nuspec).replace('VERSION_PLACEHOLDER','1.0.0') | Out-File -encoding ASCII brainflow.nuspec
+      }
+      nuget pack brainflow.csproj -properties Configuration=Release -IncludeReferencedProjects
+      aws s3 cp %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow s3://brainflow-artifacts/%APPVEYOR_REPO_COMMIT%/nuget --recursive
+
       $lin = $false;
       $osx = $false;
       for ($i=0; $i -lt 30; $i++) {
