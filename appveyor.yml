@@ -33,7 +33,6 @@ install:
   - nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages
   # charp build Any CPU
   - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform="Any CPU"
-  - cp -r %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\lib %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\test\bin\
   # install emulator for cyton
   - pip install %APPVEYOR_BUILD_FOLDER%\emulator\
   - cd %APPVEYOR_BUILD_FOLDER% && %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\certmgr.exe  /add %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\com0com.cer /s /r localMachine root
