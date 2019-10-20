@@ -113,8 +113,8 @@ deploy_script:
       Else {
         (gc .\brainflow.nuspec).replace('VERSION_PLACEHOLDER','1.0.0') | Out-File -encoding ASCII brainflow.nuspec
       }
-      nuget pack brainflow.csproj -properties Configuration=Release -IncludeReferencedProjects
-      aws s3 cp %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow s3://brainflow-artifacts/%APPVEYOR_REPO_COMMIT%/nuget --recursive
+      nuget pack brainflow.csproj -properties Configuration=Release -IncludeReferencedProjects;
+      aws s3 cp %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow s3://brainflow-artifacts/%APPVEYOR_REPO_COMMIT%/nuget --recursive;
 
       $lin = $false;
       $osx = $false;
