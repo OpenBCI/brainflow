@@ -2,7 +2,6 @@ image:
 - Visual Studio 2017
 
 stack: python 3
-skip_branch_with_pr: true
 
 environment:
   PY_DIR: C:\Python36-x64
