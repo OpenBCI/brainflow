@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>VERSION_PLACEHOLDER</version>
+    <version>1.1.1</version>
     <title>$title$</title>
     <authors>Andrey1994</authors>
     <owners>Andrey1994</owners>
@@ -20,5 +20,6 @@
   </metadata>
   <files>
     <file src="lib\**" target="lib" />
+    <file src="brainflow.targets" target="build" />
   </files>
 </package>
