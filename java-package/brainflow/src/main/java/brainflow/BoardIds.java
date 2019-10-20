@@ -36,7 +36,7 @@ public enum BoardIds {
 
     static {
         for (final BoardIds bi : BoardIds.values ()) {
-            bi_map.put(bi.get_code(), ec);
+            bi_map.put(bi.get_code(), bi);
         }
     }
 }
