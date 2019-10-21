@@ -1,5 +1,6 @@
 ﻿using System;
 using brainflow;
+using Accord.Math;
 
 namespace test
 {
@@ -29,7 +30,7 @@ namespace test
 
             board_shim.start_stream(3600);
             Console.WriteLine("Started");
-   
+
             // collect data in threads
             for (int i = 0; i < thread_number; i++)
             {
