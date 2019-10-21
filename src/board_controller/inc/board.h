@@ -1,5 +1,6 @@
 #pragma once
 
+#include "board_controller.h"
 #include "data_buffer.h"
 #include "spdlog/spdlog.h"
 
@@ -9,8 +10,9 @@
 class Board
 {
 public:
-    static spdlog::logger *board_logger;
+    static std::shared_ptr<spdlog::logger> board_logger;
     static int set_log_level (int level);
+    static int set_log_file (char *log_file);
 
     virtual ~Board ()
     {
@@ -22,10 +24,12 @@ public:
             db = NULL;
         }
     }
-    Board ()
+    Board (int board_id, struct BrainFlowInputParams params)
     {
         skip_logs = false;
         db = NULL; // should be initialized in start_stream
+        this->board_id = board_id;
+        this->params = params;
     }
     virtual int prepare_session () = 0;
     virtual int start_stream (int buffer_size) = 0;
@@ -33,10 +37,9 @@ public:
     virtual int release_session () = 0;
     virtual int config_board (char *config) = 0;
 
-    int get_current_board_data (
-        int num_samples, float *data_buf, double *ts_buf, int *returned_samples);
+    int get_current_board_data (int num_samples, double *data_buf, int *returned_samples);
     int get_board_data_count (int *result);
-    int get_board_data (int data_count, float *data_buf, double *ts_buf);
+    int get_board_data (int data_count, double *data_buf);
 
     // Board::board_logger should not be called from destructors, to ensure that there are safe log
     // methods Board::board_logger still available but should be used only outside destructors
@@ -61,4 +64,11 @@ public:
 protected:
     DataBuffer *db;
     bool skip_logs;
+    int board_id;
+    struct BrainFlowInputParams params;
+
+private:
+    // reshapes data from DataBuffer format where all channels are mixed to linear buffer with
+    // sorted data
+    void reshape_data (int data_count, const double *buf, const double *ts_buf, double *output_buf);
 };
