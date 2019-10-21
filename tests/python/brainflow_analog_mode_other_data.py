@@ -19,7 +19,7 @@ def main ():
     parser.add_argument ('--log', action = 'store_true')
     args = parser.parse_args ()
 
-    # in fact it can be CytonDaisy or Wifi Shield based boards, limit it to only Cyton in deno
+    # in fact it can be CytonDaisy or Wifi Shield based boards, limit it to only Cyton in demo
     if args.board_id != BoardIds.CYTON_BOARD.value:
         raise ValueError ('wrong board idm should be Cyton')
 

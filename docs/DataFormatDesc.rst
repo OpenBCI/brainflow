@@ -6,7 +6,7 @@ Data Format Description
 .. code-block:: python
 
    get_board_data ()
-   get_current_boards_data (100)
+   get_current_board_data (max_num_packages)
 
 **Return 2d double array [num_channels x num_data_points], rows of this array contain data for EEG, EMG, Accel, Timesteps and other kinds of data.**
 
@@ -61,3 +61,8 @@ For analog data we return int32 values but from low level API we return double a
 For such data we return unprocessed raw bytes you should cast them to integer or floats
 
 If Cyton End Byte outside `this range <https://docs.openbci.com/docs/02Cyton/CytonDataFormat#firmware-version-200-fall-2016-to-now-1>`_ we drop entire package.
+
+**Check this example for details:**
+
+.. literalinclude:: ../tests/python/brainflow_analog_mode_other_data.py
+   :language: py
