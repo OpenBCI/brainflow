@@ -27,7 +27,7 @@ void CytonDaisyWifi::read_thread ()
     */
     int res;
     unsigned char b[32];
-    double package[27] = {0.};
+    double package[30] = {0.};
     bool first_sample = false;
     while (keep_alive)
     {
