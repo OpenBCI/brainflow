@@ -28,9 +28,9 @@ namespace test
             {
                 System.Threading.Thread.Sleep(sleep_ms);
                 Console.WriteLine("data count: {0}", board_shim.get_board_data_count());
-                double[,] unprocessed_data = board_shim.get_current_board_data();
+                double[,] unprocessed_data = board_shim.get_current_board_data(250);
             }
-            
+
         }
 
         public void stop_collecting()
