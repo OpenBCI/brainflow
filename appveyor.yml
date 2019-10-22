@@ -143,9 +143,9 @@ deploy_script:
         ls  $env:APPVEYOR_BUILD_FOLDER\linux
         aws s3 cp s3://brainflow-artifacts/$env:APPVEYOR_REPO_COMMIT/osx/ $env:APPVEYOR_BUILD_FOLDER\osx\ --recursive
         ls $env:APPVEYOR_BUILD_FOLDER\osx
-        cd $env:APPVEYOR_BUILD_FOLDER\java-package\brainflow;
-        cp -r $env:APPVEYOR_BUILD_FOLDER\linux\. $env:APPVEYOR_BUILD_FOLDERE\java-package\brainflow\src\main\resources\;
-        cp -r $env:APPVEYOR_BUILD_FOLDER\osx\. $env:APPVEYOR_BUILD_FOLDERE\java-package\brainflow\src\main\resources\;
+        cd $env:APPVEYOR_BUILD_FOLDER\java-package\brainflow
+        Copy-Item "$env:APPVEYOR_BUILD_FOLDER\linux\*" -Destination "$env:APPVEYOR_BUILD_FOLDER\java-package\brainflow\src\main\resources" -Recurse
+        Copy-Item "$env:APPVEYOR_BUILD_FOLDER\osx\*" -Destination "$env:APPVEYOR_BUILD_FOLDER\java-package\brainflow\src\main\resources" -Recurse
         ls $env:APPVEYOR_BUILD_FOLDER\java-package\brainflow\src\main\resources;
         mvn package > mvn_final_stdout.txt
         #upload .jars to aws
