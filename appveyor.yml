@@ -140,7 +140,9 @@ deploy_script:
         New-Item $env:APPVEYOR_BUILD_FOLDER\linux -itemtype directory
         New-Item $env:APPVEYOR_BUILD_FOLDER\osx -itemtype directory
         aws s3 cp s3://brainflow-artifacts/$env:APPVEYOR_REPO_COMMIT/linux/ $env:APPVEYOR_BUILD_FOLDER\linux\ --recursive
+        ls  $env:APPVEYOR_BUILD_FOLDER\linux
         aws s3 cp s3://brainflow-artifacts/$env:APPVEYOR_REPO_COMMIT/osx/ $env:APPVEYOR_BUILD_FOLDER\osx\ --recursive
+        ls $env:APPVEYOR_BUILD_FOLDER\osx
         cd $env:APPVEYOR_BUILD_FOLDER\java-package\brainflow
         Copy-Item "$env:APPVEYOR_BUILD_FOLDER\linux\*" -Destination "$env:APPVEYOR_BUILD_FOLDERE\java-package\brainflow\src\main\resources" -Recurse
         Copy-Item "$env:APPVEYOR_BUILD_FOLDER\osx\*" -Destination "$env:APPVEYOR_BUILD_FOLDER\java-package\brainflow\src\main\resources" -Recurse
