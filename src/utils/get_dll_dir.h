@@ -6,7 +6,7 @@
 #include <string.h>
 
 // no unicode!
-bool get_dll_path (char *res)
+inline bool get_dll_path (char *res)
 {
     CString this_path = "";
     WCHAR path[MAX_PATH];
@@ -39,7 +39,7 @@ bool get_dll_path (char *res)
 #include <string>
 
 
-bool get_dll_path (char *res)
+inline bool get_dll_path (char *res)
 {
     Dl_info dl_info;
     if (dladdr ((void *)get_dll_path, &dl_info))

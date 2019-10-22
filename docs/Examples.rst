@@ -2,50 +2,36 @@
 Code Samples
 ============
 
-Python
---------
+Python sample
+---------------
 
 .. literalinclude:: ../python-package/examples/brainflow_get_data.py
    :language: py
 
-R
------
+R sample
+---------
+
+For R brainflow's signal processing API is unavailable, you will need to implement filters by yourself or use packages from CRAN
 
 .. literalinclude:: ../r-package/examples/brainflow_get_data.R
-   :language: r
+	:language: r
 
-Java
------
+Java sample
+-------------
 
-.. literalinclude:: ../java-package/brainflow/src/test/java/BrainFlowTest.java
+.. literalinclude:: ../tests/java/BrainFlowGetData.java
    :language: java
 
 
-C#
------
+C# sample
+-----------
 
 .. literalinclude:: ../csharp-package/brainflow/test/get_board_data.cs
    :language: c#
 
 
-Unity Integration
-~~~~~~~~~~~~~~~~~~
-
-- compile core module
-- compile c# binding
-- copy managed DLLs to Assets folder
-- copy unmanaged DLLS to project folder to use it with Unity player
-- after building Unity project copy unmanaged DLLs to exe folder
-
-Matlab
--------
-
-.. literalinclude:: ../matlab-package/BrainflowGetData.m
-   :language: matlab
-
-
-C++
------
+C++ sample
+-----------
 
 .. literalinclude:: ../tests/cpp/CMakeLists.txt
    :language: none

@@ -18,17 +18,9 @@
 #define MAX_ATTEMPTS_TO_GET_DATA 250
 
 
-Ganglion::Ganglion (const char *port_name) : Board ()
+Ganglion::Ganglion (struct BrainFlowInputParams params) : Board ((int)GANGLION_BOARD, params)
 {
-    // check port
-    if (port_name == NULL)
-    {
-        this->use_mac_addr = false;
-    }
-    else
-    {
-        strcpy (this->mac_addr, port_name);
-    }
+    this->use_mac_addr = (params.mac_address.empty ()) ? false : true;
     // get full path of ganglioblibnative with assumption that this lib is in the same folder
     char ganglionlib_dir[1024];
     bool res = get_dll_path (ganglionlib_dir);
@@ -92,6 +84,14 @@ int Ganglion::prepare_session ()
         safe_logger (spdlog::level::info, "Session is already prepared");
         return STATUS_OK;
     }
+
+#ifndef _WIN32
+    if (params.serial_port.empty ())
+    {
+        safe_logger (spdlog::level::err, "for unix you need to specify dongle port");
+        return INVALID_ARGUMENTS_ERROR;
+    }
+#endif
 
     if (!this->dll_loader->load_library ())
     {
@@ -165,7 +165,8 @@ int Ganglion::start_stream (int buffer_size)
         safe_logger (spdlog::level::err, "no data received in 20sec, stopping thread");
         this->is_streaming = true;
         this->stop_stream ();
-        return this->state;
+        // return the same exit code as novaxr
+        return UNABLE_TO_OPEN_PORT_ERROR;
     }
 }
 
@@ -244,7 +245,7 @@ void Ganglion::read_thread ()
                 safe_logger (spdlog::level::debug, "start streaming");
             }
 
-            float package[8] = {0.f};
+            double package[8] = {0.f};
             // delta holds 8 nums because (4 by each package)
             float delta[8] = {0.f};
             int bits_per_num = 0;
@@ -270,16 +271,16 @@ void Ganglion::read_thread ()
                 last_data[7] = cast_24bit_to_int32 (data.data + 10);
 
                 // scale new packet and insert into result
-                package[0] = 0.f;
+                package[0] = 0.;
                 package[1] = this->eeg_scale * last_data[4];
                 package[2] = this->eeg_scale * last_data[5];
                 package[3] = this->eeg_scale * last_data[6];
                 package[4] = this->eeg_scale * last_data[7];
 
                 // I dont understand how to get accel data, for now it's 0
-                package[5] = 0.f;
-                package[6] = 0.f;
-                package[7] = 0.f;
+                package[5] = 0.;
+                package[6] = 0.;
+                package[7] = 0.;
                 this->db->add_data (data.timestamp, package);
                 continue;
             }
@@ -415,15 +416,10 @@ int Ganglion::call_init ()
         safe_logger (spdlog::level::err, "failed to get function address for initialize");
         return GENERAL_ERROR;
     }
-    int res = (func) (NULL);
 #ifndef _WIN32
-    if (res == (int)GanglionLibNative::GANGLION_DONGLE_PORT_IS_NOT_SET_ERROR)
-    {
-        Board::board_logger->error (
-            "you need to set {} env variable to dongle port e.g /dev/ttyACM0",
-            GANGLION_DONGLE_PORT);
-        return GANGLION_DONGLE_PORT_IS_NOT_SET_ERROR;
-    }
+    int res = (func) ((void *)params.serial_port);
+#else
+    int res = (func) (NULL);
 #endif
     if (res != (int)GanglionLibNative::CustomExitCodesNative::STATUS_OK)
     {
@@ -438,7 +434,7 @@ int Ganglion::call_open ()
     int res = GanglionLibNative::CustomExitCodesNative::STATUS_OK;
     if (this->use_mac_addr)
     {
-        safe_logger (spdlog::level::info, "search for {}", this->mac_addr);
+        safe_logger (spdlog::level::info, "search for {}", this->params.mac_address.c_str ());
         DLLFunc func = this->dll_loader->get_address ("open_ganglion_mac_addr_native");
         if (func == NULL)
         {
@@ -446,7 +442,7 @@ int Ganglion::call_open ()
                 "failed to get function address for open_ganglion_mac_addr_native");
             return GENERAL_ERROR;
         }
-        res = (func) (this->mac_addr);
+        res = (func) (const_cast<char *> (params.mac_address.c_str ()));
     }
     else
     {

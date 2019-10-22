@@ -4,8 +4,9 @@
 #include "timestamp.h"
 
 #define START_BYTE 0xA0
-#define END_BYTE 0xC0
-
+#define END_BYTE_STANDARD 0xC0
+#define END_BYTE_ANALOG 0xC1
+#define END_BYTE_MAX 0xC6
 
 void Cyton::read_thread ()
 {
@@ -28,7 +29,7 @@ void Cyton::read_thread ()
     while (keep_alive)
     {
         // check start byte
-        res = serial.read_from_serial_port (b, 1);
+        res = serial->read_from_serial_port (b, 1);
         if (res != 1)
         {
             safe_logger (spdlog::level::debug, "unable to read 1 byte");
@@ -39,32 +40,53 @@ void Cyton::read_thread ()
             continue;
         }
 
-        res = serial.read_from_serial_port (b, 32);
+        res = serial->read_from_serial_port (b, 32);
         if (res != 32)
         {
             safe_logger (spdlog::level::debug, "unable to read 32 bytes");
             continue;
         }
-        // check end byte
-        if (b[res - 1] != END_BYTE)
-        {
-            safe_logger (
-                spdlog::level::warn, "Wrong end byte, found {}, required {}", b[res - 1], END_BYTE);
-            continue;
-        }
 
-        float package[12];
+        double package[22] = {0.};
         // package num
-        package[0] = (float)b[0];
+        package[0] = (double)b[0];
         // eeg
         for (int i = 0; i < 8; i++)
         {
             package[i + 1] = eeg_scale * cast_24bit_to_int32 (b + 1 + 3 * i);
         }
-        // accel
-        package[9] = accel_scale * cast_16bit_to_int32 (b + 25);
-        package[10] = accel_scale * cast_16bit_to_int32 (b + 27);
-        package[11] = accel_scale * cast_16bit_to_int32 (b + 29);
+        // end byte
+        package[12] = (double)b[res - 1];
+        // check end byte
+        if (b[res - 1] == END_BYTE_STANDARD)
+        {
+            // accel
+            package[9] = accel_scale * cast_16bit_to_int32 (b + 25);
+            package[10] = accel_scale * cast_16bit_to_int32 (b + 27);
+            package[11] = accel_scale * cast_16bit_to_int32 (b + 29);
+        }
+        else if (b[res - 1] == END_BYTE_ANALOG)
+        {
+            // analog
+            package[19] = cast_16bit_to_int32 (b + 25);
+            package[20] = cast_16bit_to_int32 (b + 27);
+            package[21] = cast_16bit_to_int32 (b + 29);
+        }
+        else if ((b[res - 1] > END_BYTE_ANALOG) && (b[res - 1] <= END_BYTE_MAX))
+        {
+            // unprocessed bytes
+            package[13] = (double)b[25];
+            package[14] = (double)b[26];
+            package[15] = (double)b[27];
+            package[16] = (double)b[28];
+            package[17] = (double)b[29];
+            package[18] = (double)b[30];
+        }
+        else
+        {
+            safe_logger (spdlog::level::warn, "Wrong end byte, found {}", b[res - 1]);
+            continue;
+        }
 
         db->add_data (get_timestamp (), package);
     }
