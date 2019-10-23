@@ -51,12 +51,11 @@ namespace GanglionLibNative
     {
         if (!initialized)
         {
-            std::string dongle_port = get_dongle_port ();
-            if (dongle_port.empty ())
+            if (param == NULL)
             {
-                return (int)CustomExitCodesNative::GANGLION_DONGLE_PORT_IS_NOT_SET_ERROR;
+                return (int)CustomExitCodesNative::PORT_OPEN_ERROR;
             }
-            strcpy (uart_port, dongle_port.c_str ());
+            strcpy (uart_port, (const char *)param);
             bglib_output = output;
             exit_code = (int)CustomExitCodesNative::SYNC_ERROR;
             initialized = true;
@@ -68,7 +67,7 @@ namespace GanglionLibNative
     {
         if (uart_open (uart_port))
         {
-            return (int)CustomExitCodesNative::GANGLION_NOT_FOUND_ERROR;
+            return (int)CustomExitCodesNative::PORT_OPEN_ERROR;
         }
         int res = reset_ble_dev ();
         if (res != (int)CustomExitCodesNative::STATUS_OK)

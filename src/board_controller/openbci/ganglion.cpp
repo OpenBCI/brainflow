@@ -417,7 +417,7 @@ int Ganglion::call_init ()
         return GENERAL_ERROR;
     }
 #ifndef _WIN32
-    int res = (func) ((void *)params.serial_port);
+    int res = (func) ((void *)params.serial_port.c_str ());
 #else
     int res = (func) (NULL);
 #endif

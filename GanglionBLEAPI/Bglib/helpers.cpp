@@ -71,19 +71,6 @@ int read_message (int timeout_ms)
     return 0;
 }
 
-std::string get_dongle_port ()
-{
-    const char *val = getenv (GANGLION_DONGLE_PORT);
-    if (val == NULL)
-    {
-        return "";
-    }
-    else
-    {
-        return val;
-    }
-}
-
 int open_ble_dev ()
 {
     exit_code = (int)GanglionLibNative::SYNC_ERROR;

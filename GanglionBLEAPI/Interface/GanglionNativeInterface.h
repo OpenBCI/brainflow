@@ -53,8 +53,7 @@ namespace GanglionLibNative
         SYNC_ERROR = 15,
         NOT_IMPLEMENTED_ERROR = 16,
         INVALID_MAC_ADDR_ERROR = 17,
-        PORT_OPEN_ERROR = 18,
-        GANGLION_DONGLE_PORT_IS_NOT_SET_ERROR = 19
+        PORT_OPEN_ERROR = 18
     };
 
 #ifdef __cplusplus

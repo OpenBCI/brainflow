@@ -22,9 +22,8 @@ typedef enum
     GENERAL_ERROR,
     SYNC_TIMEOUT_ERROR,
     JSON_NOT_FOUND_ERROR,
-    NO_SUCH_DATA_IN_JSON_ERROR;
-}
-CustomExitCodes;
+    NO_SUCH_DATA_IN_JSON_ERROR
+} CustomExitCodes;
 
 typedef enum
 {

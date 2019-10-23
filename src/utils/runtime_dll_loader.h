@@ -65,7 +65,6 @@ public:
             lib_instance = dlopen (this->dll_path, RTLD_LAZY);
             if (!lib_instance)
             {
-                std::cout << "failed " << dlerror () << std::endl;
                 return false;
             }
             return true;
