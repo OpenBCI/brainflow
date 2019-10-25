@@ -18,6 +18,7 @@
 extern volatile int exit_code;
 extern volatile bd_addr connect_addr;
 extern volatile uint8 connection;
+extern volatile uint16 client_char_handle;
 extern char uart_port[1024];
 extern volatile State state;
 extern std::mutex m;
@@ -89,7 +90,19 @@ int open_ble_dev ()
     ble_cmd_attclient_read_by_group_type (
         connection, FIRST_HANDLE, LAST_HANDLE, 2, primary_service_uuid);
 
-    return wait_for_callback (15);
+    res = wait_for_callback (15);
+    if (res != (int)GanglionLibNative::STATUS_OK)
+    {
+        return res;
+    }
+
+    // copypaste from openbci hub write 0x01 to 0x2902
+    uint8 configuration[] = {0x01};
+    state = State::write_to_client_char;
+    exit_code = (int)GanglionLibNative::SYNC_ERROR;
+    ble_cmd_attclient_attribute_write (connection, client_char_handle, 1, &configuration);
+    ble_cmd_attclient_execute_write (connection, 1);
+    return wait_for_callback (5);
 }
 
 int wait_for_callback (int num_attempts)

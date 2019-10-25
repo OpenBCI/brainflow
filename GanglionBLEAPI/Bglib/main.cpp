@@ -26,6 +26,7 @@ volatile uint16 ganglion_handle_start = 0; // I have no idea what it is but seem
 volatile uint16 ganglion_handle_end = 0;
 volatile uint16 ganglion_handle_recv = 0;
 volatile uint16 ganglion_handle_send = 0;
+volatile uint16 client_char_handle = 0;
 volatile State state =
     State::none; // same callbacks are triggered by different methods we need to differ them
 

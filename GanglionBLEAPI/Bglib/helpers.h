@@ -18,7 +18,8 @@ enum class State : int
     open_called = 3,
     config_called = 4,
     close_called = 5,
-    get_data_called = 6
+    get_data_called = 6,
+    write_to_client_char = 7
 };
 
 void output (uint8 len1, uint8 *data1, uint16 len2, uint8 *data2);

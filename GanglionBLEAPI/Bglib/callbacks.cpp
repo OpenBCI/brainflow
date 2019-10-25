@@ -13,6 +13,7 @@
 
 #include <iostream>
 #define GANGLION_SERVICE_UUID 0xfe84
+#define CLIENT_CHARACTERISTIC_UUID 0x2902
 
 extern volatile int exit_code;
 extern volatile bd_addr connect_addr;
@@ -22,6 +23,7 @@ extern volatile uint16 ganglion_handle_end;
 // recv and send chars handles
 extern volatile uint16 ganglion_handle_recv;
 extern volatile uint16 ganglion_handle_send;
+extern volatile uint16 client_char_handle;
 extern volatile State state;
 
 extern std::queue<struct GanglionLibNative::GanglionDataNative> data_queue;
@@ -111,6 +113,15 @@ void ble_evt_attclient_group_found (const struct ble_msg_attclient_group_found_e
 void ble_evt_attclient_procedure_completed (
     const struct ble_msg_attclient_procedure_completed_evt_t *msg)
 {
+    if (state == State::write_to_client_char)
+    {
+        std::cout << "fffffffff " << (int)msg->result << "  chrhandle " << msg->chrhandle
+                  << " send " << client_char_handle << std::endl;
+        if (msg->result == 0)
+        {
+            exit_code = (int)GanglionLibNative::STATUS_OK;
+        }
+    }
     if (state == State::open_called)
     {
         if ((ganglion_handle_start) && (ganglion_handle_end))
@@ -139,6 +150,16 @@ void ble_evt_attclient_find_information_found (
 {
     if (state == State::open_called)
     {
+        if (msg->uuid.len == 2)
+        {
+            uint16 uuid = (msg->uuid.data[1] << 8) | msg->uuid.data[0];
+            std::cout << "should be client " << (int)uuid << std::endl;
+            if (uuid == CLIENT_CHARACTERISTIC_UUID)
+            {
+                std::cout << "inside" << std::endl;
+                client_char_handle = msg->chrhandle;
+            }
+        }
         if (msg->uuid.len == 16)
         {
             bool is_send = true;
@@ -163,7 +184,8 @@ void ble_evt_attclient_find_information_found (
                 ganglion_handle_send = msg->chrhandle;
             }
         }
-        if ((ganglion_handle_send) && (ganglion_handle_recv))
+        if ((ganglion_handle_send) && (ganglion_handle_recv) && (client_char_handle) &&
+            (state == State::open_called))
         {
             exit_code = (int)GanglionLibNative::STATUS_OK;
         }
@@ -177,6 +199,10 @@ void ble_evt_attclient_attribute_value (const struct ble_msg_attclient_attribute
         unsigned char values[20] = {0};
         memcpy (values, msg->value.data + 1,
             (msg->value.len - 1) * sizeof (unsigned char)); // fist byte is a lenght
+        std::cout << "got data" << std::endl;
+        for (int i = 0; i < 20; i++)
+            std::cout << (int)values[i] << " ";
+        std::cout << std::endl;
         struct GanglionLibNative::GanglionDataNative data (values, (long)get_timestamp ());
         data_queue.push (data);
     }
