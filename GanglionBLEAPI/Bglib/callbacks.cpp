@@ -197,8 +197,7 @@ void ble_evt_attclient_attribute_value (const struct ble_msg_attclient_attribute
     if ((int)msg->value.len >= 18)
     {
         unsigned char values[20] = {0};
-        memcpy (values, msg->value.data + 1,
-            (msg->value.len - 1) * sizeof (unsigned char)); // fist byte is a lenght
+        memcpy (values, msg->value.data, msg->value.len * sizeof (unsigned char));
         std::cout << "got data" << std::endl;
         for (int i = 0; i < 20; i++)
             std::cout << (int)values[i] << " ";
