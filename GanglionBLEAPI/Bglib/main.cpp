@@ -21,7 +21,7 @@ char uart_port[1024];
 std::queue<struct GanglionLibNative::GanglionDataNative>
     data_queue; // not thread safe but maybe its ok
 volatile bd_addr connect_addr;
-volatile uint8 connection = 0;
+volatile uint8 connection = -1;
 volatile uint16 ganglion_handle_start = 0; // I have no idea what it is but seems like its important
 volatile uint16 ganglion_handle_end = 0;
 volatile uint16 ganglion_handle_recv = 0;
@@ -163,7 +163,7 @@ namespace GanglionLibNative
             stop_stream_native (NULL);
         }
 
-        connection = 0;
+        connection = -1;
         ganglion_handle_start = 0;
         ganglion_handle_end = 0;
         ganglion_handle_recv = 0;

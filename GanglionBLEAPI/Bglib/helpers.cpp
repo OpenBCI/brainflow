@@ -97,10 +97,10 @@ int open_ble_dev ()
     }
 
     // copypaste from openbci hub write 0x01 to 0x2902
-    uint8 configuration[] = {0x01};
+    uint8 configuration[] = {0x01, 0x00};
     state = State::write_to_client_char;
     exit_code = (int)GanglionLibNative::SYNC_ERROR;
-    ble_cmd_attclient_attribute_write (connection, client_char_handle, 1, &configuration);
+    ble_cmd_attclient_attribute_write (connection, client_char_handle, 2, &configuration);
     ble_cmd_attclient_execute_write (connection, 1);
     return wait_for_callback (5);
 }
