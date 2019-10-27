@@ -126,6 +126,7 @@ int SocketClient::connect ()
     {
         DWORD value = 1;
         setsockopt (connect_socket, IPPROTO_TCP, TCP_NODELAY, (char *)&value, sizeof (value));
+        setsockopt (connect_socket, SOL_SOCKET, SO_KEEPALIVE, (char *)&value, sizeof (value));
         if (::connect (connect_socket, (sockaddr *)&socket_addr, sizeof (socket_addr)) ==
             SOCKET_ERROR)
         {
@@ -294,6 +295,7 @@ int SocketClient::connect ()
     {
         int value = 1;
         setsockopt (connect_socket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof (value));
+        setsockopt (connect_socket, SOL_SOCKET, SO_KEEPALIVE, &value, sizeof (value));
         if (::connect (connect_socket, (sockaddr *)&socket_addr, sizeof (socket_addr)) == -1)
         {
             return (int)SocketReturnCodes::CONNECT_ERROR;
