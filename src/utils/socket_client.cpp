@@ -119,7 +119,7 @@ int SocketClient::connect ()
     }
 
     // ensure that library will not hang in blocking recv/send call
-    DWORD timeout = 3000;
+    DWORD timeout = 5000;
     setsockopt (connect_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof (timeout));
     setsockopt (connect_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
     if (socket_type == (int)SocketType::TCP)
@@ -286,7 +286,7 @@ int SocketClient::connect ()
 
     // ensure that library will not hang in blocking recv/send call
     struct timeval tv;
-    tv.tv_sec = 3;
+    tv.tv_sec = 5;
     tv.tv_usec = 0;
     setsockopt (connect_socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof (tv));
     setsockopt (connect_socket, SOL_SOCKET, SO_SNDTIMEO, (const char *)&tv, sizeof (tv));
