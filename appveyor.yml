@@ -31,9 +31,9 @@ install:
   # build csharp (in order for copy ganglion mock into csharp test folder)
   # nuget package for csharp
   - nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages
-  - nuget pack %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\brainflow.csproj -properties Configuration=Release -IncludeReferencedProjects
   # charp build Any CPU
   - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform="Any CPU"
+  - nuget pack %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\brainflow.csproj -properties Configuration=Release -IncludeReferencedProjects
   ## multi-csharp
   - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\multithread && msbuild multithread.sln /p:Configuration=Release /p:Platform=x64 /p:OutDir=..\..\build\Release_multi
   # install emulator for cyton
