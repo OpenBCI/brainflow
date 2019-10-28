@@ -62,13 +62,12 @@ namespace test
             Console.WriteLine("Stopped");
             double[,] unprocessed_data = board_shim.get_current_board_data(50);
             int[] eeg_channels = BoardShim.get_eeg_channels(board_id);
-            Console.WriteLine("Before processing:");
             foreach (var index in eeg_channels)
                 Console.WriteLine("[{0}]", string.Join(", ", unprocessed_data.GetRow(index)));
             board_shim.release_session();
             Console.WriteLine("Released");
         }
-        
+
         static int parse_args(string[] args, BrainFlowInputParams input_params)
         {
             int board_id = (int)BoardIds.SYNTHETIC_BOARD; //assume synthetic board by default

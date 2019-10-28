@@ -66,7 +66,7 @@ test_script:
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe --board-id 0 --serial-port
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build32\Release\test_get_data.exe --board-id 0 --serial-port
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\test\bin\Release\test.exe --board-id 0 --serial-port
-   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release_multi\test.exe --board-id 0 --serial-port
+  - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\cyton_windows.py %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release_multi\test.exe --board-id 0 --serial-port
   # tests for ganglion
   - python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --log --board-id 1 --mac-address e6:73:73:18:09:b1
   - echo "stub text to dont start command with special character" && %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe --board-id 1 --mac-address e6:73:73:18:09:b1
@@ -89,7 +89,7 @@ test_script:
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_udp.py %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\test\bin\Release\test.exe --board-id 3 --ip-address 127.0.0.1 --ip-protocol 1
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_tcp.py %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\test\bin\Release\test.exe --board-id 3 --ip-address 127.0.0.1 --ip-protocol 2
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_udp.py %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release_multi\test.exe --board-id 3 --ip-address 127.0.0.1 --ip-protocol 1
-  # - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_udp.py %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release_multi\test.exe --board-id 3 --ip-address 127.0.0.1 --ip-protocol 2
+  - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\novaxr_tcp.py %APPVEYOR_BUILD_FOLDER%\tests\csharp\build\Release_multi\test.exe --board-id 3 --ip-address 127.0.0.1 --ip-protocol 2
   # tests for wifi shield based boards
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\wifi_shield_emulator.py python %APPVEYOR_BUILD_FOLDER%\tests\python\brainflow_get_data.py --board-id 4 --ip-address 127.0.0.1 --ip-protocol 2 --ip-port 17982
   - python %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\wifi_shield_emulator.py %APPVEYOR_BUILD_FOLDER%\tests\cpp\build\Release\test_get_data.exe --board-id 5 --ip-address 127.0.0.1 --ip-protocol 2 --ip-port 17982
@@ -121,7 +121,6 @@ deploy_script:
       }
       nuget pack brainflow.csproj -properties Configuration=Release -IncludeReferencedProjects;
       aws s3 cp %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow s3://brainflow-artifacts/%APPVEYOR_REPO_COMMIT%/nuget --recursive;
-
       $lin = $false;
       $osx = $false;
       for ($i=0; $i -lt 30; $i++) {
@@ -148,12 +147,16 @@ deploy_script:
         New-Item $env:APPVEYOR_BUILD_FOLDER\linux -itemtype directory
         New-Item $env:APPVEYOR_BUILD_FOLDER\osx -itemtype directory
         aws s3 cp s3://brainflow-artifacts/$env:APPVEYOR_REPO_COMMIT/linux/ $env:APPVEYOR_BUILD_FOLDER\linux\ --recursive
+        ls  $env:APPVEYOR_BUILD_FOLDER\linux
         aws s3 cp s3://brainflow-artifacts/$env:APPVEYOR_REPO_COMMIT/osx/ $env:APPVEYOR_BUILD_FOLDER\osx\ --recursive
+        ls $env:APPVEYOR_BUILD_FOLDER\osx
         cd $env:APPVEYOR_BUILD_FOLDER\java-package\brainflow
+        Copy-Item "$env:APPVEYOR_BUILD_FOLDER\linux\*" -Destination "$env:APPVEYOR_BUILD_FOLDER\java-package\brainflow\src\main\resources" -Recurse
+        Copy-Item "$env:APPVEYOR_BUILD_FOLDER\osx\*" -Destination "$env:APPVEYOR_BUILD_FOLDER\java-package\brainflow\src\main\resources" -Recurse
+        ls $env:APPVEYOR_BUILD_FOLDER\java-package\brainflow\src\main\resources;
         mvn package > mvn_final_stdout.txt
         #upload .jars to aws
         aws s3 cp %APPVEYOR_BUILD_FOLDER%\java-package\brainflow\target\ s3://brainflow-artifacts/%APPVEYOR_REPO_COMMIT%/jars --recursive
-
         If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
           Copy-Item "$env:APPVEYOR_BUILD_FOLDER\linux\*" -Destination "$env:APPVEYOR_BUILD_FOLDER\python-package\brainflow\lib" -Recurse
           Copy-Item "$env:APPVEYOR_BUILD_FOLDER\osx\*" -Destination "$env:APPVEYOR_BUILD_FOLDER\python-package\brainflow\lib" -Recurse
@@ -173,7 +176,6 @@ deploy_script:
       Else {
         write-output "Failed to wait for mac and linux libs"
       }
-
 on_finish:
   - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\build32\brainflow_build32_stdout.txt
   - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\build64\brainflow_build64_stdout.txt
