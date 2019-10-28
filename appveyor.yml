@@ -35,7 +35,7 @@ install:
   - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform="Any CPU"
   - nuget pack %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\brainflow.csproj -properties Configuration=Release -IncludeReferencedProjects
   ## multi-csharp
-  - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\multithread && msbuild multithread.sln /p:Configuration=Release /p:Platform=x64 /p:OutDir=..\..\build\Release_multi
+  - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\multithread && nuget install brainflow -OutputDirectory packages && msbuild multithread.sln /p:Configuration=Release /p:Platform=x64 /p:OutDir=..\..\build\Release_multi
   # install emulator for cyton
   - pip install %APPVEYOR_BUILD_FOLDER%\emulator\
   - cd %APPVEYOR_BUILD_FOLDER% && %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\certmgr.exe  /add %APPVEYOR_BUILD_FOLDER%\emulator\brainflow_emulator\com0com\com0com.cer /s /r localMachine root
