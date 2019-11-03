@@ -39,13 +39,19 @@ int NovaXR::prepare_session ()
         safe_logger (spdlog::level::err, "ip address or ip protocol is empty");
         return INVALID_ARGUMENTS_ERROR;
     }
+    int port = 2390;
+    if (params.ip_port != 0)
+    {
+        safe_logger (spdlog::level::warn, "use port {} instead default", params.ip_port);
+        port = params.ip_port;
+    }
     if (params.ip_protocol == (int)IpProtocolType::UDP)
     {
-        socket = new SocketClient (params.ip_address.c_str (), 2390, (int)SocketType::UDP);
+        socket = new SocketClient (params.ip_address.c_str (), port, (int)SocketType::UDP);
     }
     else
     {
-        socket = new SocketClient (params.ip_address.c_str (), 2390, (int)SocketType::TCP);
+        socket = new SocketClient (params.ip_address.c_str (), port, (int)SocketType::TCP);
     }
     int res = socket->connect ();
     if (res != 0)
