@@ -33,15 +33,8 @@ install:
   - nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages
   # charp build Any CPU
   - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform="Any CPU"
-  - ps: >-
-      cd $env:APPVEYOR_BUILD_FOLDER\csharp-package\brainflow\brainflow;
-      If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
-        (gc .\brainflow.nuspec.in).replace('VERSION_PLACEHOLDER',$env:APPVEYOR_REPO_TAG_NAME) | Out-File -encoding ASCII brainflow.nuspec.in
-      }
-      Else {
-        (gc .\brainflow.nuspec.in).replace('VERSION_PLACEHOLDER','1.0.0') | Out-File -encoding ASCII brainflow.nuspec.in
-      }
-      nuget pack %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\brainflow.csproj -properties Configuration=Release -IncludeReferencedProjects;
+  - (gc .\brainflow.nuspec.in).replace('VERSION_PLACEHOLDER',$env:APPVEYOR_REPO_TAG_NAME) | Out-File -encoding ASCII brainflow.nuspec.in
+  - nuget pack %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow\brainflow.csproj -properties Configuration=Release -IncludeReferencedProjects;
   ## multi-csharp
   - cd %APPVEYOR_BUILD_FOLDER%\tests\csharp\multithread && nuget install brainflow -OutputDirectory packages && msbuild multithread.sln /p:Configuration=Release /p:Platform=x64 /p:OutDir=..\..\build\Release_multi
   # install emulator for cyton
