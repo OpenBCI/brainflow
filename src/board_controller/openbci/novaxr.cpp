@@ -255,10 +255,6 @@ void NovaXR::read_thread ()
             // inform main thread that everything is ok and first package was received
             if (this->state != STATUS_OK)
             {
-                for (int i = 0; i < 72; i++)
-                {
-                    safe_logger (spdlog::level::trace, "byte {} val {}", i, b[i]);
-                }
                 {
                     std::lock_guard<std::mutex> lk (this->m);
                     this->state = STATUS_OK;
