@@ -74,7 +74,7 @@ class NovaXREmulator (threading.Thread):
             # dirtiest hack ever but it doesnt work otherwise. seems like recv ignores timeout and it means that we send only 1 package
             if self.package_num == 0:
                 try:
-                    msg = self.conn.recv (128)
+                    msg = self.conn.recv (1)
                     if msg:
                         logging.info ('received %s' % (msg))
                         if msg == Message.start_stream.value:

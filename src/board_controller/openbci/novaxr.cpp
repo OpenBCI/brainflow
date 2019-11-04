@@ -75,6 +75,14 @@ int NovaXR::config_board (char *config)
     res = socket->send (config, len);
     if (len != res)
     {
+        if (res == -1)
+        {
+#ifdef _WIN32
+            safe_logger (spdlog::level::err, "WSAGetLastError is {}", WSAGetLastError ());
+#else
+            safe_logger (spdlog::level::err, "errno {} message {}", errno, strerror (errno));
+#endif
+        }
         safe_logger (spdlog::level::err, "Failed to config a board");
         return BOARD_WRITE_ERROR;
     }
@@ -104,12 +112,14 @@ int NovaXR::start_stream (int buffer_size)
     int res = socket->send ("b", 1);
     if (res != 1)
     {
-#ifndef _WIN32
         if (res == -1)
         {
+#ifdef _WIN32
+            safe_logger (spdlog::level::err, "WSAGetLastError is {}", WSAGetLastError ());
+#else
             safe_logger (spdlog::level::err, "errno {} message {}", errno, strerror (errno));
-        }
 #endif
+        }
         safe_logger (spdlog::level::err, "Failed to send a command to board");
         return BOARD_WRITE_ERROR;
     }
@@ -153,12 +163,14 @@ int NovaXR::stop_stream ()
         int res = socket->send ("s", 1);
         if (res != 1)
         {
-#ifndef _WIN32
             if (res == -1)
             {
+#ifdef _WIN32
+                safe_logger (spdlog::level::err, "WSAGetLastError is {}", WSAGetLastError ());
+#else
                 safe_logger (spdlog::level::err, "errno {} message {}", errno, strerror (errno));
-            }
 #endif
+            }
             safe_logger (spdlog::level::err, "Failed to send a command to board");
             return BOARD_WRITE_ERROR;
         }
@@ -225,12 +237,14 @@ void NovaXR::read_thread ()
     while (keep_alive)
     {
         res = socket->recv (b, 72);
-#ifndef _WIN32
         if (res == -1)
         {
+#ifdef _WIN32
+            safe_logger (spdlog::level::err, "WSAGetLastError is {}", WSAGetLastError ());
+#else
             safe_logger (spdlog::level::err, "errno {} message {}", errno, strerror (errno));
-        }
 #endif
+        }
         if (res != 72)
         {
             safe_logger (spdlog::level::trace, "unable to read 72 bytes, read {}", res);
