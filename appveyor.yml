@@ -33,7 +33,7 @@ install:
   - nuget install Accord -OutputDirectory ../csharp-package/brainflow/packages && nuget install Accord.Math -OutputDirectory ../csharp-package/brainflow/packages
   # charp build Any CPU
   - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow && msbuild brainflow.sln /p:Configuration=Release /p:Platform="Any CPU"
-  - cd $env:APPVEYOR_BUILD_FOLDER\csharp-package\brainflow\brainflow
+  - cd %APPVEYOR_BUILD_FOLDER%\csharp-package\brainflow\brainflow
   - If ($env:APPVEYOR_REPO_TAG -eq "true" -And $env:APPVEYOR_REPO_BRANCH -eq "master") {
         (gc .\brainflow.nuspec.in).replace('VERSION_PLACEHOLDER',$env:APPVEYOR_REPO_TAG_NAME) | Out-File -encoding ASCII brainflow.nuspec.in
       }
