@@ -54,7 +54,7 @@ int NovaXR::prepare_session ()
         socket = new SocketClient (params.ip_address.c_str (), port, (int)SocketType::TCP);
     }
     int res = socket->connect ();
-    if (res != 0)
+    if (res != (int)SocketReturnCodes::STATUS_OK)
     {
         safe_logger (spdlog::level::err, "failed to init socket: {}", res);
         return GENERAL_ERROR;
@@ -101,8 +101,15 @@ int NovaXR::start_stream (int buffer_size)
     }
 
     // start streaming
-    if (socket->send ("b", 1) != 1)
+    int res = socket->send ("b", 1);
+    if (res != 1)
     {
+#ifndef _WIN32
+        if (res == -1)
+        {
+            safe_logger (spdlog::level::err, "errno {} message {}", errno, strerror (errno));
+        }
+#endif
         safe_logger (spdlog::level::err, "Failed to send a command to board");
         return BOARD_WRITE_ERROR;
     }
@@ -143,8 +150,15 @@ int NovaXR::stop_stream ()
         is_streaming = false;
         streaming_thread.join ();
         this->state = SYNC_TIMEOUT_ERROR;
-        if (socket->send ("s", 1) != 1)
+        int res = socket->send ("s", 1);
+        if (res != 1)
         {
+#ifndef _WIN32
+            if (res == -1)
+            {
+                safe_logger (spdlog::level::err, "errno {} message {}", errno, strerror (errno));
+            }
+#endif
             safe_logger (spdlog::level::err, "Failed to send a command to board");
             return BOARD_WRITE_ERROR;
         }
