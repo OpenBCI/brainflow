@@ -41,8 +41,8 @@ void read_characteristic_worker ()
     while (!should_stop_stream)
     {
         read_message (UART_TIMEOUT);
-        ble_cmd_attclient_read_by_handle (
-            connection, ganglion_handle_recv); // I think we dont need this line
+        // ble_cmd_attclient_read_by_handle (
+        //    connection, ganglion_handle_recv); // I think we dont need this line
     }
 }
 
@@ -145,6 +145,13 @@ namespace GanglionLibNative
         {
             return res;
         }
+        // copypaste from openbci hub write 0x01 to 0x2902
+        uint8 configuration[] = {0x01, 0x00};
+        state = State::write_to_client_char;
+        exit_code = (int)GanglionLibNative::SYNC_ERROR;
+        ble_cmd_attclient_attribute_write (connection, client_char_handle, 2, &configuration);
+        ble_cmd_attclient_execute_write (connection, 1);
+        res = wait_for_callback (10);
         should_stop_stream = false;
         read_characteristic_thread = std::thread (read_characteristic_worker);
         return res;

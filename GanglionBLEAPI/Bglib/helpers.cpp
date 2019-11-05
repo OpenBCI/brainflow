@@ -12,6 +12,7 @@
 
 #include "GanglionNativeInterface.h"
 
+#include <iostream>
 #define FIRST_HANDLE 0x0001
 #define LAST_HANDLE 0xffff
 
@@ -100,6 +101,7 @@ int open_ble_dev ()
     uint8 configuration[] = {0x01, 0x00};
     state = State::write_to_client_char;
     exit_code = (int)GanglionLibNative::SYNC_ERROR;
+    std::cout << "client handle " << (int)client_char_handle << std::endl;
     ble_cmd_attclient_attribute_write (connection, client_char_handle, 2, &configuration);
     ble_cmd_attclient_execute_write (connection, 1);
     return wait_for_callback (5);
