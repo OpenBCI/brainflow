@@ -311,13 +311,13 @@ if (MSVC)
         DESTINATION lib
     )
 endif (MSVC)
-if (UNIX)
+if (UNIX AND NOT APPLE)
     install (
         FILES
         "${GANGLION_LIB_PATH}"
         DESTINATION lib
     )
-endif (UNIX)
+endif (UNIX AND NOT APPLE)
 
 install (
     FILES "${project_config}" "${version_config}"
