@@ -14,15 +14,14 @@
 
 #include "GanglionNativeInterface.h"
 
-// read Bluetooth_Smart_Software_v1.3.1_API_Reference.pdf to understand at least smth here
+// read Bluetooth_Smart_Software_v1.3.1_API_Reference.pdf to understand this code
 
 volatile int exit_code = (int)GanglionLibNative::SYNC_ERROR;
 char uart_port[1024];
-std::queue<struct GanglionLibNative::GanglionDataNative>
-    data_queue; // not thread safe but maybe its ok
+std::queue<struct GanglionLibNative::GanglionDataNative> data_queue;
 volatile bd_addr connect_addr;
 volatile uint8 connection = -1;
-volatile uint16 ganglion_handle_start = 0; // I have no idea what it is but seems like its important
+volatile uint16 ganglion_handle_start = 0;
 volatile uint16 ganglion_handle_end = 0;
 volatile uint16 ganglion_handle_recv = 0;
 volatile uint16 ganglion_handle_send = 0;
@@ -32,8 +31,7 @@ volatile State state =
 
 bool initialized = false;
 std::mutex mutex;
-std::thread read_characteristic_thread; // I didnt find a way to subscribe for notifications, send
-                                        // commands to read data in a loop
+std::thread read_characteristic_thread;
 bool should_stop_stream = true;
 
 void read_characteristic_worker ()
@@ -41,8 +39,6 @@ void read_characteristic_worker ()
     while (!should_stop_stream)
     {
         read_message (UART_TIMEOUT);
-        // ble_cmd_attclient_read_by_handle (
-        //    connection, ganglion_handle_recv); // I think we dont need this line
     }
 }
 
@@ -138,14 +134,12 @@ namespace GanglionLibNative
 
     int start_stream_native (void *param)
     {
-        // in theory after 'b' callback should be triggered automatically but it doesnt, so I
-        // created another thread which reads data in a loop
         int res = config_board_native ((char *)"b");
         if (res != (int)CustomExitCodesNative::STATUS_OK)
         {
             return res;
         }
-        // copypaste from openbci hub write 0x01 to 0x2902
+        // from silicanlabs forum - write 0x00001 to enable notifications
         uint8 configuration[] = {0x01, 0x00};
         state = State::write_to_client_char;
         exit_code = (int)GanglionLibNative::SYNC_ERROR;

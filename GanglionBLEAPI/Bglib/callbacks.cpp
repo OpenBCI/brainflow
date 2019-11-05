@@ -11,7 +11,6 @@
 #include "timestamp.h"
 #include "uart.h"
 
-#include <iostream>
 #define GANGLION_SERVICE_UUID 0xfe84
 #define CLIENT_CHARACTERISTIC_UUID 0x2902
 
@@ -50,12 +49,11 @@ void ble_evt_gap_scan_response (const struct ble_msg_gap_scan_response_evt_t *ms
             break; // not enough data
         }
         uint8 type = msg->data.data[i++];
-        switch (type)
+        if (type == 0x09) // no idea what is 0x09
         {
-            case 0x09:
-                name = (char *)malloc (len);
-                memcpy (name, msg->data.data + i, len - 1);
-                name[len - 1] = '\0';
+            name = (char *)malloc (len);
+            memcpy (name, msg->data.data + i, len - 1);
+            name[len - 1] = '\0';
         }
 
         i += len - 1;
@@ -79,8 +77,8 @@ void ble_evt_connection_status (const struct ble_msg_connection_status_evt_t *ms
     if (msg->flags & connection_connected)
     {
         connection = msg->connection;
-        // this method is called from ble_evt_connection_disconnected after each connection timeout
-        // expiration, need to set exit code only when we call this methid from open_ble_device
+        // this method is called from ble_evt_connection_disconnected need to set exit code only
+        // when we call this method from open_ble_device
         if (state == State::initial_connection)
         {
             exit_code = (int)GanglionLibNative::STATUS_OK;
@@ -115,8 +113,6 @@ void ble_evt_attclient_procedure_completed (
 {
     if (state == State::write_to_client_char)
     {
-        std::cout << "fffffffff " << (int)msg->result << "  chrhandle " << msg->chrhandle
-                  << " send " << client_char_handle << std::endl;
         if (msg->result == 0)
         {
             exit_code = (int)GanglionLibNative::STATUS_OK;
@@ -132,12 +128,7 @@ void ble_evt_attclient_procedure_completed (
     }
     else if (state == State::config_called)
     {
-        std::cout << "triggered res" << (int)msg->result << "  chrhandle " << msg->chrhandle
-                  << " send " << ganglion_handle_send << " recv " << ganglion_handle_recv
-                  << std::endl;
         if (msg->result == 0)
-        // for unknown reason after start_stream this method triggered with another chrhandle value!
-        // if ((msg->result == 0) && (msg->chrhandle == ganglion_handle_send))
         {
             exit_code = (int)GanglionLibNative::STATUS_OK;
         }
@@ -153,10 +144,8 @@ void ble_evt_attclient_find_information_found (
         if (msg->uuid.len == 2)
         {
             uint16 uuid = (msg->uuid.data[1] << 8) | msg->uuid.data[0];
-            std::cout << "should be client " << (int)uuid << std::endl;
             if (uuid == CLIENT_CHARACTERISTIC_UUID)
             {
-                std::cout << "inside" << std::endl;
                 client_char_handle = msg->chrhandle;
             }
         }
@@ -198,10 +187,6 @@ void ble_evt_attclient_attribute_value (const struct ble_msg_attclient_attribute
     {
         unsigned char values[20] = {0};
         memcpy (values, msg->value.data, msg->value.len * sizeof (unsigned char));
-        std::cout << "got data" << std::endl;
-        for (int i = 0; i < 20; i++)
-            std::cout << (int)values[i] << " ";
-        std::cout << std::endl;
         struct GanglionLibNative::GanglionDataNative data (values, (long)get_timestamp ());
         data_queue.push (data);
     }

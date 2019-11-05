@@ -10,7 +10,7 @@
 
 #define UART_TIMEOUT 1000
 
-enum class State : int
+enum State
 {
     none = 0,
     init_called = 1,

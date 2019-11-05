@@ -6,7 +6,7 @@ MACHINE = $(shell $(CC) -dumpmachine)
 PLATFORM = POSIX
 LIBS = -lm
 LDFLAGS = -shared
-CFLAGS = -O1 -Wall -c -fmessage-length=0 -fPIC
+CFLAGS = -O1 -Wall -c -fmessage-length=0 -fPIC -std=c++11
 ifeq ($(DEBUG), y)  
 	CFLAGS += -g -DDEBUG
 endif
