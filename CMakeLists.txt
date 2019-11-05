@@ -226,10 +226,6 @@ if (MSVC)
 endif (MSVC)
 if (UNIX)
     add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD
-        # copy libraries for ganglion
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${GANGLION_LIB_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/lib/${GANGLION_LIB_NAME}"
-        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${GANGLION_LIB_NAME}"
         # copy board controller libs
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${BOARD_CONTROLLER_COMPILED_NAME}"
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${BOARD_CONTROLLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${BOARD_CONTROLLER_COMPILED_NAME}"
@@ -244,6 +240,14 @@ if (UNIX)
         COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${CMAKE_HOME_DIRECTORY}/compiled/${DATA_HANDLER_COMPILED_NAME}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${DATA_HANDLER_COMPILED_NAME}"
     )
 endif (UNIX)
+if (UNIX AND NOT APPLE)
+    add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD
+        # copy libraries for ganglion
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/java-package/brainflow/src/main/resources/${GANGLION_LIB_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/csharp-package/brainflow/brainflow/lib/${GANGLION_LIB_NAME}"
+        COMMAND "${CMAKE_COMMAND}" -E copy_if_different "${GANGLION_LIB_PATH}" "${CMAKE_HOME_DIRECTORY}/python-package/brainflow/lib/${GANGLION_LIB_NAME}"
+    )
+endif (UNIX AND NOT APPLE)
 
 # need to copy json file to bindings
 add_custom_command (TARGET ${BOARD_CONTROLLER_NAME} POST_BUILD
