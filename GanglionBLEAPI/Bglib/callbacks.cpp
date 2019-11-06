@@ -36,7 +36,8 @@ const int recv_char_uuid_bytes[16] = {
 
 void ble_evt_gap_scan_response (const struct ble_msg_gap_scan_response_evt_t *msg)
 {
-    char *name = NULL;
+    char name[512];
+    bool name_found_in_response = false;
     for (int i = 0; i < msg->data.len;)
     {
         int8 len = msg->data.data[i++];
@@ -51,7 +52,7 @@ void ble_evt_gap_scan_response (const struct ble_msg_gap_scan_response_evt_t *ms
         uint8 type = msg->data.data[i++];
         if (type == 0x09) // no idea what is 0x09
         {
-            name = (char *)malloc (len);
+            name_found_in_response = true;
             memcpy (name, msg->data.data + i, len - 1);
             name[len - 1] = '\0';
         }
@@ -59,16 +60,14 @@ void ble_evt_gap_scan_response (const struct ble_msg_gap_scan_response_evt_t *ms
         i += len - 1;
     }
 
-    if (name)
+    if (name_found_in_response)
     {
-        if (strstr (name, "anglion") != NULL)
+        if (strcasestr (name, "ganglion") != NULL)
         {
             memcpy ((void *)connect_addr.addr, msg->sender.addr, sizeof (bd_addr));
             exit_code = (int)GanglionLibNative::STATUS_OK;
         }
     }
-
-    free (name);
 }
 
 void ble_evt_connection_status (const struct ble_msg_connection_status_evt_t *msg)

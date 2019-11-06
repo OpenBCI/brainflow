@@ -24,45 +24,45 @@ Ganglion::Ganglion (struct BrainFlowInputParams params) : Board ((int)GANGLION_B
     // get full path of ganglioblibnative with assumption that this lib is in the same folder
     char ganglionlib_dir[1024];
     bool res = get_dll_path (ganglionlib_dir);
-    std::string ganglioblib_path = "";
+    std::string ganglionlib_path = "";
 #ifdef _WIN32
     // get library path
     if (sizeof (void *) == 8)
     {
         if (res)
         {
-            ganglioblib_path = std::string (ganglionlib_dir) + "GanglionLibNative64.dll";
+            ganglionlib_path = std::string (ganglionlib_dir) + "GanglionLibNative64.dll";
         }
         else
         {
-            ganglioblib_path = "GanglionLibNative64.dll";
+            ganglionlib_path = "GanglionLibNative64.dll";
         }
     }
     else
     {
         if (res)
         {
-            ganglioblib_path = std::string (ganglionlib_dir) + "GanglionLibNative32.dll";
+            ganglionlib_path = std::string (ganglionlib_dir) + "GanglionLibNative32.dll";
         }
         else
         {
-            ganglioblib_path = "GanglionLibNative32.dll";
+            ganglionlib_path = "GanglionLibNative32.dll";
         }
     }
 #else
     // get lib path, only 64 bit for unix
     if (res)
     {
-        ganglioblib_path = std::string (ganglionlib_dir) + "GanglionLibrary.so";
+        ganglionlib_path = std::string (ganglionlib_dir) + "GanglionLibrary.so";
     }
     else
     {
-        ganglioblib_path = "GanglionLibrary.so";
+        ganglionlib_path = "GanglionLibrary.so";
     }
 #endif
 
-    safe_logger (spdlog::level::debug, "use dyn lib: {}", ganglioblib_path.c_str ());
-    dll_loader = new DLLLoader (ganglioblib_path.c_str ());
+    safe_logger (spdlog::level::debug, "use dyn lib: {}", ganglionlib_path.c_str ());
+    dll_loader = new DLLLoader (ganglionlib_path.c_str ());
 
     this->is_streaming = false;
     this->keep_alive = false;
@@ -391,7 +391,7 @@ void Ganglion::read_thread ()
 #ifdef _WIN32
             Sleep (10);
 #else
-            usleep (1000000);
+            usleep (10000);
 #endif
         }
     }
