@@ -150,7 +150,6 @@ deploy_script:
 on_finish:
   - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\build32\brainflow_build32_stdout.txt
   - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\build64\brainflow_build64_stdout.txt
-  - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\GanglionBLEAPI\Mock\build\ganglion_mock_build64_stdout.txt
   - appveyor PushArtifact %APPVEYOR_BUILD_FOLDER%\java-package\brainflow\maven_package_stdout.txt
 
 notifications:
