@@ -90,7 +90,7 @@ OpenBCI Cyton Daisy
 To choose this board in BoardShim class please specify:
 
 - board_id: 2
-- serial_port field of BrainFlowInputStruct
+- serial_port field of BrainFlowInputParams structure
 
 Supported platforms:
 
@@ -118,9 +118,9 @@ OpenBCI Ganglion with Wifi Shield
 To choose this board in BoardShim class please specify:
 
 - board_id: 4
-- ip_address field of BrainFlowInputStruct should contain WiFi Shield Ip address(in direct mode its 192.168.4.1)
-- ip_protocol field of BrainFlowInputStruct should be IpProtocolType.TCP
-- ip_port field of BrainFlowInputStruct should be any local port which is free right now
+- ip_address field of BrainFlowInputParams structure should contain WiFi Shield Ip address(in direct mode its 192.168.4.1)
+- ip_protocol field of BrainFlowInputParams structure should be IpProtocolType.TCP
+- ip_port field of BrainFlowInputParams structure should be any local port which is free right now
 
 Supported platforms:
 
@@ -150,9 +150,9 @@ OpenBCI Cyton with Wifi Shield
 To choose this board in BoardShim class please specify:
 
 - board_id: 5
-- ip_address field of BrainFlowInputStruct should contain WiFi Shield Ip address(in direct mode its 192.168.4.1)
-- ip_protocol field of BrainFlowInputStruct should be IpProtocolType.TCP
-- ip_port field of BrainFlowInputStruct should be any local port which is free right now
+- ip_address field of BrainFlowInputParams structure should contain WiFi Shield Ip address(in direct mode its 192.168.4.1)
+- ip_protocol field of BrainFlowInputParams structure should be IpProtocolType.TCP
+- ip_port field of BrainFlowInputParams structure should be any local port which is free right now
 
 Supported platforms:
 
@@ -181,9 +181,9 @@ OpenBCI Cyton Daisy with Wifi Shield
 To choose this board in BoardShim class please specify:
 
 - board_id: 6
-- ip_address field of BrainFlowInputStruct should contain WiFi Shield Ip address(in direct mode its 192.168.4.1)
-- ip_protocol field of BrainFlowInputStruct should be IpProtocolType.TCP
-- ip_port field of BrainFlowInputStruct should be any local port which is free right now
+- ip_address field of BrainFlowInputParams structure should contain WiFi Shield Ip address(in direct mode its 192.168.4.1)
+- ip_protocol field of BrainFlowInputParams structure should be IpProtocolType.TCP
+- ip_port field of BrainFlowInputParams structure should be any local port which is free right now
 
 Supported platforms:
 
