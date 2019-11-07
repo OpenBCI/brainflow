@@ -35,7 +35,7 @@ def main ():
         BoardShim.disable_board_logger ()
 
     board = BoardShim (args.board_id, params)
-    synth_board = BoardShim (1, synth_params)
+    synth_board = BoardShim (brainflow.board_shim.BoardIds.SYNTHETIC_BOARD.value, synth_params)
     board.prepare_session ()
     synth_board.prepare_session ()
 
