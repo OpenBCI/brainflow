@@ -54,7 +54,7 @@ int Ganglion::prepare_session ()
 
     if (!this->is_valid)
     {
-        safe_logger (spdlog::level::info, "only one ganglion is supoprted per process");
+        safe_logger (spdlog::level::info, "only one ganglion per process is supported");
         return ANOTHER_BOARD_IS_CREATED_ERROR;
     }
 
