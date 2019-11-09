@@ -8,7 +8,7 @@ import matplotlib
 matplotlib.use ('Agg')
 import matplotlib.pyplot as plt
 
-from brainflow.board_shim import BoardShim, BrainFlowInputParams
+from brainflow.board_shim import BoardShim, BrainFlowInputParams, LogLevels
 from brainflow.data_filter import DataFilter, FilterTypes
 
 
@@ -42,6 +42,7 @@ def main ():
     board = BoardShim (args.board_id, params)
     board.prepare_session ()
     board.start_stream ()
+    BoardShim.log_message (LogLevels.LEVEL_INFO.value, 'start sleeping in the main thread')
     time.sleep (10)
     # data = board.get_current_board_data (256) # get latest 256 packages or less, doesnt remove them from internal buffer
     data = board.get_board_data () # get all data and remove it from internal buffer

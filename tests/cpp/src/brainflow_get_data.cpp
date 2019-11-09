@@ -36,16 +36,17 @@ int main (int argc, char *argv[])
     {
         board->prepare_session ();
         board->start_stream ();
-
+        BoardShim::log_message ((int)LogLevels::LEVEL_INFO, "Start sleeping in the main thread");
 #ifdef _WIN32
         Sleep (5000);
 #else
         sleep (5);
 #endif
+
         board->stop_stream ();
         int data_count = 0;
         data = board->get_board_data (&data_count);
-        std::cout << "received " << data_count << " packages" << std::endl;
+        BoardShim::log_message ((int)LogLevels::LEVEL_INFO, "read %d packages", data_count);
         board->release_session ();
         num_rows = BoardShim::get_num_rows (board_id);
         print_head (data, num_rows, data_count);
@@ -80,7 +81,7 @@ int main (int argc, char *argv[])
     }
     catch (const BrainFlowException &err)
     {
-        std::cout << err.what () << std::endl;
+        BoardShim::log_message ((int)LogLevels::LEVEL_ERROR, err.what ());
         res = err.exit_code;
     }
 
