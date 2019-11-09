@@ -10,7 +10,7 @@ public enum BoardIds
     GANGLION_WIFI_BOARD (4), CYTON_WIFI_BOARD (5), CYTON_DAISY_WIFI_BOARD (6);
 
     private final int board_id;
-    private static final Map<Integer, BoardIds> bi_map = new HashMap<Integer, BoardIds>();
+    private static final Map<Integer, BoardIds> bi_map = new HashMap<Integer, BoardIds> ();
 
     public int get_code ()
     {
@@ -19,12 +19,12 @@ public enum BoardIds
 
     public static String string_from_code (final int code)
     {
-        return from_code(code).name();
+        return from_code (code).name ();
     }
 
     public static BoardIds from_code (final int code)
     {
-        final BoardIds element = bi_map.get(code);
+        final BoardIds element = bi_map.get (code);
         return element;
     }
 
@@ -35,9 +35,9 @@ public enum BoardIds
 
     static
     {
-        for (final BoardIds bi : BoardIds.values())
+        for (final BoardIds bi : BoardIds.values ())
         {
-            bi_map.put(bi.get_code(), bi);
+            bi_map.put (bi.get_code (), bi);
         }
     }
 }

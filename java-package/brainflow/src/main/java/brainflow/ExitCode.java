@@ -14,7 +14,7 @@ public enum ExitCode
     SYNC_TIMEOUT_ERROR (18), JSON_NOT_FOUND_ERROR (19), NO_SUCH_DATA_IN_JSON_ERROR (20);
 
     private final int exit_code;
-    private static final Map<Integer, ExitCode> ec_map = new HashMap<Integer, ExitCode>();
+    private static final Map<Integer, ExitCode> ec_map = new HashMap<Integer, ExitCode> ();
 
     public int get_code ()
     {
@@ -23,12 +23,12 @@ public enum ExitCode
 
     public static String string_from_code (final int code)
     {
-        return from_code(code).name();
+        return from_code (code).name ();
     }
 
     public static ExitCode from_code (final int code)
     {
-        final ExitCode element = ec_map.get(code);
+        final ExitCode element = ec_map.get (code);
         return element;
     }
 
@@ -39,9 +39,9 @@ public enum ExitCode
 
     static
     {
-        for (final ExitCode ec : ExitCode.values())
+        for (final ExitCode ec : ExitCode.values ())
         {
-            ec_map.put(ec.get_code(), ec);
+            ec_map.put (ec.get_code (), ec);
         }
     }
 

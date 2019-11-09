@@ -1,5 +1,7 @@
 ﻿using System;
 
+using Accord.Math;
+
 namespace brainflow
 {
     public class DataFilter
@@ -51,6 +53,38 @@ namespace brainflow
                 throw new BrainFlowException (res);
             }
             return filtered_data;
+        }
+
+        public static void write_file (double[,] data, string file_name, string file_mode)
+        {
+            int num_rows = data.Rows();
+            int res = DataHandlerLibrary.write_file (data.Flatten(), data.Rows (), data.Columns (), file_name, file_mode);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowException (res);
+            }
+        }
+
+        public static double[,] read_file (string file_name, int max_elements = 28800000)
+        {
+            double[] data_arr = new double[max_elements];
+            int[] num_rows = new int[1];
+            int[] num_cols = new int[1];
+            int res = DataHandlerLibrary.read_file (data_arr, num_rows, num_cols, file_name, max_elements);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowException (res);
+            }
+
+            double[,] result = new double[num_rows[0], num_cols[0]];
+            for (int i = 0; i < num_rows[0]; i++)
+            {
+                for (int j = 0; j < num_cols[0]; j++)
+                {
+                    result[i, j] = data_arr[i * num_cols[0] + j];
+                }
+            }
+            return result;
         }
     }
 }

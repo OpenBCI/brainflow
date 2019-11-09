@@ -10,7 +10,7 @@ public enum LogLevels
     LEVEL_OFF (6);
 
     private final int log_level;
-    private static final Map<Integer, LogLevels> ll_map = new HashMap<Integer, LogLevels>();
+    private static final Map<Integer, LogLevels> ll_map = new HashMap<Integer, LogLevels> ();
 
     public int get_code ()
     {
@@ -19,12 +19,12 @@ public enum LogLevels
 
     public static String string_from_code (final int code)
     {
-        return from_code(code).name();
+        return from_code (code).name ();
     }
 
     public static LogLevels from_code (final int code)
     {
-        final LogLevels element = ll_map.get(code);
+        final LogLevels element = ll_map.get (code);
         return element;
     }
 
@@ -35,9 +35,9 @@ public enum LogLevels
 
     static
     {
-        for (final LogLevels ll : LogLevels.values())
+        for (final LogLevels ll : LogLevels.values ())
         {
-            ll_map.put(ll.get_code(), ll);
+            ll_map.put (ll.get_code (), ll);
         }
     }
 }

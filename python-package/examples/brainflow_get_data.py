@@ -52,10 +52,18 @@ def main ():
     # demo how to convert it to pandas DF and plot data
     eeg_channels = BoardShim.get_eeg_channels (args.board_id)
     df = pd.DataFrame (np.transpose (data))
+    print ('Data From the Board')
     print (df.head ())
     plt.figure ()
     df[eeg_channels].plot (subplots = True)
     plt.savefig ('before_processing.png')
+
+    # demo for data serialization
+    DataFilter.write_file (data, 'test.csv', 'w')
+    restored_data = DataFilter.read_file ('test.csv')
+    restored_df = pd.DataFrame (np.transpose (restored_data))
+    print ('Data From the File')
+    print (restored_df.head ())
 
     # demo how to perform signal processing
     for count, channel in enumerate (eeg_channels):
@@ -69,6 +77,7 @@ def main ():
             DataFilter.perform_highpass (data[channel], BoardShim.get_sampling_rate (args.board_id), 3.0, 4, FilterTypes.BUTTERWORTH.value, 0)
 
     df = pd.DataFrame (np.transpose (data))
+    print ('Data After Processing')
     print (df.head ())
     plt.figure ()
     df[eeg_channels].plot (subplots = True)

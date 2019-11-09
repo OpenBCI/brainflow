@@ -19,12 +19,12 @@ public class BrainFlowInputParams
         mac_address = "";
         serial_port = "";
         ip_port = 0;
-        ip_protocol = IpProtocolType.NONE.get_code();
+        ip_protocol = IpProtocolType.NONE.get_code ();
         other_info = "";
     }
 
     public String to_json ()
     {
-        return new Gson().toJson(this);
+        return new Gson ().toJson (this);
     }
 }

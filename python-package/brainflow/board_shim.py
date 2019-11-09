@@ -140,7 +140,7 @@ class BoardControllerDLL (object):
         self.get_current_board_data.argtypes = [
             ctypes.c_int,
             ndpointer (ctypes.c_double),
-            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int32),
             ctypes.c_int,
             ctypes.c_char_p
         ]
@@ -164,7 +164,7 @@ class BoardControllerDLL (object):
         self.get_board_data_count = self.lib.get_board_data_count
         self.get_board_data_count.restype = ctypes.c_int
         self.get_board_data_count.argtypes = [
-            ndpointer (ctypes.c_int64),
+            ndpointer (ctypes.c_int32),
             ctypes.c_int,
             ctypes.c_char_p
         ]
@@ -662,7 +662,7 @@ class BoardShim (object):
         """
         package_length = BoardShim.get_num_rows (self.board_id)
         data_arr = numpy.zeros (int(num_samples  * package_length)).astype (numpy.float64)
-        current_size = numpy.zeros (1).astype (numpy.int64)
+        current_size = numpy.zeros (1).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_current_board_data (num_samples, data_arr, current_size, self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:
@@ -680,7 +680,7 @@ class BoardShim (object):
         :return: number of elements in ring buffer
         :rtype: int
         """
-        data_size = numpy.zeros (1).astype (numpy.int64)
+        data_size = numpy.zeros (1).astype (numpy.int32)
 
         res = BoardControllerDLL.get_instance ().get_board_data_count (data_size, self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:

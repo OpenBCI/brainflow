@@ -21,12 +21,19 @@ namespace test
             System.Threading.Thread.Sleep (5000);
             board_shim.stop_stream ();
             Console.WriteLine ("data count: {0}", board_shim.get_board_data_count ());
-            double[,] unprocessed_data = board_shim.get_current_board_data (50);
+            double[,] unprocessed_data = board_shim.get_current_board_data (20);
             int[] eeg_channels = BoardShim.get_eeg_channels (board_id);
             Console.WriteLine ("Before processing:");
             foreach (var index in eeg_channels)
                 Console.WriteLine ("[{0}]", string.Join (", ", unprocessed_data.GetRow (index)));
             board_shim.release_session ();
+
+            // demo for data serialization
+            DataFilter.write_file (unprocessed_data, "test.csv", "w");
+            double[,] restored_data = DataFilter.read_file ("test.csv", 48800000);
+            Console.WriteLine ("After Serialization:");
+            foreach (var index in eeg_channels)
+                Console.WriteLine ("[{0}]", string.Join (", ", restored_data.GetRow (index)));
 
             // for demo apply different filters to different channels
             double[] filtered;

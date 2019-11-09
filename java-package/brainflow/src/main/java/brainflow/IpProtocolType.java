@@ -9,7 +9,7 @@ public enum IpProtocolType
     NONE (0), UDP (1), TCP (2);
 
     private final int protocol;
-    private static final Map<Integer, IpProtocolType> ip_map = new HashMap<Integer, IpProtocolType>();
+    private static final Map<Integer, IpProtocolType> ip_map = new HashMap<Integer, IpProtocolType> ();
 
     public int get_code ()
     {
@@ -18,12 +18,12 @@ public enum IpProtocolType
 
     public static String string_from_code (final int code)
     {
-        return from_code(code).name();
+        return from_code (code).name ();
     }
 
     public static IpProtocolType from_code (final int code)
     {
-        final IpProtocolType element = ip_map.get(code);
+        final IpProtocolType element = ip_map.get (code);
         return element;
     }
 
@@ -34,9 +34,9 @@ public enum IpProtocolType
 
     static
     {
-        for (final IpProtocolType ec : IpProtocolType.values())
+        for (final IpProtocolType ec : IpProtocolType.values ())
         {
-            ip_map.put(ec.get_code(), ec);
+            ip_map.put (ec.get_code (), ec);
         }
     }
 

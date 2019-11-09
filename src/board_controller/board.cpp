@@ -109,8 +109,6 @@ void Board::reshape_data (
     get_num_rows (board_id, &num_data_channels); // here we know that board id is valid
     num_data_channels--;                         // -1 because of timestamp
 
-    // todo speed up this code for better perf, also I dont like that we need to allocate 2x times
-    // more memory
     for (int i = 0; i < data_count; i++)
     {
         for (int j = 0; j < num_data_channels; j++)
