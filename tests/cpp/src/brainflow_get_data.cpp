@@ -63,6 +63,11 @@ int main (int argc, char *argv[])
                   << "Data from the file, num packages is " << restored_num_cols << std::endl
                   << std::endl;
         print_head (restored_data, restored_num_rows, restored_num_cols);
+        for (int i = 0; i < restored_num_rows; i++)
+        {
+            delete[] restored_data[i];
+        }
+        delete[] restored_data;
         */
         // just for test and demo - apply different filters to different eeg channels
         int eeg_num_channels = 0;
