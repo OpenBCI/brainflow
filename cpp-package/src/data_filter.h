@@ -19,8 +19,7 @@ public:
 
     static void write_file (
         double **data, int num_rows, int num_cols, char *file_name, char *file_mode);
-    static double **read_file (int *num_rows, int *num_cols, char *file_name,
-        int max_elements = 28800000); // 3600 * 200 * 40
+    static double **read_file (int *num_rows, int *num_cols, char *file_name);
 
 private:
     static void reshape_data_to_2d (

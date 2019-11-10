@@ -218,9 +218,9 @@ int write_file (double *data, int num_rows, int num_cols, char *file_name, char 
     return STATUS_OK;
 }
 
-int read_file (double *data, int *num_rows, int *num_cols, char *file_name, int max_elements)
+int read_file (double *data, int *num_rows, int *num_cols, char *file_name, int num_elements)
 {
-    if (max_elements <= 0)
+    if (num_elements <= 0)
     {
         return INVALID_ARGUMENTS_ERROR;
     }
@@ -248,7 +248,7 @@ int read_file (double *data, int *num_rows, int *num_cols, char *file_name, int 
 
     fseek (fp, 0, SEEK_SET);
     int current_row = 0;
-    int num_elements = 0;
+    int cur_pos = 0;
     while (fgets (buf, sizeof (buf), fp) != NULL)
     {
         std::string csv_string (buf);
@@ -262,21 +262,69 @@ int read_file (double *data, int *num_rows, int *num_cols, char *file_name, int 
         total_cols = splitted.size ();
         for (int i = 0; i < total_cols; i++)
         {
-            num_elements++;
-            // we need to preallocate array in bindings but we dont know size
-            if (num_elements == (max_elements - 1))
+            data[i * total_rows + current_row] = std::stod (splitted[i]);
+            cur_pos++;
+            if (cur_pos == (num_elements - 1))
             {
-                *num_cols = current_row;
+                *num_cols = current_row + 1;
                 *num_rows = total_cols;
                 fclose (fp);
-                return INVALID_BUFFER_SIZE_ERROR;
+                return STATUS_OK;
             }
-            data[i * total_rows + current_row] = std::stod (splitted[i]);
         }
         current_row++;
     }
+    // more likely code below is unreachable
     *num_cols = total_rows;
     *num_rows = total_cols;
     fclose (fp);
     return STATUS_OK;
+}
+
+int get_num_elements_in_file (char *file_name, int *num_elements)
+{
+    FILE *fp;
+    fp = fopen (file_name, "r");
+    if (fp == NULL)
+    {
+        return INVALID_ARGUMENTS_ERROR;
+    }
+
+    char buf[4096];
+    int total_rows = 0;
+
+    // count rows
+    char c;
+    for (c = getc (fp); c != EOF; c = getc (fp))
+    {
+        if (c == '\n')
+        {
+            total_rows++;
+        }
+    }
+    if (total_rows == 0)
+    {
+        *num_elements = 0;
+        fclose (fp);
+        return EMPTY_BUFFER_ERROR;
+    }
+
+    fseek (fp, 0, SEEK_SET);
+    while (fgets (buf, sizeof (buf), fp) != NULL)
+    {
+        std::string csv_string (buf);
+        std::stringstream ss (csv_string);
+        std::vector<std::string> splitted;
+        std::string tmp;
+        while (getline (ss, tmp, ','))
+        {
+            splitted.push_back (tmp);
+        }
+        *num_elements = splitted.size () * total_rows;
+        fclose (fp);
+        return STATUS_OK;
+    }
+    *num_elements = 0;
+    fclose (fp);
+    return EMPTY_BUFFER_ERROR;
 }

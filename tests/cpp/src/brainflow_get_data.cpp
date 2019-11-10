@@ -59,7 +59,9 @@ int main (int argc, char *argv[])
         int restored_num_cols = 0;
         double **restored_data =
             DataFilter::read_file (&restored_num_rows, &restored_num_cols, "test.csv");
-        std::cout << std::endl << "Data from the file" << std::endl << std::endl;
+        std::cout << std::endl
+                  << "Data from the file, num packages is " << restored_num_cols << std::endl
+                  << std::endl;
         print_head (restored_data, restored_num_rows, restored_num_cols);
         */
         // just for test and demo - apply different filters to different eeg channels

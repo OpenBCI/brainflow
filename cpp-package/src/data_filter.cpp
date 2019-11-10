@@ -46,10 +46,16 @@ void DataFilter::perform_bandstop (double *data, int data_len, int sampling_rate
     }
 }
 
-double **DataFilter::read_file (int *num_rows, int *num_cols, char *file_name, int max_elements)
+double **DataFilter::read_file (int *num_rows, int *num_cols, char *file_name)
 {
+    int max_elements = 0;
+    int res = get_num_elements_in_file (file_name, &max_elements);
+    if (res != STATUS_OK)
+    {
+        throw BrainFlowException ("failed to determine file size", res);
+    }
     double *data_linear = new double[max_elements];
-    int res = ::read_file (data_linear, num_rows, num_cols, file_name, max_elements);
+    res = ::read_file (data_linear, num_rows, num_cols, file_name, max_elements);
     if (res != STATUS_OK)
     {
         delete[] data_linear;

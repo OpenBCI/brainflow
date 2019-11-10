@@ -65,12 +65,18 @@ namespace brainflow
             }
         }
 
-        public static double[,] read_file (string file_name, int max_elements = 28800000)
+        public static double[,] read_file (string file_name)
         {
-            double[] data_arr = new double[max_elements];
+            int[] num_elements = new int[1];
+            int res = DataHandlerLibrary.get_num_elements_in_file (file_name, num_elements);
+            if (res != (int)CustomExitCodes.STATUS_OK)
+            {
+                throw new BrainFlowException (res);
+            }
+            double[] data_arr = new double[num_elements[0]];
             int[] num_rows = new int[1];
             int[] num_cols = new int[1];
-            int res = DataHandlerLibrary.read_file (data_arr, num_rows, num_cols, file_name, max_elements);
+            res = DataHandlerLibrary.read_file (data_arr, num_rows, num_cols, file_name, num_elements[0]);
             if (res != (int)CustomExitCodes.STATUS_OK)
             {
                 throw new BrainFlowException (res);

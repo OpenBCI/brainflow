@@ -30,7 +30,7 @@ namespace test
 
             // demo for data serialization
             DataFilter.write_file (unprocessed_data, "test.csv", "w");
-            double[,] restored_data = DataFilter.read_file ("test.csv", 48800000);
+            double[,] restored_data = DataFilter.read_file ("test.csv");
             Console.WriteLine ("After Serialization:");
             foreach (var index in eeg_channels)
                 Console.WriteLine ("[{0}]", string.Join (", ", restored_data.GetRow (index)));

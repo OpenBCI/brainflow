@@ -116,6 +116,13 @@ class DataHandlerDLL (object):
             ctypes.c_int
         ]
 
+        self.get_num_elements_in_file = self.lib.get_num_elements_in_file
+        self.get_num_elements_in_file.restype = ctypes.c_int
+        self.get_num_elements_in_file.argtypes = [
+            ctypes.c_char_p,
+            ndpointer (ctypes.c_int32)
+        ]
+
 
 class DataFilter (object):
     """DataFilter class contains methods for signal processig"""
@@ -250,13 +257,11 @@ class DataFilter (object):
             raise BrainFlowError ('unable to write file', res)
 
     @classmethod
-    def read_file (cls, file_name, max_elements = 28800000):
+    def read_file (cls, file_name):
         """read data from file and transpose it original dimensions
 
         :param file_name: file name to read
         :type file_name: str
-        :param max_elements: max number of elements in this file, we need this to preallocate buffer
-        :type max_elements: int
         :return: 2d numpy array with data from this file, data will be transposed
         :rtype: 2d numpy array
         """
@@ -265,11 +270,16 @@ class DataFilter (object):
         except:
             file = file_name
 
-        data_arr = numpy.zeros (max_elements).astype (numpy.float64)
+        num_elements = numpy.zeros (1).astype (numpy.int32)
+        res = DataHandlerDLL.get_instance ().get_num_elements_in_file (file, num_elements)
+        if res != BrainflowExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to determine number of elements in file', res)
+
+        data_arr = numpy.zeros (num_elements).astype (numpy.float64)
         num_rows = numpy.zeros (1).astype (numpy.int32)
         num_cols = numpy.zeros (1).astype (numpy.int32)
 
-        res = DataHandlerDLL.get_instance ().read_file (data_arr, num_rows, num_cols, file, int (max_elements))
+        res = DataHandlerDLL.get_instance ().read_file (data_arr, num_rows, num_cols, file, num_elements)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to read file', res)
 

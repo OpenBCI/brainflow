@@ -36,7 +36,10 @@ extern "C"
     SHARED_EXPORT int write_file (
         double *data, int num_rows, int num_cols, char *file_name, char *file_mode);
     SHARED_EXPORT int read_file (
-        double *data, int *num_rows, int *num_cols, char *file_name, int max_elements);
+        double *data, int *num_rows, int *num_cols, char *file_name, int num_elements);
+    SHARED_EXPORT int get_num_elements_in_file (
+        char *file_name, int *num_elements); // its an internal method for bindings its not
+                                             // available via high level api
 #ifdef __cplusplus
 }
 #endif

@@ -30,6 +30,8 @@ public class DataFilter
         int write_file (double[] data, int num_rows, int num_cols, String file_name, String file_mode);
 
         int read_file (double[] data, int[] num_rows, int[] num_cols, String file_name, int max_elements);
+
+        int get_num_elements_in_file (String file_name, int[] num_elements);
     }
 
     private static DllInterface instance;
@@ -122,22 +124,23 @@ public class DataFilter
         }
     }
 
-    public static double[][] read_file (String file_name, int max_elements) throws BrainFlowError
+    public static double[][] read_file (String file_name) throws BrainFlowError
     {
-        double[] data_arr = new double[max_elements];
+        int[] num_elements = new int[1];
+        int ec = instance.get_num_elements_in_file (file_name, num_elements);
+        if (ec != ExitCode.STATUS_OK.get_code ())
+        {
+            throw new BrainFlowError ("Failed to determine number of elements in a file", ec);
+        }
+        double[] data_arr = new double[num_elements[0]];
         int[] num_rows = new int[1];
         int[] num_cols = new int[1];
-        int ec = instance.read_file (data_arr, num_rows, num_cols, file_name, max_elements);
+        ec = instance.read_file (data_arr, num_rows, num_cols, file_name, num_elements[0]);
         if (ec != ExitCode.STATUS_OK.get_code ())
         {
             throw new BrainFlowError ("Failed to read data to file", ec);
         }
         return reshape_data_to_2d (num_rows[0], num_cols[0], data_arr);
-    }
-
-    public static double[][] read_file (String file_name) throws BrainFlowError
-    {
-        return read_file (file_name, 28800000);
     }
 
     private static double[] reshape_data_to_1d (int num_rows, int num_cols, double[][] buf)

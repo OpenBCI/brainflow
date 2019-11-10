@@ -23,6 +23,8 @@ namespace brainflow
         public static extern int write_file (double[] data, int num_rows, int num_cols, string file_name, string file_mode);
         [DllImport ("DataHandler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
         public static extern int read_file (double[] data, int[] num_rows, int[] num_cols, string file_name, int max_elements);
+        [DllImport ("DataHandler.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int get_num_elements_in_file (string file_name, int[] num_elements);
     }
 
     class DataHandlerLibrary32
@@ -39,6 +41,8 @@ namespace brainflow
         public static extern int write_file (double[] data, int num_rows, int num_cols, string file_name, string file_mode);
         [DllImport ("DataHandler32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
         public static extern int read_file (double[] data, int[] num_rows, int[] num_cols, string file_name, int max_elements);
+        [DllImport ("DataHandler32.dll", SetLastError = true, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int get_num_elements_in_file (string file_name, int[] num_elements);
     }
 
     class DataHandlerLibrary
@@ -91,5 +95,12 @@ namespace brainflow
                 return DataHandlerLibrary32.write_file (data, num_rows, num_cols, file_name, file_mode);
         }
 
+        public static int get_num_elements_in_file (string file_name, int[] num_elements)
+        {
+            if (System.Environment.Is64BitProcess)
+                return DataHandlerLibrary64.get_num_elements_in_file (file_name, num_elements);
+            else
+                return DataHandlerLibrary32.get_num_elements_in_file (file_name, num_elements);
+        }
     }
 }
