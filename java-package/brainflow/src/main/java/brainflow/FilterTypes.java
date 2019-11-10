@@ -6,7 +6,9 @@ import java.util.Map;
 public enum FilterTypes
 {
 
-    BUTTERWORTH (0), CHEBYSHEV_TYPE_1 (1), BESSEL (2);
+    BUTTERWORTH (0),
+    CHEBYSHEV_TYPE_1 (1),
+    BESSEL (2);
 
     private final int filter_type;
     private static final Map<Integer, FilterTypes> ft_map = new HashMap<Integer, FilterTypes> ();

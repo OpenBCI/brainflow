@@ -6,7 +6,9 @@ import java.util.Map;
 public enum IpProtocolType
 {
 
-    NONE (0), UDP (1), TCP (2);
+    NONE (0),
+    UDP (1),
+    TCP (2);
 
     private final int protocol;
     private static final Map<Integer, IpProtocolType> ip_map = new HashMap<Integer, IpProtocolType> ();
