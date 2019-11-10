@@ -89,12 +89,15 @@ class NovaXREmulator (threading.Thread):
 
             if self.state == State.stream.value:
                 package = list ()
-                package.append (self.package_num)
-                self.package_num = self.package_num + 1
-                for i in range (1, self.package_size - 8):
-                    package.append (random.randint (0, 255))
-                timestamp = bytearray (struct.pack ("d", time.time ()))
-                package.extend (timestamp)
+                for _ in range (20):
+                    package.append (self.package_num)
+                    self.package_num = self.package_num + 1
+                    if self.package_num % 256 == 0:
+                        self.package_num = 0
+                    for i in range (1, self.package_size - 8):
+                        package.append (random.randint (0, 255))
+                    timestamp = bytearray (struct.pack ("d", time.time ()))
+                    package.extend (timestamp)
                 try:
                     self.conn.send (bytes (package))
                 except socket.timeout:

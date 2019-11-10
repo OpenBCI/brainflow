@@ -233,10 +233,13 @@ void NovaXR::read_thread ()
      */
 
     int res;
-    unsigned char b[72];
+    constexpr int package_size = 72;
+    constexpr int num_packages = 20;
+    constexpr int transaction_size = package_size * num_packages;
+    unsigned char b[transaction_size];
     while (keep_alive)
     {
-        res = socket->recv (b, 72);
+        res = socket->recv (b, transaction_size);
         if (res == -1)
         {
 #ifdef _WIN32
@@ -245,9 +248,10 @@ void NovaXR::read_thread ()
             safe_logger (spdlog::level::err, "errno {} message {}", errno, strerror (errno));
 #endif
         }
-        if (res != 72)
+        if (res != transaction_size)
         {
-            safe_logger (spdlog::level::trace, "unable to read 72 bytes, read {}", res);
+            safe_logger (
+                spdlog::level::trace, "unable to read {} bytes, read {}", transaction_size, res);
             continue;
         }
         else
@@ -255,6 +259,8 @@ void NovaXR::read_thread ()
             // inform main thread that everything is ok and first package was received
             if (this->state != STATUS_OK)
             {
+                safe_logger (spdlog::level::info,
+                    "received first package with {} bytes streaming is started", res);
                 {
                     std::lock_guard<std::mutex> lk (this->m);
                     this->state = STATUS_OK;
@@ -264,26 +270,31 @@ void NovaXR::read_thread ()
             }
         }
 
-        double package[25];
-        // package num
-        package[0] = (double)b[0];
-        // eeg and emg
-        for (int i = 4; i < 20; i++)
+        for (int cur_package = 0; cur_package < num_packages; cur_package++)
         {
-            // put them directly after package num in brainflow
-            package[i - 3] = eeg_scale * (double)cast_24bit_to_int32 (b + 4 + 3 * (i - 4));
-        }
-        package[17] = (double)b[1];                               // ppg
-        package[18] = cast_16bit_to_int32 (b + 2);                // eda todo scale?
-        package[19] = accel_scale * cast_16bit_to_int32 (b + 52); // accel x
-        package[20] = accel_scale * cast_16bit_to_int32 (b + 54); // accel y
-        package[21] = accel_scale * cast_16bit_to_int32 (b + 56); // accel z
-        package[22] = cast_16bit_to_int32 (b + 58);               // gyro x scale?
-        package[23] = cast_16bit_to_int32 (b + 60);               // gyro y scale?
-        package[24] = cast_16bit_to_int32 (b + 62);               // gyro z scale?
+            double package[25];
+            int offset = cur_package * package_size;
+            // package num
+            package[0] = (double)b[0 + offset];
+            // eeg and emg
+            for (int i = 4; i < 20; i++)
+            {
+                // put them directly after package num in brainflow
+                package[i - 3] =
+                    eeg_scale * (double)cast_24bit_to_int32 (b + offset + 4 + 3 * (i - 4));
+            }
+            package[17] = (double)b[1 + offset];                               // ppg
+            package[18] = cast_16bit_to_int32 (b + 2 + offset);                // eda todo scale?
+            package[19] = accel_scale * cast_16bit_to_int32 (b + 52 + offset); // accel x
+            package[20] = accel_scale * cast_16bit_to_int32 (b + 54 + offset); // accel y
+            package[21] = accel_scale * cast_16bit_to_int32 (b + 56 + offset); // accel z
+            package[22] = cast_16bit_to_int32 (b + 58 + offset);               // gyro x scale?
+            package[23] = cast_16bit_to_int32 (b + 60 + offset);               // gyro y scale?
+            package[24] = cast_16bit_to_int32 (b + 62 + offset);               // gyro z scale?
 
-        double timestamp;
-        memcpy (&timestamp, b + 64, 8);
-        db->add_data (timestamp, package);
+            double timestamp;
+            memcpy (&timestamp, b + 64 + offset, 8);
+            db->add_data (timestamp, package);
+        }
     }
 }
