@@ -328,8 +328,8 @@ class BoardShim (object):
         """set BrainFlow log level, use it only if you want to write your own messages to BrainFlow logger,
         otherwise use enable_board_logger, enable_dev_board_logger or disable_board_logger
 
-        :param log_level: log level
-        :type log_file: int
+        :param log_level: log level, to specify it you should use values from LogLevels enum
+        :type log_level: int
         """
         res = BoardControllerDLL.get_instance ().set_log_level (log_level)
         if res != BrainflowExitCodes.STATUS_OK.value:
@@ -337,16 +337,17 @@ class BoardShim (object):
 
     @classmethod
     def enable_board_logger (cls):
-        """enable board logger to stderr"""
+        """enable BrainFlow Logger with level INFO, uses stderr for log messages by default"""
         cls.set_log_level (LogLevels.LEVEL_INFO.value)
 
     @classmethod
     def disable_board_logger (cls):
-        """disable board logger to stderr"""
+        """disable BrainFlow Logger"""
         cls.set_log_level (LogLevels.LEVEL_OFF.value)
 
     @classmethod
     def enable_dev_board_logger (cls):
+        """enable BrainFlow Logger with level TRACE, uses stderr for log messages by default"""
         cls.set_log_level (LogLevels.LEVEL_TRACE.value)
 
     @classmethod

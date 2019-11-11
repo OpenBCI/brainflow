@@ -233,13 +233,13 @@ class DataFilter (object):
 
     @classmethod
     def write_file (cls, data, file_name, file_mode):
-        """write data to file, in file data will be transposed.
+        """write data to file, in file data will be transposed
 
         :param data: data to store in a file
         :type data: numpy array
         :param file_name: file name to store data
         :type file_name: str
-        :param file_mode: 'w' or 'a'
+        :param file_mode: 'w' to rewrite file or 'a' to append data to file
         :type file_mode: str
         """
         try:
@@ -258,11 +258,11 @@ class DataFilter (object):
 
     @classmethod
     def read_file (cls, file_name):
-        """read data from file and transpose it original dimensions
+        """read data from file
 
         :param file_name: file name to read
         :type file_name: str
-        :return: 2d numpy array with data from this file, data will be transposed
+        :return: 2d numpy array with data from this file, data will be transposed to original dimensions
         :rtype: 2d numpy array
         """
         try:
