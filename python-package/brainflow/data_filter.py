@@ -131,9 +131,9 @@ class DataHandlerDLL (object):
             ndpointer (ctypes.c_int32)
         ]
 
-        self.smooth_data = self.lib.smooth_data
-        self.smooth_data.restype = ctypes.c_int
-        self.smooth_data.argtypes = [
+        self.perform_rolling_filter = self.lib.perform_rolling_filter
+        self.perform_rolling_filter.restype = ctypes.c_int
+        self.perform_rolling_filter.argtypes = [
             ndpointer (ctypes.c_double),
             ctypes.c_int,
             ctypes.c_int,
@@ -257,7 +257,7 @@ class DataFilter (object):
             raise BrainFlowError ('unable to apply band stop filter', res)
 
     @classmethod
-    def smooth_data (cls, data, period, operation):
+    def perform_rolling_filter (cls, data, period, operation):
         """smooth data using moving average or median
 
         :param data: data to smooth, it works in-place
@@ -267,9 +267,13 @@ class DataFilter (object):
         :param operation: int for AggOperation enum
         :type operation: int
         """
+        if not isinstance (period, int):
+            raise BrainFlowError ('wrong type for period', BrainflowExitCodes.INVALID_ARGUMENTS_ERROR.value)
+        if not isinstance (operation, int):
+            raise BrainFlowError ('wrong type for operation', BrainflowExitCodes.INVALID_ARGUMENTS_ERROR.value)
         if len (data.shape) != 1:
             raise BrainFlowError ('wrong shape for filter data array, it should be 1d array', BrainflowExitCodes.INVALID_ARGUMENTS_ERROR.value)
-        res = DataHandlerDLL.get_instance ().smooth_data (data, data.shape[0], period, operation)
+        res = DataHandlerDLL.get_instance ().perform_rolling_filter (data, data.shape[0], period, operation)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to smooth data', res)
 

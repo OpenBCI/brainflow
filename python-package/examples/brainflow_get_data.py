@@ -76,9 +76,9 @@ def main ():
         elif count == 3:
             DataFilter.perform_highpass (data[channel], BoardShim.get_sampling_rate (args.board_id), 3.0, 4, FilterTypes.BUTTERWORTH.value, 0)
         elif count == 4:
-            DataFilter.smooth_data (data[channel], 3, AggOperation.MEAN.value)
+            DataFilter.perform_rolling_filter (data[channel], 3, AggOperation.MEAN.value)
         elif count == 5:
-            DataFilter.smooth_data (data[channel], 3, AggOperation.MEDIAN.value)
+            DataFilter.perform_rolling_filter (data[channel], 3, AggOperation.MEDIAN.value)
 
     df = pd.DataFrame (np.transpose (data))
     print ('Data After Processing')

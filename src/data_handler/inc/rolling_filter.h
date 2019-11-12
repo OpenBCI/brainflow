@@ -3,19 +3,19 @@
 #include <deque>
 #include <set>
 
-template <typename T> class SmoothFilter
+template <typename T> class RollingFilter
 {
 
 protected:
     int period;
 
 public:
-    SmoothFilter (int period)
+    RollingFilter (int period)
     {
         this->period = period;
     }
 
-    virtual ~SmoothFilter ()
+    virtual ~RollingFilter ()
     {
     }
 
@@ -23,7 +23,7 @@ public:
     virtual T get_value () = 0;
 };
 
-template <typename T> class MovingMedian : public SmoothFilter<T>
+template <typename T> class RollingMedian : public RollingFilter<T>
 {
 
 private:
@@ -31,7 +31,7 @@ private:
     std::deque<T> deque;
 
 public:
-    MovingMedian (int period) : SmoothFilter (period)
+    RollingMedian (int period) : RollingFilter<T> (period)
     {
     }
 
@@ -62,8 +62,7 @@ public:
     }
 };
 
-
-template <typename T> class MovingAverage : public SmoothFilter<T>
+template <typename T> class RollingAverage : public RollingFilter<T>
 {
 
 private:
@@ -71,7 +70,7 @@ private:
     T sum;
 
 public:
-    MovingAverage (int period) : SmoothFilter (period)
+    RollingAverage (int period) : RollingFilter<T> (period)
     {
         this->sum = 0;
     }

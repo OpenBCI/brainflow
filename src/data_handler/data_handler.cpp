@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "data_handler.h"
-#include "smooth_filter.h"
+#include "rolling_filter.h"
 
 #include "DspFilters/Dsp.h"
 
@@ -192,21 +192,21 @@ int perform_bandstop (double *data, int data_len, int sampling_rate, double cent
     return STATUS_OK;
 }
 
-int smooth_data (double *data, int data_len, int period, int agg_operation)
+int perform_rolling_filter (double *data, int data_len, int period, int agg_operation)
 {
     if ((data == NULL) || (period <= 0))
     {
         return INVALID_ARGUMENTS_ERROR;
     }
 
-    SmoothFilter<double> *filter = NULL;
+    RollingFilter<double> *filter = NULL;
     switch (agg_operation)
     {
         case MEAN:
-            filter = new MovingAverage<double> (period);
+            filter = new RollingAverage<double> (period);
             break;
         case MEDIAN:
-            filter = new MovingMedian<double> (period);
+            filter = new RollingMedian<double> (period);
             break;
         case EACH:
             return STATUS_OK;

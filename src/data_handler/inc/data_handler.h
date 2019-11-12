@@ -41,7 +41,8 @@ extern "C"
         double center_freq, double band_width, int order, int filter_type, double ripple);
     SHARED_EXPORT int perform_bandstop (double *data, int data_len, int sampling_rate,
         double center_freq, double band_width, int order, int filter_type, double ripple);
-    SHARED_EXPORT int smooth_data (double *data, int data_len, int period, int agg_operation);
+    SHARED_EXPORT int perform_rolling_filter (
+        double *data, int data_len, int period, int agg_operation);
 
     // file operations
     SHARED_EXPORT int write_file (
