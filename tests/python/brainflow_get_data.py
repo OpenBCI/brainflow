@@ -55,6 +55,11 @@ def main ():
             DataFilter.perform_lowpass (data[channel], BoardShim.get_sampling_rate (args.board_id), 9.0, 5, FilterTypes.CHEBYSHEV_TYPE_1.value, 1)
         elif count == 3:
             DataFilter.perform_highpass (data[channel], BoardShim.get_sampling_rate (args.board_id), 3.0, 4, FilterTypes.BUTTERWORTH.value, 0)
+        elif count == 4:
+            DataFilter.perform_rolling_filter (data[channel], 3, AggOperations.MEAN.value)
+        elif count == 5:
+            DataFilter.perform_rolling_filter (data[channel], 3, AggOperations.MEDIAN.value)
+
 
 
 if __name__ == "__main__":

@@ -20,7 +20,7 @@ class FilterTypes (enum.Enum):
     BESSEL = 2 #:
 
 
-class AggOperation (enum.Enum):
+class AggOperations (enum.Enum):
     """Enum to store all supported aggregation operations"""
 
     MEAN = 0 #:

@@ -24,7 +24,7 @@ typedef enum
     MEAN = 0,
     MEDIAN = 1,
     EACH = 2
-} AggOperation;
+} AggOperations;
 
 
 #ifdef __cplusplus
