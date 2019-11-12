@@ -9,7 +9,7 @@ matplotlib.use ('Agg')
 import matplotlib.pyplot as plt
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, LogLevels
-from brainflow.data_filter import DataFilter, FilterTypes, AggOperation
+from brainflow.data_filter import DataFilter, FilterTypes, AggOperations
 
 
 def main ():

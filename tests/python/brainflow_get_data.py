@@ -4,7 +4,8 @@ import brainflow
 import numpy as np
 
 from brainflow.board_shim import BoardShim, BrainFlowInputParams
-from brainflow.data_filter import DataFilter, FilterTypes
+from brainflow.data_filter import DataFilter, FilterTypes, AggOperations
+
 
 def main ():
     parser = argparse.ArgumentParser ()
