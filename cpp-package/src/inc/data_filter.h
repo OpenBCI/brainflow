@@ -24,7 +24,7 @@ public:
         double band_width, int order, int filter_type, double ripple);
     /// perform moving average or moving median filter in-place
     static void perform_rolling_filter (double *data, int data_len, int period, int agg_operation);
-    /// perform downsampling
+    /// perform data downsampling, it just aggregates several data points
     static double *perform_downsampling (
         double *data, int data_len, int period, int agg_operation, int *filtered_size);
 
