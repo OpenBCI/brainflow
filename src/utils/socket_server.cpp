@@ -54,10 +54,10 @@ int SocketServer::bind (int min_bytes)
     struct linger sl;
     sl.l_onoff = 1;
     sl.l_linger = 1;
-    setsockopt (server_socket, SOL_SOCKET, SO_LINGER, &sl, sizeof (sl));
+    setsockopt (server_socket, SOL_SOCKET, SO_LINGER, (char *)&sl, sizeof (sl));
     // to simplify parsing code and make it uniform for udp and tcp set min bytes for tcp to
     // package size
-    setsockopt (server_socket, SOL_SOCKET, SO_RCVLOWAT, &min_bytes, sizeof (min_bytes));
+    setsockopt (server_socket, SOL_SOCKET, SO_RCVLOWAT, (char *)&min_bytes, sizeof (min_bytes));
 
     if ((listen (server_socket, 1)) != 0)
     {
