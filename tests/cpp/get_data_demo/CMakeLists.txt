@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.10)
-project (brainflow_cpp_example)
+project (BRAINFLOW_GET_DATA)
 
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_VERBOSE_MAKEFILE ON)
@@ -51,17 +51,17 @@ find_package (
 )
 
 add_executable (
-    test_get_data
+    brainflow_get_data
     src/brainflow_get_data.cpp
 )
 
 target_include_directories (
-    test_get_data PUBLIC
+    brainflow_get_data PUBLIC
     ${brainflow_INCLUDE_DIRS}
 )
 
 target_link_libraries (
-    test_get_data PUBLIC
+    brainflow_get_data PUBLIC
     # for some systems(ubuntu for example) order matters
     ${BrainflowPath}
     ${DataHandlerPath}

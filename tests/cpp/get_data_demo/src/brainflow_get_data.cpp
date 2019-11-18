@@ -8,13 +8,12 @@
 #endif
 
 #include "board_shim.h"
-#include "data_filter.h"
 
 using namespace std;
 
 void print_head (double **data_buf, int num_channels, int num_data_points);
 bool parse_args (int argc, char *argv[], struct BrainFlowInputParams *params, int *board_id);
-void print_one_row (double *data, int num_data_points);
+
 
 int main (int argc, char *argv[])
 {
@@ -29,9 +28,8 @@ int main (int argc, char *argv[])
 
     BoardShim *board = new BoardShim (board_id, params);
     double **data = NULL;
-    int *eeg_channels = NULL;
-    int num_rows = 0;
     int res = 0;
+    int num_rows = 0;
 
     try
     {
@@ -52,83 +50,6 @@ int main (int argc, char *argv[])
         num_rows = BoardShim::get_num_rows (board_id);
         std::cout << std::endl << "Data from the board" << std::endl << std::endl;
         print_head (data, num_rows, data_count);
-
-        // demo for serialization, commented out because in CI its not allowed to write files in
-        // some directories
-        /*
-        DataFilter::write_file (data, num_rows, data_count, "test.csv", "w");
-        int restored_num_rows = 0;
-        int restored_num_cols = 0;
-        double **restored_data =
-            DataFilter::read_file (&restored_num_rows, &restored_num_cols, "test.csv");
-        std::cout << std::endl
-                  << "Data from the file, num packages is " << restored_num_cols << std::endl
-                  << std::endl;
-        print_head (restored_data, restored_num_rows, restored_num_cols);
-        for (int i = 0; i < restored_num_rows; i++)
-        {
-            delete[] restored_data[i];
-        }
-        delete[] restored_data;
-        */
-        // just for test and demo - apply different filters to different eeg channels
-        int eeg_num_channels = 0;
-        eeg_channels = BoardShim::get_eeg_channels (board_id, &eeg_num_channels);
-        int filtered_size = 0;
-        double *downsampled_data = NULL;
-        for (int i = 0; i < eeg_num_channels; i++)
-        {
-            switch (i)
-            {
-                // signal filtering methods work in-place
-                case 0:
-                    DataFilter::perform_lowpass (data[eeg_channels[i]], data_count,
-                        BoardShim::get_sampling_rate (board_id), 20.0, 3, BUTTERWORTH, 0);
-                    break;
-                case 1:
-                    DataFilter::perform_highpass (data[eeg_channels[i]], data_count,
-                        BoardShim::get_sampling_rate (board_id), 1.0, 5, CHEBYSHEV_TYPE_1, 1);
-                    break;
-                case 2:
-                    DataFilter::perform_bandpass (data[eeg_channels[i]], data_count,
-                        BoardShim::get_sampling_rate (board_id), 15.0, 5.0, 3, BESSEL, 0);
-                    break;
-                case 3:
-                    DataFilter::perform_bandstop (data[eeg_channels[i]], data_count,
-                        BoardShim::get_sampling_rate (board_id), 5.0, 1.5, 4, BUTTERWORTH, 0);
-                    break;
-                case 4:
-                    DataFilter::perform_rolling_filter (data[eeg_channels[i]], data_count, 3, MEAN);
-                    break;
-                case 5:
-                    DataFilter::perform_rolling_filter (
-                        data[eeg_channels[i]], data_count, 3, MEDIAN);
-                    break;
-                // downsampling methods return new array
-                case 6:
-                    downsampled_data = DataFilter::perform_downsampling (
-                        data[eeg_channels[i]], data_count, 2, MEAN, &filtered_size);
-                    std::cout << std::endl
-                              << "Data from :" << eeg_channels[i] << " after downsampling "
-                              << std::endl
-                              << std::endl;
-                    print_one_row (downsampled_data, filtered_size);
-                    delete[] downsampled_data;
-                    break;
-                case 7:
-                    downsampled_data = DataFilter::perform_downsampling (
-                        data[eeg_channels[i]], data_count, 2, EACH, &filtered_size);
-                    std::cout << std::endl
-                              << "Data from channel " << eeg_channels[i] << " after downsampling "
-                              << std::endl
-                              << std::endl;
-                    print_one_row (downsampled_data, filtered_size);
-                    delete[] downsampled_data;
-                    break;
-            }
-        }
-        std::cout << std::endl << "Data after processing" << std::endl << std::endl;
-        print_head (data, num_rows, data_count);
     }
     catch (const BrainFlowException &err)
     {
@@ -144,7 +65,6 @@ int main (int argc, char *argv[])
         }
     }
     delete[] data;
-    delete[] eeg_channels;
     delete board;
 
     return res;
@@ -163,16 +83,6 @@ void print_head (double **data_buf, int num_channels, int num_data_points)
         }
         std::cout << std::endl;
     }
-}
-
-void print_one_row (double *data, int num_data_points)
-{
-    int num_points = (num_data_points < 5) ? num_data_points : 5;
-    for (int i = 0; i < num_points; i++)
-    {
-        std::cout << data[i] << " ";
-    }
-    std::cout << std::endl;
 }
 
 bool parse_args (int argc, char *argv[], struct BrainFlowInputParams *params, int *board_id)

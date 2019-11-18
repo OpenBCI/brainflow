@@ -72,6 +72,42 @@ double *DataFilter::perform_downsampling (
     return filtered_data;
 }
 
+double *DataFilter::perform_wavelet_transform (
+    double *data, int data_len, char *wavelet, int *output_len)
+{
+    if (data_len <= 0)
+    {
+        throw BrainFlowException ("invalid input params", INVALID_ARGUMENTS_ERROR);
+    }
+
+    double *wavelet_output =
+        new double[data_len + 2 * (40 + 1)]; // I get this formula from wavelib sources
+    int res = ::perform_wavelet_transform (data, data_len, wavelet, wavelet_output, output_len);
+    if (res != STATUS_OK)
+    {
+        throw BrainFlowException ("failed to perform wavelet", res);
+    }
+    return wavelet_output;
+}
+
+double *DataFilter::perform_inverse_wavelet_transform (
+    double *wavelet_coeffs, int coeffs_len, int original_data_len, char *wavelet)
+{
+    if (original_data_len <= 0)
+    {
+        throw BrainFlowException ("invalid input params", INVALID_ARGUMENTS_ERROR);
+    }
+
+    double *original_data = new double[original_data_len];
+    int res = ::perform_inverse_wavelet_transform (
+        wavelet_coeffs, coeffs_len, original_data_len, wavelet, original_data);
+    if (res != STATUS_OK)
+    {
+        throw BrainFlowException ("failed to perform inverse wavelet", res);
+    }
+    return original_data;
+}
+
 double **DataFilter::read_file (int *num_rows, int *num_cols, char *file_name)
 {
     int max_elements = 0;

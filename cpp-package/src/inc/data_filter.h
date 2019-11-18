@@ -27,6 +27,19 @@ public:
     /// perform data downsampling, it just aggregates several data points
     static double *perform_downsampling (
         double *data, int data_len, int period, int agg_operation, int *filtered_size);
+    /**
+     * perform wavelet transform
+     * @param data input array, any size
+     * @param data_len length of input array
+     * @param wavelet supported vals: db1..db15, haar, coif1..coif5, sym2..sym10
+     * @param output_len output array len, each subarray has output_len/2 elements
+     * @return output array with app and detailed coefficients(both subarrays have the same size)
+     */
+    static double *perform_wavelet_transform (
+        double *data, int data_len, char *wavelet, int *output_len);
+    /// performs inverse wavelet transform
+    static double *perform_inverse_wavelet_transform (
+        double *wavelet_coeffs, int coeffs_len, int original_data_len, char *wavelet);
 
     /// write file, in file data will be transposed
     static void write_file (
