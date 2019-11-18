@@ -52,6 +52,8 @@ extern "C"
         double *data, int data_len, char *wavelet, double *output_data, int *output_len);
     SHARED_EXPORT int perform_inverse_wavelet_transform (double *wavelet_coeffs, int coeffs_len,
         int original_data_len, char *wavelet, double *output_data);
+    SHARED_EXPORT int perform_wavelet_denoising (
+        double *data, int data_len, char *wavelet, int decomposition_level);
 
 
     // file operations

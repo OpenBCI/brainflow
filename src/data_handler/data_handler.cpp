@@ -11,6 +11,7 @@
 
 #include "DspFilters/Dsp.h"
 
+#include "wauxlib.h"
 #include "wavelib.h"
 
 
@@ -343,6 +344,44 @@ int perform_inverse_wavelet_transform (double *wavelet_coeffs, int coeffs_len,
         if (wt)
         {
             wt_free (wt);
+        }
+        // more likely exception here occured because input buffer is to small to perform wavelet
+        // transform
+        return INVALID_BUFFER_SIZE_ERROR;
+    }
+    return STATUS_OK;
+}
+
+int perform_wavelet_denoising (double *data, int data_len, char *wavelet, int decomposition_level)
+{
+    if ((data == NULL) || (data_len <= 0) || (decomposition_level <= 0) ||
+        (!validate_wavelet (wavelet)))
+    {
+        return INVALID_ARGUMENTS_ERROR;
+    }
+
+    denoise_object obj;
+    double *temp = new double[data_len];
+    try
+    {
+        obj = denoise_init (data_len, decomposition_level, wavelet);
+        setDenoiseMethod (obj, "visushrink");
+        setDenoiseWTMethod (obj, "dwt");
+        setDenoiseWTExtension (obj, "sym");
+        setDenoiseParameters (obj, "soft", "all");
+        denoise (obj, data, temp);
+        for (int i = 0; i < data_len; i++)
+        {
+            data[i] = temp[i];
+        }
+        delete[] temp;
+    }
+    catch (const std::exception &e)
+    {
+        delete[] temp;
+        if (obj)
+        {
+            denoise_free (obj);
         }
         // more likely exception here occured because input buffer is to small to perform wavelet
         // transform

@@ -28,7 +28,7 @@ SyntheticBoard::SyntheticBoard (struct BrainFlowInputParams params)
     this->num_channels = 8;
     this->amplitude = 1000;
     this->shift = 0.3f;
-    this->noise = 0.5f;
+    this->noise = 0.75f;
     this->sampling_rate = 256;
 }
 

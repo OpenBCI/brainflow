@@ -150,6 +150,35 @@ class DataHandlerDLL (object):
             ndpointer (ctypes.c_double)
         ]
 
+        self.perform_wavelet_transform = self.lib.perform_wavelet_transform
+        self.perform_wavelet_transform.restype = ctypes.c_int
+        self.perform_wavelet_transform.argtypes = [
+            ndpointer (ctypes.c_double),
+            ctypes.c_int,
+            ctypes.c_char_p,
+            ndpointer (ctypes.c_double),
+            ndpointer (ctypes.c_int32)
+        ]
+
+        self.perform_inverse_wavelet_transform = self.lib.perform_inverse_wavelet_transform
+        self.perform_inverse_wavelet_transform.restype = ctypes.c_int
+        self.perform_inverse_wavelet_transform.argtypes = [
+            ndpointer (ctypes.c_double),
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_char_p,
+            ndpointer (ctypes.c_double)
+        ]
+
+        self.perform_wavelet_denoising = self.lib.perform_wavelet_denoising
+        self.perform_wavelet_denoising.restype = ctypes.c_int
+        self.perform_wavelet_denoising.argtypes = [
+            ndpointer (ctypes.c_double),
+            ctypes.c_int,
+            ctypes.c_char_p,
+            ctypes.c_int
+        ]
+
 
 class DataFilter (object):
     """DataFilter class contains methods for signal processig"""
@@ -315,6 +344,76 @@ class DataFilter (object):
             raise BrainFlowError ('unable to perform downsampling', res)
 
         return downsampled_data
+
+    @classmethod
+    def perform_wavelet_transform (cls, data, wavelet):
+        """perform wavelet transform
+
+        :param data: initial data
+        :type data: 1d numpy array
+        :param wavelet: supported vals: db1..db15,haar,sym2..sym10,coif1..coif5,bior1.1,bior1.3,bior1.5,bior2.2,bior2.4,bior2.6,bior2.8,bior3.1,bior3.3,bior3.5 ,bior3.7,bior3.9,bior4.4,bior5.5,bior6.8
+        :type wavelet: str
+        :return: approximation and detailed coeffs in a single array(app coeffs - first half, detailed coeffs - second half)
+        :rtype: 1d numpy array
+        """
+        try:
+            wavelet_func = wavelet.encode ()
+        except:
+            wavelet_func = wavelet
+
+        wavelet_coeffs = numpy.zeros (data.shape[0] + 2 * (40 + 1)).astype (numpy.float64)
+        output_len = numpy.zeros (1).astype (numpy.int32)
+        res = DataHandlerDLL.get_instance ().perform_wavelet_transform (data, data.shape[0], wavelet_func, wavelet_coeffs, output_len)
+        if res != BrainflowExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to perform wavelet transform', res)
+
+        # we could return a tuple here but lets keep it like in other bindings
+        return wavelet_coeffs[0: output_len[0]]
+
+    @classmethod
+    def perform_inverse_wavelet_transform (cls, wavelet_coeffs, original_data_len, wavelet):
+        """perform wavelet transform
+
+        :param wavelet_coeffs: wavelet coefficients
+        :type wavelet_coeffs: 1d numpy array
+        :param original_data_len: len of signal before wavelet transform
+        :type original_data_len: int
+        :param wavelet: supported vals: db1..db15,haar,sym2..sym10,coif1..coif5,bior1.1,bior1.3,bior1.5,bior2.2,bior2.4,bior2.6,bior2.8,bior3.1,bior3.3,bior3.5 ,bior3.7,bior3.9,bior4.4,bior5.5,bior6.8
+        :type wavelet: str
+        :return: restored data
+        :rtype: 1d numpy array
+        """
+        try:
+            wavelet_func = wavelet.encode ()
+        except:
+            wavelet_func = wavelet
+
+        original_data = numpy.zeros (original_data_len).astype (numpy.float64)
+        res = DataHandlerDLL.get_instance ().perform_inverse_wavelet_transform (wavelet_coeffs, wavelet_coeffs.shape[0], original_data_len, wavelet_func, original_data)
+        if res != BrainflowExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to perform inverse wavelet transform', res)
+
+        return original_data
+
+    @classmethod
+    def perform_wavelet_denoising (cls, data, wavelet, decomposition_level):
+        """perform wavelet denoising
+
+        :param data: data to denoise
+        :type data: 1d numpy array
+        :param wavelet: supported vals: db1..db15,haar,sym2..sym10,coif1..coif5,bior1.1,bior1.3,bior1.5,bior2.2,bior2.4,bior2.6,bior2.8,bior3.1,bior3.3,bior3.5 ,bior3.7,bior3.9,bior4.4,bior5.5,bior6.8
+        :type wavelet: str
+        :param decomposition_level: decomposition level
+        :type decomposition_level: int
+        """
+        try:
+            wavelet_func = wavelet.encode ()
+        except:
+            wavelet_func = wavelet
+
+        res = DataHandlerDLL.get_instance ().perform_wavelet_denoising (data, data.shape[0], wavelet_func, decomposition_level)
+        if res != BrainflowExitCodes.STATUS_OK.value:
+            raise BrainFlowError ('unable to denoise data', res)
 
     @classmethod
     def write_file (cls, data, file_name, file_mode):
