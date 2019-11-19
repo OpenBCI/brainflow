@@ -34,14 +34,20 @@ public:
      * @param wavelet supported vals:
      * db1..db15,haar,sym2..sym10,coif1..coif5,bior1.1,bior1.3,bior1.5,bior2.2,bior2.4,bior2.6,bior2.8,bior3.1,bior3.3,bior3.5
      * ,bior3.7,bior3.9,bior4.4,bior5.5,bior6.8
-     * @param output_len output array len, each subarray has output_len/2 elements
-     * @return output array with app and detailed coefficients(both subarrays have the same size)
+     * @param decomposition_level level of decomposition in wavelet transform
+     * @param output_len output array len
+     * @param decomposition_lengths array with length for each coeff array, size = decom_level + 1
+     * @return output array in format [A(J) D(J) D(J-1) ..... D(1)] where J is decomposition level
      */
-    static double *perform_wavelet_transform (
-        double *data, int data_len, char *wavelet, int *output_len);
+    static double *perform_wavelet_transform (double *data, int data_len, char *wavelet,
+        int decomposition_level, int *output_len, int **decomposition_lengths);
     /// performs inverse wavelet transform
-    static double *perform_inverse_wavelet_transform (
-        double *wavelet_coeffs, int coeffs_len, int original_data_len, char *wavelet);
+    static double *perform_inverse_wavelet_transform (double *wavelet_coeffs, int coeffs_len,
+        int original_data_len, char *wavelet, int decomposition_level, int *decomposition_lengths);
+    /// perform wavelet denoising
+    static void perform_wavelet_denoising (
+        double *data, int data_len, char *wavelet, int decomposition_level);
+
 
     /// write file, in file data will be transposed
     static void write_file (

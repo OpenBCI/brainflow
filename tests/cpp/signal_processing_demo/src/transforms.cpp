@@ -54,31 +54,40 @@ int main (int argc, char *argv[])
         {
             // demo for wavelet transform
             int wavelet_size = 0;
+            int *decomposition_lengths = NULL;
+            // format for wavelet_data is [A(J) D(J) D(J-1) ..... D(1)] where J is a decomposition
+            // level, A - app coeffs, D - detailed coeffs, decomposition_lengths stores length for
+            // each block, len(decomposition_length) = decomposition_level + 1
             double *wavelet_data = DataFilter::perform_wavelet_transform (
-                data[eeg_channels[i]], data_count, "db15", &wavelet_size);
-            std::cout << "approximation coefficients:" << std::endl;
-            for (int i = 0; i < wavelet_size / 2; i++)
-            {
-                std::cout << wavelet_data[i] << " ";
-            }
-            std::cout << std::endl;
-            std::cout << "detailed coefficients:" << std::endl;
-            for (int i = wavelet_size / 2; i < wavelet_size; i++)
-            {
-                std::cout << wavelet_data[i] << " ";
-            }
-            std::cout << std::endl;
+                data[eeg_channels[i]], data_count, "db4", 3, &wavelet_size, &decomposition_lengths);
+
             // you can do smth with wavelet coeffs here, for example denoising works via thresholds
             // for wavelet coefficients
+            std::cout << "approximation coefficients:" << std::endl;
+            for (int i = 0; i < decomposition_lengths[0]; i++)
+            {
+                std::cout << wavelet_data[i] << " ";
+            }
+            std::cout << std::endl;
+            std::cout << "first block of detailed coefficients:" << std::endl;
+            for (int i = decomposition_lengths[0];
+                 i < decomposition_lengths[0] + decomposition_lengths[1]; i++)
+            {
+                std::cout << wavelet_data[i] << " ";
+            }
+            std::cout << std::endl;
+
             double *restored_data = DataFilter::perform_inverse_wavelet_transform (
-                wavelet_data, wavelet_size, data_count, "db15");
+                wavelet_data, wavelet_size, data_count, "db4", 3, decomposition_lengths);
 
             std::cout << "Original data:" << std::endl;
             print_one_row (data[eeg_channels[i]], data_count);
             std::cout << "Restored after inverse transform data:" << std::endl;
             print_one_row (restored_data, data_count);
+
             delete[] wavelet_data;
             delete[] restored_data;
+            delete[] decomposition_lengths;
         }
     }
     catch (const BrainFlowException &err)

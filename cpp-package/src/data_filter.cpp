@@ -72,17 +72,24 @@ double *DataFilter::perform_downsampling (
     return filtered_data;
 }
 
-double *DataFilter::perform_wavelet_transform (
-    double *data, int data_len, char *wavelet, int *output_len)
+double *DataFilter::perform_wavelet_transform (double *data, int data_len, char *wavelet,
+    int decomposition_level, int *output_len, int **decomposition_lengths)
 {
     if (data_len <= 0)
     {
         throw BrainFlowException ("invalid input params", INVALID_ARGUMENTS_ERROR);
     }
+    if (*decomposition_lengths != NULL)
+    {
+        // ensure that there is no memory leaks
+        throw BrainFlowException ("decomposition_lengths should be NULL", INVALID_ARGUMENTS_ERROR);
+    }
 
-    double *wavelet_output =
-        new double[data_len + 2 * (40 + 1)]; // I get this formula from wavelib sources
-    int res = ::perform_wavelet_transform (data, data_len, wavelet, wavelet_output, output_len);
+    double *wavelet_output = new double[data_len +
+        2 * decomposition_level * (40 + 1)]; // I get this formula from wavelib sources
+    *decomposition_lengths = new int[decomposition_level + 1];
+    int res = ::perform_wavelet_transform (data, data_len, wavelet, decomposition_level,
+        wavelet_output, output_len, *decomposition_lengths);
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to perform wavelet", res);
@@ -90,8 +97,8 @@ double *DataFilter::perform_wavelet_transform (
     return wavelet_output;
 }
 
-double *DataFilter::perform_inverse_wavelet_transform (
-    double *wavelet_coeffs, int coeffs_len, int original_data_len, char *wavelet)
+double *DataFilter::perform_inverse_wavelet_transform (double *wavelet_coeffs, int coeffs_len,
+    int original_data_len, char *wavelet, int decomposition_level, int *decomposition_lengths)
 {
     if (original_data_len <= 0)
     {
@@ -99,13 +106,23 @@ double *DataFilter::perform_inverse_wavelet_transform (
     }
 
     double *original_data = new double[original_data_len];
-    int res = ::perform_inverse_wavelet_transform (
-        wavelet_coeffs, coeffs_len, original_data_len, wavelet, original_data);
+    int res = ::perform_inverse_wavelet_transform (wavelet_coeffs, coeffs_len, original_data_len,
+        wavelet, decomposition_level, decomposition_lengths, original_data);
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to perform inverse wavelet", res);
     }
     return original_data;
+}
+
+void DataFilter::perform_wavelet_denoising (
+    double *data, int data_len, char *wavelet, int decomposition_level)
+{
+    int res = ::perform_wavelet_denoising (data, data_len, wavelet, decomposition_level);
+    if (res != STATUS_OK)
+    {
+        throw BrainFlowException ("failed to perform wavelet denoising", res);
+    }
 }
 
 double **DataFilter::read_file (int *num_rows, int *num_cols, char *file_name)

@@ -54,15 +54,6 @@ int main (int argc, char *argv[])
         double *downsampled_data = NULL;
         for (int i = 0; i < eeg_num_channels; i++)
         {
-            // demo for wavelet transform
-            int wavelet_size = 0;
-            double *wavelet_data = DataFilter::perform_wavelet_transform (
-                data[eeg_channels[i]], data_count, "db15", &wavelet_size);
-            double *original_data = DataFilter::perform_inverse_wavelet_transform (
-                wavelet_data, wavelet_size, data_count, "db15");
-            delete[] wavelet_data;
-            delete[] original_data;
-
             switch (i)
             {
                 // just for test and demo - apply different filters to different eeg channels

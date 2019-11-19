@@ -72,9 +72,20 @@ int main (int argc, char *argv[])
                     DataFilter::perform_rolling_filter (data[eeg_channels[i]], data_count, 5, MEAN);
                     break;
                     // if moving average and moving median dont work well for your signal you can
-                    // try wavelet based denoising
+                    // try wavelet based denoising, feel free to try different wavelet functions and
+                    // decomposition levels
+                case 4:
+                    DataFilter::perform_wavelet_denoising (
+                        data[eeg_channels[i]], data_count, "db4", 5);
+                    break;
+                case 5:
+                    DataFilter::perform_wavelet_denoising (
+                        data[eeg_channels[i]], data_count, "coif3", 5);
+                    break;
             }
         }
+        std::cout << std::endl << "Data after denoising" << std::endl << std::endl;
+        print_head (data, num_rows, data_count);
     }
     catch (const BrainFlowException &err)
     {
