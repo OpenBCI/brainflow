@@ -33,6 +33,12 @@ addons:
   #     - r
   #   update: true
 
+before_install:
+- |
+  if [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
+    eval "CC=gcc-7 && CXX=g++-7"
+  fi
+
 install:
   - sudo pip3 install --upgrade pip
   - sudo pip3 install cmake==3.13.0
