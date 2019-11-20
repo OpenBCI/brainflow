@@ -2,11 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle ("test")]
+[assembly: AssemblyTitle ("serialization")]
 [assembly: AssemblyDescription ("")]
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("")]
-[assembly: AssemblyProduct ("test")]
+[assembly: AssemblyProduct ("serialization")]
 [assembly: AssemblyCopyright ("Copyright ©  2019")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
