@@ -151,9 +151,9 @@ void SyntheticBoard::read_thread ()
             package[i + 1] = base_wave[counter] + dist (mt);
         }
         // accel
-        package[1 + this->num_channels] = this->amplitude * dist (mt);
-        package[2 + this->num_channels] = this->amplitude * dist (mt);
-        package[3 + this->num_channels] = this->amplitude * dist (mt);
+        package[1 + this->num_channels] = dist (mt);
+        package[2 + this->num_channels] = dist (mt);
+        package[3 + this->num_channels] = dist (mt);
 
         db->add_data (get_timestamp (), package);
         counter++;

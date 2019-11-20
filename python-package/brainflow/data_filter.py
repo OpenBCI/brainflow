@@ -158,7 +158,6 @@ class DataHandlerDLL (object):
             ctypes.c_char_p,
             ctypes.c_int,
             ndpointer (ctypes.c_double),
-            ndpointer (ctypes.c_int32),
             ndpointer (ctypes.c_int32)
         ]
 
@@ -166,7 +165,6 @@ class DataHandlerDLL (object):
         self.perform_inverse_wavelet_transform.restype = ctypes.c_int
         self.perform_inverse_wavelet_transform.argtypes = [
             ndpointer (ctypes.c_double),
-            ctypes.c_int,
             ctypes.c_int,
             ctypes.c_char_p,
             ctypes.c_int,
@@ -369,20 +367,19 @@ class DataFilter (object):
 
         wavelet_coeffs = numpy.zeros (data.shape[0] + 2 * (40 + 1)).astype (numpy.float64)
         lengths = numpy.zeros (decomposition_level + 1).astype (numpy.int32)
-        output_len = numpy.zeros (1).astype (numpy.int32)
-        res = DataHandlerDLL.get_instance ().perform_wavelet_transform (data, data.shape[0], wavelet_func, decomposition_level, wavelet_coeffs, output_len, lengths)
+        res = DataHandlerDLL.get_instance ().perform_wavelet_transform (data, data.shape[0], wavelet_func, decomposition_level, wavelet_coeffs, lengths)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to perform wavelet transform', res)
 
         # we could return a tuple here but lets keep it like in other bindings
-        return wavelet_coeffs[0: output_len[0]], lengths
+        return wavelet_coeffs[0: sum (lengths)], lengths
 
     @classmethod
-    def perform_inverse_wavelet_transform (cls, wavelet_coeffs, original_data_len, wavelet, decomposition_level, decomposition_lengths):
+    def perform_inverse_wavelet_transform (cls, wavelet_output, original_data_len, wavelet, decomposition_level):
         """perform wavelet transform
 
-        :param wavelet_coeffs: wavelet coefficients
-        :type wavelet_coeffs: 1d numpy array
+        :param wavelet_output: tuple of wavelet_coeffs and array with lengths
+        :type wavelet_coeffs: typle of 2 1d numpy arrays
         :param original_data_len: len of signal before wavelet transform
         :type original_data_len: int
         :param wavelet: supported vals: db1..db15,haar,sym2..sym10,coif1..coif5,bior1.1,bior1.3,bior1.5,bior2.2,bior2.4,bior2.6,bior2.8,bior3.1,bior3.3,bior3.5 ,bior3.7,bior3.9,bior4.4,bior5.5,bior6.8
@@ -400,8 +397,8 @@ class DataFilter (object):
             wavelet_func = wavelet
 
         original_data = numpy.zeros (original_data_len).astype (numpy.float64)
-        res = DataHandlerDLL.get_instance ().perform_inverse_wavelet_transform (wavelet_coeffs, wavelet_coeffs.shape[0], original_data_len, wavelet_func, 
-                                                                                decomposition_level, decomposition_lengths, original_data)
+        res = DataHandlerDLL.get_instance ().perform_inverse_wavelet_transform (wavelet_output[0], original_data_len, wavelet_func, 
+                                                                                decomposition_level, wavelet_output[1], original_data)
         if res != BrainflowExitCodes.STATUS_OK.value:
             raise BrainFlowError ('unable to perform inverse wavelet transform', res)
 

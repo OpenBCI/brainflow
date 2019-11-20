@@ -72,33 +72,28 @@ double *DataFilter::perform_downsampling (
     return filtered_data;
 }
 
-double *DataFilter::perform_wavelet_transform (double *data, int data_len, char *wavelet,
-    int decomposition_level, int *output_len, int **decomposition_lengths)
+std::pair<double *, int *> DataFilter::perform_wavelet_transform (
+    double *data, int data_len, char *wavelet, int decomposition_level)
 {
     if (data_len <= 0)
     {
         throw BrainFlowException ("invalid input params", INVALID_ARGUMENTS_ERROR);
     }
-    if (*decomposition_lengths != NULL)
-    {
-        // ensure that there is no memory leaks
-        throw BrainFlowException ("decomposition_lengths should be NULL", INVALID_ARGUMENTS_ERROR);
-    }
 
     double *wavelet_output = new double[data_len +
         2 * decomposition_level * (40 + 1)]; // I get this formula from wavelib sources
-    *decomposition_lengths = new int[decomposition_level + 1];
-    int res = ::perform_wavelet_transform (data, data_len, wavelet, decomposition_level,
-        wavelet_output, output_len, *decomposition_lengths);
+    int *decomposition_lengths = new int[decomposition_level + 1];
+    int res = ::perform_wavelet_transform (
+        data, data_len, wavelet, decomposition_level, wavelet_output, decomposition_lengths);
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to perform wavelet", res);
     }
-    return wavelet_output;
+    return std::make_pair (wavelet_output, decomposition_lengths);
 }
 
-double *DataFilter::perform_inverse_wavelet_transform (double *wavelet_coeffs, int coeffs_len,
-    int original_data_len, char *wavelet, int decomposition_level, int *decomposition_lengths)
+double *DataFilter::perform_inverse_wavelet_transform (std::pair<double *, int *> wavelet_output,
+    int original_data_len, char *wavelet, int decomposition_level)
 {
     if (original_data_len <= 0)
     {
@@ -106,8 +101,8 @@ double *DataFilter::perform_inverse_wavelet_transform (double *wavelet_coeffs, i
     }
 
     double *original_data = new double[original_data_len];
-    int res = ::perform_inverse_wavelet_transform (wavelet_coeffs, coeffs_len, original_data_len,
-        wavelet, decomposition_level, decomposition_lengths, original_data);
+    int res = ::perform_inverse_wavelet_transform (wavelet_output.first, original_data_len, wavelet,
+        decomposition_level, wavelet_output.second, original_data);
     if (res != STATUS_OK)
     {
         throw BrainFlowException ("failed to perform inverse wavelet", res);

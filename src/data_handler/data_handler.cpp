@@ -260,10 +260,10 @@ int perform_downsampling (
 
 // https://github.com/rafat/wavelib/wiki/DWT-Example-Code
 int perform_wavelet_transform (double *data, int data_len, char *wavelet, int decomposition_level,
-    double *output_data, int *output_len, int *decomposition_lengths)
+    double *output_data, int *decomposition_lengths)
 {
     if ((data == NULL) || (data_len <= 0) || (wavelet == NULL) || (output_data == NULL) ||
-        (output_len == NULL) || (!validate_wavelet (wavelet)) || (decomposition_lengths == NULL) ||
+        (!validate_wavelet (wavelet)) || (decomposition_lengths == NULL) ||
         (decomposition_level <= 0))
     {
         return INVALID_ARGUMENTS_ERROR;
@@ -279,8 +279,7 @@ int perform_wavelet_transform (double *data, int data_len, char *wavelet, int de
         setDWTExtension (wt, "sym");
         setWTConv (wt, "direct");
         dwt (wt, data);
-        *output_len = wt->outlength;
-        for (int i = 0; i < *output_len; i++)
+        for (int i = 0; i < wt->outlength; i++)
         {
             output_data[i] = wt->output[i];
         }
@@ -310,13 +309,12 @@ int perform_wavelet_transform (double *data, int data_len, char *wavelet, int de
 
 // inside wavelib inverse transform uses internal state from direct transform, dirty hack to restore
 // it here
-int perform_inverse_wavelet_transform (double *wavelet_coeffs, int coeffs_len,
-    int original_data_len, char *wavelet, int decomposition_level, int *decomposition_lengths,
-    double *output_data)
+int perform_inverse_wavelet_transform (double *wavelet_coeffs, int original_data_len, char *wavelet,
+    int decomposition_level, int *decomposition_lengths, double *output_data)
 {
     if ((wavelet_coeffs == NULL) || (decomposition_level <= 0) || (original_data_len <= 0) ||
-        (wavelet == NULL) || (output_data == NULL) || (coeffs_len == original_data_len) ||
-        (!validate_wavelet (wavelet)) || (decomposition_lengths == NULL))
+        (wavelet == NULL) || (output_data == NULL) || (!validate_wavelet (wavelet)) ||
+        (decomposition_lengths == NULL))
     {
         return INVALID_ARGUMENTS_ERROR;
     }
@@ -330,11 +328,13 @@ int perform_inverse_wavelet_transform (double *wavelet_coeffs, int coeffs_len,
         wt = wt_init (obj, "dwt", original_data_len, decomposition_level);
         setDWTExtension (wt, "sym");
         setWTConv (wt, "direct");
+        int total_len = 0;
         for (int i = 0; i < decomposition_level + 1; i++)
         {
             wt->length[i] = decomposition_lengths[i];
+            total_len += decomposition_lengths[i];
         }
-        for (int i = 0; i < coeffs_len; i++)
+        for (int i = 0; i < total_len; i++)
         {
             wt->output[i] = wavelet_coeffs[i];
         }
