@@ -33,11 +33,8 @@ addons:
   #     - r
   #   update: true
 
-before_install:
-- |
-  if [[ ${TRAVIS_OS_NAME} == "osx" ]]; then
-    eval "CC=gcc-7 && CXX=g++-7"
-  fi
+compiler:
+  - gcc
 
 install:
   - sudo pip3 install --upgrade pip
