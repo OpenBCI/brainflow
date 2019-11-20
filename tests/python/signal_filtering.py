@@ -40,7 +40,7 @@ def main ():
         if count == 0:
             DataFilter.perform_bandpass (data[channel], BoardShim.get_sampling_rate (board_id), 15.0, 6.0, 4, FilterTypes.BESSEL.value, 0)
         elif count == 1:
-            DataFilter.perform_bandstop (data[channel], BoardShim.get_sampling_rate (board_id), 30.0, 1.0, 3, FilterTypes.BUTTERWORTH.value, 0)
+            DataFilter.perform_bandstop (data[channel], BoardShim.get_sampling_rate (board_id), 5.0, 1.0, 3, FilterTypes.BUTTERWORTH.value, 0)
         elif count == 2:
             DataFilter.perform_lowpass (data[channel], BoardShim.get_sampling_rate (board_id), 20.0, 5, FilterTypes.CHEBYSHEV_TYPE_1.value, 1)
         elif count == 3:
