@@ -72,7 +72,7 @@ int main (int argc, char *argv[])
                     break;
                 default:
                     DataFilter::perform_bandstop (data[eeg_channels[i]], data_count,
-                        BoardShim::get_sampling_rate (board_id), 50.0, 0.5, 4, BUTTERWORTH, 0);
+                        BoardShim::get_sampling_rate (board_id), 30.0, 1.0, 3, BUTTERWORTH, 0);
                     break;
             }
         }
