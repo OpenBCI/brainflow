@@ -22,17 +22,6 @@ enum class IpProtocolType
     TCP = 2
 };
 
-enum class LogLevels : int
-{
-    LEVEL_TRACE = 0,
-    LEVEL_DEBUG = 1,
-    LEVEL_INFO = 2,
-    LEVEL_WARN = 3,
-    LEVEL_ERROR = 4,
-    LEVEL_CRITICAL = 5,
-    LEVEL_OFF = 6
-};
-
 // we pass this structure from user API as a json string
 struct BrainFlowInputParams
 {
