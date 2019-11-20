@@ -76,11 +76,11 @@ int main (int argc, char *argv[])
                     // decomposition levels
                 case 4:
                     DataFilter::perform_wavelet_denoising (
-                        data[eeg_channels[i]], data_count, "db4", 5);
+                        data[eeg_channels[i]], data_count, "db4", 3);
                     break;
                 case 5:
                     DataFilter::perform_wavelet_denoising (
-                        data[eeg_channels[i]], data_count, "coif3", 5);
+                        data[eeg_channels[i]], data_count, "coif3", 3);
                     break;
             }
         }
