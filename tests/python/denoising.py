@@ -22,7 +22,7 @@ def main ():
     board.prepare_session ()
     board.start_stream ()
     BoardShim.log_message (LogLevels.LEVEL_INFO.value, 'start sleeping in the main thread')
-    time.sleep (10)
+    time.sleep (20)
     data = board.get_board_data ()
     board.stop_stream ()
     board.release_session ()
@@ -44,14 +44,14 @@ def main ():
         # if methods above dont work for your signal you can try wavelet based denoising
         # feel free to try different functions and decomposition levels
         elif count == 2:
-            DataFilter.perform_wavelet_denoising (data[channel], 'db6', 5)
+            DataFilter.perform_wavelet_denoising (data[channel], 'db6', 3)
         elif count == 3:
-            DataFilter.perform_wavelet_denoising (data[channel], 'bior3.9', 5)
+            DataFilter.perform_wavelet_denoising (data[channel], 'bior3.9', 3)
         elif count == 4:
-            DataFilter.perform_wavelet_denoising (data[channel], 'sym7', 5)
+            DataFilter.perform_wavelet_denoising (data[channel], 'sym7', 3)
         elif count == 5:
             # with synthetic board this one looks like the best option, but it depends on many circumstances
-            DataFilter.perform_wavelet_denoising (data[channel], 'coif3', 5)
+            DataFilter.perform_wavelet_denoising (data[channel], 'coif3', 3)
             
 
     df = pd.DataFrame (np.transpose (data))
