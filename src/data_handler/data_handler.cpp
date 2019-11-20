@@ -382,6 +382,7 @@ int perform_wavelet_denoising (double *data, int data_len, char *wavelet, int de
             data[i] = temp[i];
         }
         delete[] temp;
+        denoise_free (obj);
     }
     catch (const std::exception &e)
     {
