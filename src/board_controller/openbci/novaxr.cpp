@@ -53,7 +53,7 @@ int NovaXR::prepare_session ()
     {
         socket = new SocketClient (params.ip_address.c_str (), port, (int)SocketType::TCP);
     }
-    int res = socket->connect ();
+    int res = socket->connect (NovaXR::transaction_size);
     if (res != (int)SocketReturnCodes::STATUS_OK)
     {
         safe_logger (spdlog::level::err, "failed to init socket: {}", res);
@@ -233,13 +233,10 @@ void NovaXR::read_thread ()
      */
 
     int res;
-    constexpr int package_size = 72;
-    constexpr int num_packages = 20;
-    constexpr int transaction_size = package_size * num_packages;
-    unsigned char b[transaction_size];
+    unsigned char b[NovaXR::transaction_size];
     while (keep_alive)
     {
-        res = socket->recv (b, transaction_size);
+        res = socket->recv (b, NovaXR::transaction_size);
         if (res == -1)
         {
 #ifdef _WIN32
@@ -248,10 +245,10 @@ void NovaXR::read_thread ()
             safe_logger (spdlog::level::err, "errno {} message {}", errno, strerror (errno));
 #endif
         }
-        if (res != transaction_size)
+        if (res != NovaXR::transaction_size)
         {
-            safe_logger (
-                spdlog::level::trace, "unable to read {} bytes, read {}", transaction_size, res);
+            safe_logger (spdlog::level::trace, "unable to read {} bytes, read {}",
+                NovaXR::transaction_size, res);
             continue;
         }
         else
@@ -270,10 +267,10 @@ void NovaXR::read_thread ()
             }
         }
 
-        for (int cur_package = 0; cur_package < num_packages; cur_package++)
+        for (int cur_package = 0; cur_package < NovaXR::num_packages; cur_package++)
         {
             double package[25];
-            int offset = cur_package * package_size;
+            int offset = cur_package * NovaXR::package_size;
             // package num
             package[0] = (double)b[0 + offset];
             // eeg and emg

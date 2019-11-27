@@ -40,4 +40,8 @@ public:
     int stop_stream ();
     int release_session ();
     int config_board (char *config);
+
+    static constexpr int package_size = 72;
+    static constexpr int num_packages = 19;
+    static constexpr int transaction_size = package_size * num_packages;
 };

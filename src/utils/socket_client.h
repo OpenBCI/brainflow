@@ -39,7 +39,7 @@ public:
         close ();
     }
 
-    int connect ();
+    int connect (int min_bytes);
     int send (const char *data, int size);
     int recv (void *data, int size);
     void close ();

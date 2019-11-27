@@ -91,7 +91,7 @@ SocketClient::SocketClient (const char *ip_addr, int port, int socket_type)
     this->socket_type = socket_type;
 }
 
-int SocketClient::connect ()
+int SocketClient::connect (int min_bytes)
 {
     WSADATA wsadata;
     int res = WSAStartup (MAKEWORD (2, 2), &wsadata);
@@ -124,9 +124,12 @@ int SocketClient::connect ()
     setsockopt (connect_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
     if (socket_type == (int)SocketType::TCP)
     {
+
         DWORD value = 1;
         setsockopt (connect_socket, IPPROTO_TCP, TCP_NODELAY, (char *)&value, sizeof (value));
         setsockopt (connect_socket, SOL_SOCKET, SO_KEEPALIVE, (char *)&value, sizeof (value));
+        setsockopt (
+            connect_socket, SOL_SOCKET, SO_RCVLOWAT, (char *)&min_bytes, sizeof (min_bytes));
         if (::connect (connect_socket, (sockaddr *)&socket_addr, sizeof (socket_addr)) ==
             SOCKET_ERROR)
         {
@@ -262,7 +265,7 @@ SocketClient::SocketClient (const char *ip_addr, int port, int socket_type)
     this->socket_type = socket_type;
 }
 
-int SocketClient::connect ()
+int SocketClient::connect (int min_bytes)
 {
     if (socket_type == (int)SocketType::UDP)
     {
@@ -296,6 +299,7 @@ int SocketClient::connect ()
         int value = 1;
         setsockopt (connect_socket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof (value));
         setsockopt (connect_socket, SOL_SOCKET, SO_KEEPALIVE, &value, sizeof (value));
+        setsockopt (connect_socket, SOL_SOCKET, SO_RCVLOWAT, &min_bytes, sizeof (min_bytes));
         if (::connect (connect_socket, (sockaddr *)&socket_addr, sizeof (socket_addr)) == -1)
         {
             return (int)SocketReturnCodes::CONNECT_ERROR;
