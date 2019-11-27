@@ -11,6 +11,11 @@
 #endif
 
 
+constexpr int NovaXR::transaction_size;
+constexpr int NovaXR::num_packages;
+constexpr int NovaXR::package_size;
+
+
 NovaXR::NovaXR (struct BrainFlowInputParams params) : Board ((int)NOVAXR_BOARD, params)
 {
     this->socket = NULL;
