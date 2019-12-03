@@ -25,7 +25,7 @@ http://sam.zoy.org/wtfpl/COPYING for more details.
 
 /*\\\ INCLUDE FILES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-#include <cassert>
+#include <stdexcept>
 
 
 namespace ffft
@@ -43,7 +43,10 @@ namespace ffft
 
     template <class T> DynArray<T>::DynArray (long size) : _data_ptr (0), _len (0)
     {
-        assert (size >= 0);
+        if (size < 0)
+        {
+            throw new std::runtime_error ("pos range error");
+        }
         if (size > 0)
         {
             _data_ptr = new DataType[size];
@@ -68,7 +71,10 @@ namespace ffft
 
     template <class T> void DynArray<T>::resize (long size)
     {
-        assert (size >= 0);
+        if (size < 0)
+        {
+            throw new std::runtime_error ("pos range error");
+        }
         if (size > 0)
         {
             DataType *old_data_ptr = _data_ptr;
@@ -85,8 +91,10 @@ namespace ffft
     template <class T>
     const typename DynArray<T>::DataType &DynArray<T>::operator[] (long pos) const
     {
-        assert (pos >= 0);
-        assert (pos < _len);
+        if ((pos < 0) || (pos > _len))
+        {
+            throw new std::runtime_error ("pos range error");
+        }
 
         return (_data_ptr[pos]);
     }
@@ -94,8 +102,10 @@ namespace ffft
 
     template <class T> typename DynArray<T>::DataType &DynArray<T>::operator[] (long pos)
     {
-        assert (pos >= 0);
-        assert (pos < _len);
+        if ((pos < 0) || (pos > _len))
+        {
+            throw new std::runtime_error ("pos range error");
+        }
 
         return (_data_ptr[pos]);
     }

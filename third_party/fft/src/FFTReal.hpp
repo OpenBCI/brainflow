@@ -25,8 +25,8 @@ http://sam.zoy.org/wtfpl/COPYING for more details.
 
 /*\\\ INCLUDE FILES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\*/
 
-#include <cassert>
 #include <cmath>
+#include <stdexcept>
 
 
 namespace ffft
@@ -35,7 +35,10 @@ namespace ffft
 
     static inline bool FFTReal_is_pow2 (long x)
     {
-        assert (x > 0);
+        if (x < 0)
+        {
+            throw new std::runtime_error ("x is negative");
+        }
 
         return ((x & -x) == x);
     }
@@ -88,8 +91,10 @@ namespace ffft
         , _buffer (length)
         , _trigo_osc ()
     {
-        assert (FFTReal_is_pow2 (length));
-        assert (_nbr_bits <= MAX_BIT_DEPTH);
+        if ((!FFTReal_is_pow2 (length)) || (_nbr_bits > MAX_BIT_DEPTH))
+        {
+            throw new std::runtime_error ("invalid length");
+        }
 
         init_br_lut ();
         init_trigo_lut ();
@@ -131,11 +136,10 @@ namespace ffft
 
     template <class DT> void FFTReal<DT>::do_fft (DataType f[], const DataType x[]) const
     {
-        assert (f != 0);
-        assert (f != use_buffer ());
-        assert (x != 0);
-        assert (x != use_buffer ());
-        assert (x != f);
+        if ((f == 0) || (f == use_buffer ()) || (x == 0) || (x == use_buffer ()) || (x == f))
+        {
+            throw new std::runtime_error ("invalid x and f arguments");
+        }
 
         // General case
         if (_nbr_bits > 2)
@@ -190,11 +194,10 @@ namespace ffft
 
     template <class DT> void FFTReal<DT>::do_ifft (const DataType f[], DataType x[]) const
     {
-        assert (f != 0);
-        assert (f != use_buffer ());
-        assert (x != 0);
-        assert (x != use_buffer ());
-        assert (x != f);
+        if ((f == 0) || (f == use_buffer ()) || (x == 0) || (x == use_buffer ()) || (x == f))
+        {
+            throw new std::runtime_error ("invalid x and f arguments");
+        }
 
         // General case
         if (_nbr_bits > 2)
@@ -257,7 +260,10 @@ namespace ffft
 
         else
         {
-            assert ((_length & 3) == 0);
+            if ((_length & 3) != 0)
+            {
+                throw new std::runtime_error ("invalid _length");
+            }
 
             // Could be optimized with SIMD instruction sets (needs alignment check)
             long i = _length - 4;
@@ -373,7 +379,10 @@ namespace ffft
     template <class DT>
     const typename FFTReal<DT>::DataType *FFTReal<DT>::get_trigo_ptr (int level) const
     {
-        assert (level >= 3);
+        if (level < 3)
+        {
+            throw new std::runtime_error ("invalid level");
+        }
 
         return (&_trigo_lut[get_trigo_level_index (level)]);
     }
@@ -381,7 +390,10 @@ namespace ffft
 
     template <class DT> long FFTReal<DT>::get_trigo_level_index (int level) const
     {
-        assert (level >= 3);
+        if (level < 3)
+        {
+            throw new std::runtime_error ("invalid level");
+        }
 
         return ((1L << (level - 1)) - 4);
     }
@@ -391,11 +403,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_fft_general (DataType f[], const DataType x[]) const
     {
-        assert (f != 0);
-        assert (f != use_buffer ());
-        assert (x != 0);
-        assert (x != use_buffer ());
-        assert (x != f);
+        if ((f == 0) || (f == use_buffer ()) || (x == 0) || (x == use_buffer ()) || (x == f))
+        {
+            throw new std::runtime_error ("invalid x and f arguments");
+        }
 
         DataType *sf;
         DataType *df;
@@ -428,9 +439,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_direct_pass_1_2 (DataType df[], const DataType x[]) const
     {
-        assert (df != 0);
-        assert (x != 0);
-        assert (df != x);
+        if ((df == 0) || (x == 0) || (df == x))
+        {
+            throw new std::runtime_error ("invalid df or x");
+        }
 
         const long *const bit_rev_lut_ptr = get_br_ptr ();
         long coef_index = 0;
@@ -459,9 +471,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_direct_pass_3 (DataType df[], const DataType sf[]) const
     {
-        assert (df != 0);
-        assert (sf != 0);
-        assert (df != sf);
+        if ((df == 0) || (sf == 0) || (df == sf))
+        {
+            throw new std::runtime_error ("invalid df or sf");
+        }
 
         const DataType sqrt2_2 = DataType (SQRT2 * 0.5);
         long coef_index = 0;
@@ -490,11 +503,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_direct_pass_n (DataType df[], const DataType sf[], int pass) const
     {
-        assert (df != 0);
-        assert (sf != 0);
-        assert (df != sf);
-        assert (pass >= 3);
-        assert (pass < _nbr_bits);
+        if ((df == 0) || (sf == 0) || (df == sf) || (pass < 3) || (pass >= _nbr_bits))
+        {
+            throw new std::runtime_error ("invalid df or sf or pass");
+        }
 
         if (pass <= TRIGO_BD_LIMIT)
         {
@@ -510,11 +522,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_direct_pass_n_lut (DataType df[], const DataType sf[], int pass) const
     {
-        assert (df != 0);
-        assert (sf != 0);
-        assert (df != sf);
-        assert (pass >= 3);
-        assert (pass < _nbr_bits);
+        if ((df == 0) || (sf == 0) || (df == sf) || (pass < 3) || (pass >= _nbr_bits))
+        {
+            throw new std::runtime_error ("invalid df or x or pass");
+        }
 
         const long nbr_coef = 1 << pass;
         const long h_nbr_coef = nbr_coef >> 1;
@@ -560,11 +571,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_direct_pass_n_osc (DataType df[], const DataType sf[], int pass) const
     {
-        assert (df != 0);
-        assert (sf != 0);
-        assert (df != sf);
-        assert (pass > TRIGO_BD_LIMIT);
-        assert (pass < _nbr_bits);
+        if ((df == 0) || (sf == 0) || (df == sf) || (pass <= TRIGO_BD_LIMIT) || (pass >= _nbr_bits))
+        {
+            throw new std::runtime_error ("invalid df or x or pass");
+        }
 
         const long nbr_coef = 1 << pass;
         const long h_nbr_coef = nbr_coef >> 1;
@@ -614,11 +624,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_ifft_general (const DataType f[], DataType x[]) const
     {
-        assert (f != 0);
-        assert (f != use_buffer ());
-        assert (x != 0);
-        assert (x != use_buffer ());
-        assert (x != f);
+        if ((x == 0) || (f == 0) || (x == f) || (f == use_buffer ()) || (x == use_buffer ()))
+        {
+            throw new std::runtime_error ("invalid x or f");
+        }
 
         DataType *sf = const_cast<DataType *> (f);
         DataType *df;
@@ -660,11 +669,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_inverse_pass_n (DataType df[], const DataType sf[], int pass) const
     {
-        assert (df != 0);
-        assert (sf != 0);
-        assert (df != sf);
-        assert (pass >= 3);
-        assert (pass < _nbr_bits);
+        if ((df == 0) || (sf == 0) || (df == sf) || (pass < 3) || (pass >= _nbr_bits))
+        {
+            throw new std::runtime_error ("invalid df or x or pass");
+        }
 
         if (pass <= TRIGO_BD_LIMIT)
         {
@@ -681,11 +689,10 @@ namespace ffft
     void FFTReal<DT>::compute_inverse_pass_n_lut (
         DataType df[], const DataType sf[], int pass) const
     {
-        assert (df != 0);
-        assert (sf != 0);
-        assert (df != sf);
-        assert (pass >= 3);
-        assert (pass < _nbr_bits);
+        if ((df == 0) || (sf == 0) || (df == sf) || (pass < 3) || (pass >= _nbr_bits))
+        {
+            throw new std::runtime_error ("invalid df or x or pass");
+        }
 
         const long nbr_coef = 1 << pass;
         const long h_nbr_coef = nbr_coef >> 1;
@@ -731,11 +738,10 @@ namespace ffft
     void FFTReal<DT>::compute_inverse_pass_n_osc (
         DataType df[], const DataType sf[], int pass) const
     {
-        assert (df != 0);
-        assert (sf != 0);
-        assert (df != sf);
-        assert (pass > TRIGO_BD_LIMIT);
-        assert (pass < _nbr_bits);
+        if ((df == 0) || (sf == 0) || (df == sf) || (pass <= TRIGO_BD_LIMIT) || (pass >= _nbr_bits))
+        {
+            throw new std::runtime_error ("invalid df or x or pass");
+        }
 
         const long nbr_coef = 1 << pass;
         const long h_nbr_coef = nbr_coef >> 1;
@@ -783,10 +789,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_inverse_pass_3 (DataType df[], const DataType sf[]) const
     {
-        assert (df != 0);
-        assert (sf != 0);
-        assert (df != sf);
-
+        if ((df == 0) || (sf == 0) || (df == sf))
+        {
+            throw new std::runtime_error ("invalid df or sf");
+        }
         const DataType sqrt2_2 = DataType (SQRT2 * 0.5);
         long coef_index = 0;
         do
@@ -813,9 +819,10 @@ namespace ffft
     template <class DT>
     void FFTReal<DT>::compute_inverse_pass_1_2 (DataType x[], const DataType sf[]) const
     {
-        assert (x != 0);
-        assert (sf != 0);
-        assert (x != sf);
+        if ((x == 0) || (sf == 0) || (x == sf))
+        {
+            throw new std::runtime_error ("invalid x or sf");
+        }
 
         const long *bit_rev_lut_ptr = get_br_ptr ();
         const DataType *sf2 = sf;
