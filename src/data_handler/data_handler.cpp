@@ -443,17 +443,13 @@ int perform_fft (double *data, int data_len, double *output_re, double *output_i
         for (int i = 0; i < data_len / 2 + 1; i++)
         {
             output_re[i] = temp[i];
-            // the transformaton of a real number sequence is a conjugate complex number sequence so
-            // output can have len == data_len / 2 + 1
-            if (i == 0)
-            {
-                output_im[i] = 0.0;
-            }
-            else
-            {
-                output_im[i] = temp[i + data_len / 2];
-            }
         }
+        output_im[0] = 0.0;
+        for (int count = 1, j = data_len / 2 + 1; j < data_len; j++, count++)
+        {
+            output_im[count] = temp[j];
+        }
+        output_im[data_len / 2] = 0.0;
         delete[] temp;
         temp = NULL;
     }
@@ -484,10 +480,10 @@ int perform_ifft (double *input_re, double *input_im, int data_len, double *rest
         for (int i = 0; i < data_len / 2 + 1; i++)
         {
             temp[i] = input_re[i];
-            if (i != 0)
-            {
-                temp[i + data_len / 2] = input_im[i];
-            }
+        }
+        for (int count = 1, j = data_len / 2 + 1; j < data_len; j++, count++)
+        {
+            temp[j] = input_im[count];
         }
         fft_object.do_ifft (temp, restored_data);
         fft_object.rescale (restored_data);
