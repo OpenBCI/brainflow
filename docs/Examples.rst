@@ -9,6 +9,7 @@ Python
 
 - matplotlib
 - pandas
+- mne
 
 Python Get Data from a Board
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -44,6 +45,12 @@ Python Denoising
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: ../tests/python/denoising.py
+   :language: py
+
+Python MNE Integration
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: ../tests/python/brainflow_to_mne.py
    :language: py
 
 Java
@@ -185,4 +192,11 @@ R Get Data from a Board
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: ../tests/r/brainflow_get_data.R
-	:language: r
+   :language: r
+
+Notebooks
+------------
+.. toctree::
+
+   ./notebooks/brainflow_mne
+   ./notebooks/denoising

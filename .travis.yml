@@ -119,6 +119,7 @@ script:
   - python3 $TRAVIS_BUILD_DIR/tests/python/signal_filtering.py
   - python3 $TRAVIS_BUILD_DIR/tests/python/transforms.py
   - python3 $TRAVIS_BUILD_DIR/tests/python/downsampling.py
+  - python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_to_mne.py
   # C++
   - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TRAVIS_BUILD_DIR/installed/lib $TRAVIS_BUILD_DIR/tests/cpp/signal_processing_demo/build/denoising
   - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TRAVIS_BUILD_DIR/installed/lib $TRAVIS_BUILD_DIR/tests/cpp/signal_processing_demo/build/downsampling
