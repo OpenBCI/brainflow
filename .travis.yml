@@ -72,7 +72,7 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       cp $TRAVIS_BUILD_DIR/java-package/brainflow/target/classes/brainflow/*.so $TRAVIS_BUILD_DIR/java-package/brainflow/target/classes/ ;
     fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       cp $TRAVIS_BUILD_DIR/java-package/brainflow/target/classes/brainflow/*.dylib $TRAVIS_BUILD_DIR/java-package/brainflow/target/classes/ ;
     fi
 
