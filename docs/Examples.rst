@@ -59,37 +59,37 @@ Java
 Java Get Data from a Board
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../java-package/brainflow/src/test/java/brainflow_test/BrainFlowGetData.java
+.. literalinclude:: ../java-package/brainflow/src/main/java/brainflow/examples/BrainFlowGetData.java
    :language: java
 
 Java Read Write File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../java-package/brainflow/src/test/java/brainflow_test/Serialization.java
+.. literalinclude:: ../java-package/brainflow/src/main/java/brainflow/examples/Serialization.java
    :language: java
 
 Java Downsample Data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../java-package/brainflow/src/test/java/brainflow_test/Downsampling.java
+.. literalinclude:: ../java-package/brainflow/src/main/java/brainflow/examples/Downsampling.java
    :language: java
 
 Java Transforms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../java-package/brainflow/src/test/java/brainflow_test/Transforms.java
+.. literalinclude:: ../java-package/brainflow/src/main/java/brainflow/examples/Transforms.java
    :language: java
 
 Java Signal Filtering
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../java-package/brainflow/src/test/java/brainflow_test/SignalFiltering.java
+.. literalinclude:: ../java-package/brainflow/src/main/java/brainflow/examples/SignalFiltering.java
    :language: java
 
 Java Denoising
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: ../java-package/brainflow/src/test/java/brainflow_test/Denoising.java
+.. literalinclude:: ../java-package/brainflow/src/main/java/brainflow/examples/Denoising.java
    :language: java
 
 C#

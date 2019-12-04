@@ -1,4 +1,4 @@
-package brainflow_test;
+package brainflow.examples;
 
 import java.util.Arrays;
 

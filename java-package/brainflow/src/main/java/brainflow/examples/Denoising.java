@@ -1,15 +1,15 @@
-package brainflow_test;
+package brainflow.examples;
 
 import java.util.Arrays;
 
+import brainflow.AggOperations;
 import brainflow.BoardIds;
 import brainflow.BoardShim;
 import brainflow.BrainFlowInputParams;
 import brainflow.DataFilter;
-import brainflow.FilterTypes;
 import brainflow.LogLevels;
 
-public class SignalFiltering
+public class Denoising
 {
 
     public static void main (String[] args) throws Exception
@@ -27,7 +27,7 @@ public class SignalFiltering
         board_shim.stop_stream ();
         System.out.println (board_shim.get_board_data_count ());
         int num_rows = BoardShim.get_num_rows (board_id);
-        double[][] data = board_shim.get_current_board_data (30);
+        double[][] data = board_shim.get_current_board_data (64);
         for (int i = 0; i < num_rows; i++)
         {
             System.out.println (Arrays.toString (data[i]));
@@ -37,24 +37,21 @@ public class SignalFiltering
         int[] eeg_channels = BoardShim.get_eeg_channels (board_id);
         for (int i = 0; i < eeg_channels.length; i++)
         {
-            // just for demo - apply different filters to different eeg channels
+            // just for demo - apply different methods to different eeg channels
             switch (i)
             {
+                // first of all you can try simple moving average or moving median
                 case 0:
-                    DataFilter.perform_lowpass (data[eeg_channels[i]], BoardShim.get_sampling_rate (board_id), 20.0, 4,
-                            FilterTypes.BESSEL.get_code (), 0.0);
+                    DataFilter.perform_rolling_filter (data[eeg_channels[i]], 3, AggOperations.MEAN.get_code ());
                     break;
                 case 1:
-                    DataFilter.perform_highpass (data[eeg_channels[i]], BoardShim.get_sampling_rate (board_id), 5.0, 4,
-                            FilterTypes.BUTTERWORTH.get_code (), 0.0);
+                    DataFilter.perform_rolling_filter (data[eeg_channels[i]], 3, AggOperations.MEDIAN.get_code ());
                     break;
-                case 2:
-                    DataFilter.perform_bandpass (data[eeg_channels[i]], BoardShim.get_sampling_rate (board_id), 15.0,
-                            5.0, 4, FilterTypes.CHEBYSHEV_TYPE_1.get_code (), 1.0);
-                    break;
-                case 3:
-                    DataFilter.perform_bandstop (data[eeg_channels[i]], BoardShim.get_sampling_rate (board_id), 50.0,
-                            1.0, 4, FilterTypes.CHEBYSHEV_TYPE_1.get_code (), 1.0);
+                // if methods above dont work good for you you should try wavelet based
+                // denoising
+                default:
+                    // try different functions and different decomposition levels here
+                    DataFilter.perform_wavelet_denoising (data[eeg_channels[i]], "db4", 3);
                     break;
             }
         }
