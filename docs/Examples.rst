@@ -1,6 +1,11 @@
+.. _code-samples-label:
 
 Code Samples
 ============
+
+Make sure that you've installed BrainFlow package before running code samples below.
+
+See :ref:`installation-label` for details.
 
 Python
 --------
@@ -10,6 +15,8 @@ Python
 - matplotlib
 - pandas
 - mne
+
+BrainFlow doesn't need these packages and doesn't install them, but we use them in demos below.
 
 Python Get Data from a Board
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -139,7 +146,7 @@ C++
 
 - for Linux and MacOS add them to LD_LIBRARY_PATH env variable
 - for Windows add them to PATH env variable
-- or just copypaste them to the folder where your executable is located
+- or just copypaste them to the folder where your executable is located, don’t forget to copypaste brainflow_boards.json too
 
 CMake File Example
 ~~~~~~~~~~~~~~~~~~~~~
@@ -185,8 +192,6 @@ C++ Denoising
 
 R
 ----
-
-For R BrainFlow's signal processing API is unavailable, you will need to implement filters by yourself or use packages from CRAN.
 
 R Get Data from a Board
 ~~~~~~~~~~~~~~~~~~~~~~~~~
