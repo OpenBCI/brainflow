@@ -1,5 +1,7 @@
 package brainflow.examples;
 
+import brainflow.*;
+
 import java.util.Arrays;
 
 import brainflow.BoardShim;
