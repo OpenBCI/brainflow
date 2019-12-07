@@ -339,6 +339,13 @@ int Ganglion::config_board (char *config)
     {
         return res;
     }
+    // I've tried to pause and restart inside bglib code it doesnt work, dont want to investigate
+    // further
+    if (this->keep_alive)
+    {
+        safe_logger (spdlog::level::debug, "For ganglion config doesnt work if stream is running");
+        return STREAM_ALREADY_RUN_ERROR;
+    }
     return this->call_config (config);
 }
 
