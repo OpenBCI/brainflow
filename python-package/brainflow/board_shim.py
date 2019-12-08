@@ -639,10 +639,13 @@ class BoardShim (object):
         :type streamer_params: str
         """
 
-        try:
-            streamer = streamer_params.encode ()
-        except:
-            streamer = wavelet
+        if streamer_params is None:
+            streamer = None
+        else:
+            try:
+                streamer = streamer_params.encode ()
+            except:
+                streamer = streamer_params
 
         res = BoardControllerDLL.get_instance ().start_stream (num_samples, streamer, self.board_id, self.input_json)
         if res != BrainflowExitCodes.STATUS_OK.value:

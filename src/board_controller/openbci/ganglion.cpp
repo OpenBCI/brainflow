@@ -117,7 +117,7 @@ int Ganglion::start_stream (int buffer_size, char *streamer_params)
         return INVALID_BUFFER_SIZE_ERROR;
     }
 
-    int res = this->call_start ();
+    res = this->call_start ();
     if (res != STATUS_OK)
     {
         return res;
