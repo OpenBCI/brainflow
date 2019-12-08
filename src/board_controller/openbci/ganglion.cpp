@@ -105,16 +105,10 @@ int Ganglion::start_stream (int buffer_size, char *streamer_params)
         this->streamer = NULL;
     }
 
-    if (streamer_params)
+    int res = prepare_streamer (streamer_params);
+    if (res != STATUS_OK)
     {
-        if (streamer_params[0] != '\0')
-        {
-            int res = prepare_streamer (streamer_params);
-            if (res != STATUS_OK)
-            {
-                return res;
-            }
-        }
+        return res;
     }
     this->db = new DataBuffer (num_channels, buffer_size);
     if (!this->db->is_ready ())
