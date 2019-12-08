@@ -46,7 +46,7 @@ def main ():
     board.release_session ()
 
     print (data)
-    print (data.shape)
+
 
 if __name__ == "__main__":
     main ()
