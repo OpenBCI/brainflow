@@ -42,7 +42,7 @@ int MultiCastServer::init ()
     // ensure that library will not hang in blocking recv/send call
     DWORD timeout = 5000;
     DWORD value = 1;
-    setsockopt (socket, SOL_SOCKET, SO_REUSEADDR, (char *)&value, sizeof (value));
+    setsockopt (server_socket, SOL_SOCKET, SO_REUSEADDR, (char *)&value, sizeof (value));
     setsockopt (server_socket, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof (timeout));
     setsockopt (server_socket, SOL_SOCKET, SO_SNDTIMEO, (char *)&timeout, sizeof (timeout));
 
