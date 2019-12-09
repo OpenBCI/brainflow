@@ -85,7 +85,7 @@ public:
      * start streaming thread and store data in ringbuffer
      * @param buffer_size size of internal ring buffer
      * @param streamer_params use it to pass data packages further or store them directly during streaming,
-                    supported values: file://%file_name%:w, file://%file_name%:a, streaming_board://%ip%:%port%
+                    supported values: file://%file_name%:w, file://%file_name%:a, streaming_board://%multicast_group_ip%:%port%
      */
     void start_stream (int buffer_size = 450000, char *streamer_params = NULL);
     // clang-format on

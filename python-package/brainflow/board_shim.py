@@ -635,7 +635,7 @@ class BoardShim (object):
 
         :param num_samples: size of ring buffer to keep data
         :type num_samples: int
-        :param streamer_params parameter to stream data from brainflow, supported vals: file://%file_name%:w, file://%file_name%:a
+        :param streamer_params parameter to stream data from brainflow, supported vals: file://%file_name%:w, file://%file_name%:a, streaming_board://%multicast_group_ip%:%port%
         :type streamer_params: str
         """
 

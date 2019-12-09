@@ -404,7 +404,7 @@ namespace brainflow
         /// start streaming thread, store data in internal ringbuffer
         /// </summary>
         /// <param name="buffer_size">size of internal ringbuffer</param>
-        /// <param name="streamer_params">supported values: file://%file_name%:w, file://%file_name%:a</param>
+        /// <param name="streamer_params">supported values: file://%file_name%:w, file://%file_name%:a, streaming_board://%multicast_group_ip%:%port%</param>
         public void start_stream (int buffer_size = 3600 * 250, string streamer_params = "")
         {
             int res = BoardControllerLibrary.start_stream (buffer_size, streamer_params, board_id, input_json);
