@@ -34,7 +34,7 @@ int MultiCastClient::init ()
     {
         return (int)MultiCastReturnCodes::PTON_ERROR;
     }
-    client_socket = client_socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    client_socket = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (client_socket == INVALID_SOCKET)
     {
         return (int)MultiCastReturnCodes::CREATE_SOCKET_ERROR;
