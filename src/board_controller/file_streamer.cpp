@@ -34,9 +34,9 @@ int FileStreamer::init_streamer ()
     return STATUS_OK;
 }
 
-void FileStreamer::stream_data (double *data, int size, double timestamp)
+void FileStreamer::stream_data (double *data, int len, double timestamp)
 {
-    for (int i = 0; i < size; i++)
+    for (int i = 0; i < len; i++)
     {
         fprintf (fp, "%lf,", data[i]);
     }

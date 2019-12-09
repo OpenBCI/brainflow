@@ -3,6 +3,7 @@
 #include "board.h"
 #include "board_controller.h"
 #include "file_streamer.h"
+#include "multicast_streamer.h"
 #include "stub_streamer.h"
 
 
@@ -76,7 +77,11 @@ int Board::prepare_streamer (char *streamer_params)
         {
             streamer = new FileStreamer (streamer_dest.c_str (), streamer_mods.c_str ());
         }
-        // add more streamers here
+        if (streamer_type == "streaming_board")
+        {
+            int port = std::stoi (streamer_mods);
+            streamer = new MultiCastStreamer (streamer_dest.c_str (), port);
+        }
 
         if (streamer == NULL)
         {

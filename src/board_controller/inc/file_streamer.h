@@ -13,7 +13,7 @@ public:
     ~FileStreamer ();
 
     int init_streamer ();
-    void stream_data (double *data, int size, double timestamp);
+    void stream_data (double *data, int len, double timestamp);
 
 private:
     char file[128];
