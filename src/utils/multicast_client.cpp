@@ -30,10 +30,7 @@ int MultiCastClient::init ()
     }
     socket_addr.sin_family = AF_INET;
     socket_addr.sin_port = htons (port);
-    if (inet_pton (AF_INET, ip_addr, &socket_addr.sin_addr) == 0)
-    {
-        return (int)MultiCastReturnCodes::PTON_ERROR;
-    }
+    socket_addr.sin_addr.s_addr = htonl (INADDR_ANY);
     client_socket = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (client_socket == INVALID_SOCKET)
     {
@@ -112,10 +109,7 @@ int MultiCastClient::init ()
 
     socket_addr.sin_family = AF_INET;
     socket_addr.sin_port = htons (port);
-    if (inet_pton (AF_INET, ip_addr, &socket_addr.sin_addr) == 0)
-    {
-        return (int)MultiCastReturnCodes::PTON_ERROR;
-    }
+    socket_addr.sin_addr.s_addr = htonl (INADDR_ANY);
 
     // ensure that library will not hang in blocking recv/send call
     struct timeval tv;
