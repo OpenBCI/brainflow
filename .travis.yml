@@ -123,7 +123,7 @@ script:
     fi
   # tests for streaming board
   - python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/streaming_board_emulator.py python3 $TRAVIS_BUILD_DIR/tests/python/brainflow_get_data.py --log --board-id -2 --ip-address 225.1.1.1 --ip-port 6677 --other-info -1
-  - $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/streaming_board_emulator.py $TRAVIS_BUILD_DIR/tests/cpp/get_data_demo/build/brainflow_get_data --board-id -2 --ip-address 225.1.1.1 --ip-port 6677 --other-info -1
+  - python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/streaming_board_emulator.py $TRAVIS_BUILD_DIR/tests/cpp/get_data_demo/build/brainflow_get_data --board-id -2 --ip-address 225.1.1.1 --ip-port 6677 --other-info -1
   # there is an error in valgrind but this error doesnt make any sense and looks like smth outside our control
   # - if [ `which valgrind` ]; then
   #    python3 $TRAVIS_BUILD_DIR/emulator/brainflow_emulator/streaming_board_emulator.py valgrind --error-exitcode=1 --leak-check=full $TRAVIS_BUILD_DIR/tests/cpp/get_data_demo/build/brainflow_get_data --board-id -2 --ip-address 225.1.1.1 --ip-port 6677 --other-info -1 ;
