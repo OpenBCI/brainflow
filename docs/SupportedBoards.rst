@@ -8,7 +8,7 @@ Streaming Board
 
 BrainFlow's boards can stream data to different destinations like file, socket and so on. This board acts like a consumer for data streamed from the main process.
 
-**To use it in first process you should call:**
+**To use it in the first process you should call:**
 
 .. code-block:: python
 
