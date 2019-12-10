@@ -12,7 +12,7 @@ BrainFlow's boards can stream data to different destinations like file, socket a
 
 .. code-block:: python
 
-    # choose any supported multicast address(from "224.0.0.0" to "239.255.255.255") and port
+    # choose any valid multicast address(from "224.0.0.0" to "239.255.255.255") and port
     start_stream (450000, 'streaming_board://225.1.1.1:6677')
 
 **In the second process please specify:**
@@ -32,12 +32,12 @@ In methods like:
 
 .. code-block:: python
 
-   # these methods return an array of rows in this 2d array containing eeg\emg\ecg\accel data
    get_eeg_channels (board_id)
    get_emg_channels (board_id)
    get_ecg_channels (board_id)
+   # .......
 
-You need to write master board id instead Streaming Board Id, because exact data format for streaming board is controlled by master board as well as sampling rate.
+You need to use master board id instead Streaming Board Id, because exact data format for streaming board is controlled by master board as well as sampling rate.
 
 Board Specs:
 
@@ -187,7 +187,7 @@ Board Spec:
 - num eeg(emg,...) channels: 4
 - num acceleration channels: 3
 - sampling rate: 1600
-- communication: tcp socket to read data and http to send commands
+- communication: TCP socket to read data and http to send commands
 
 Cyton with Wifi Shield
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -218,7 +218,7 @@ Board Spec:
 - num eeg(emg,...) channels: 8
 - num acceleration channels: 3
 - sampling rate: 1000
-- communication: tcp socket to read data and http to send commands
+- communication: TCP socket to read data and http to send commands
 
 Cyton Daisy with Wifi Shield
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -248,4 +248,4 @@ Board Spec:
 - num eeg(emg,...) channels: 16
 - num acceleration channels: 3
 - sampling rate: 1000
-- communication: tcp socket to read data and http to send commands
+- communication: TCP socket to read data and http to send commands
