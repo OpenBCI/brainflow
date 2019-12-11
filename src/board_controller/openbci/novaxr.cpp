@@ -47,7 +47,7 @@ int NovaXR::prepare_session ()
         safe_logger (spdlog::level::err, "ip protocol is UDP for novaxr");
         return INVALID_ARGUMENTS_ERROR;
     }
-    socket = new SocketClient (params.ip_address.c_str (), params.ip_port, (int)SocketType::UDP);
+    socket = new SocketClient (params.ip_address.c_str (), 2390, (int)SocketType::UDP);
     int res = socket->connect (NovaXR::transaction_size);
     if (res != (int)SocketReturnCodes::STATUS_OK)
     {
