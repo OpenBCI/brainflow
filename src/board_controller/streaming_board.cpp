@@ -167,10 +167,10 @@ void StreamingBoard::read_thread ()
     int num_channels = 0;
     get_num_rows (board_id, &num_channels);
     int bytes_per_recv = sizeof (double) * num_channels;
+    double *package = new double[num_channels];
     num_channels--;
     int timestamp_channel = 0;
     get_timestamp_channel (board_id, &timestamp_channel);
-    double *package = new double[num_channels];
     int res = 0;
 
     while (keep_alive)
