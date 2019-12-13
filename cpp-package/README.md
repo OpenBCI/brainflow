@@ -1,4 +1,4 @@
-# Brainflow
+# BrainFlow
 
 BrainFlow is a library intended to obtain, parse and analyze EEG, EMG, ECG and other kinds of data from biosensors.
 
@@ -6,7 +6,7 @@ BrainFlow is a library intended to obtain, parse and analyze EEG, EMG, ECG and o
 
 * powerful API with many features to simplify development
     * Straightforward API for data acquisition
-    * Powerfull API for signal filterring, denoising, downsampling... 
+    * Powerful API for signal filtering, denoising, downsampling...
     * Development tools like Synthetic board, Streaming board, logging API
 * easy to use
     * BrainFlow has many bindings, you can choose programming language you like
