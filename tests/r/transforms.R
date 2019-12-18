@@ -1,4 +1,4 @@
-library(brainflow)
+library (brainflow)
 
 params <- brainflow_python$BrainFlowInputParams ()
 board_shim <- brainflow_python$BoardShim (brainflow_python$BoardIds$SYNTHETIC_BOARD$value, params)
