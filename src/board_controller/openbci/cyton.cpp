@@ -48,6 +48,10 @@ void Cyton::read_thread ()
             remaining_bytes -= res;
             pos += res;
         }
+        if (!keep_alive)
+        {
+            return;
+        }
 
         if ((b[31] < END_BYTE_STANDARD) || (b[31] > END_BYTE_MAX))
         {
