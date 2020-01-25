@@ -178,7 +178,7 @@ after_success:
     fi
   # push results of static analyzer
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-      aws s3 cp $TRAVIS_BUILD_DIR/report s3://brainflow-artifacts/$TRAVIS_COMMIT/ --recursive ;
+      aws s3 cp $TRAVIS_BUILD_DIR/report s3://brainflow-artifacts/$TRAVIS_COMMIT/report --recursive ;
     fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       aws s3 cp $TRAVIS_BUILD_DIR/installed/lib/ s3://brainflow-artifacts/$TRAVIS_COMMIT/$TRAVIS_OS_NAME --recursive ;
