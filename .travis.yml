@@ -28,7 +28,6 @@ addons:
       - libxml2-dev
       - valgrind
       - cppcheck
-      - cppcheck-htmlreport
   # R disabled. It's taking up too much time in CI
   # homebrew:
   #   packages:
