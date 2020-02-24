@@ -24,6 +24,7 @@ class BoardIds (enum.Enum):
     GANGLION_WIFI_BOARD = 4 #:
     CYTON_WIFI_BOARD = 5 #:
     CYTON_DAISY_WIFI_BOARD = 6 #:
+    BRAINBIT_BOARD = 7 #:
 
 
 class LogLevels (enum.Enum):

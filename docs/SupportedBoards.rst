@@ -16,6 +16,7 @@ To create an instance of BoardShim class for your board check required inputs in
    "Ganglion Wifi", "BoardIds.GANGLION_WIFI_BOARD (4)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-"
    "Cyton Wifi", "BoardIds.CYTON_WIFI_BOARD (5)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-"
    "Cyton Daisy Wifi", "BoardIds.CYTON_DAISY_WIFI_BOARD (6)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-"
+   "BrainBit", "BoardIds.BRAINBIT_BOARD (7)", "-", "-", "-", "-", "-", "Serial Number of BrainBit device"
 
 
 Streaming Board
@@ -274,3 +275,31 @@ Board Spec:
 - sampling rate: 1000
 - communication: TCP socket to read data and HTTP to send commands
 - signal gain: 24
+
+BrainBit Company
+-----------------
+
+BrainBit
+~~~~~~~~~~
+
+.. image:: https://live.staticflickr.com/65535/49579371806_80b1bffae1.jpg
+    :width: 400px
+    :height: 400px
+
+`BrainBit website <https://brainbit.com/>`_.
+
+**To choose this board in BoardShim constructor please specify:**
+
+- board_id: 7
+- other_info field of BrainFlowInputParams structure should contain Serial Number of BrainBit device
+
+Supported platforms:
+
+- Windows >= 10
+
+Board Spec:
+
+- num eeg channels: 4
+- num acceleration channels: None
+- sampling rate: 250
+- communication: Bluetooth Low Energy
