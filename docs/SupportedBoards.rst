@@ -17,6 +17,7 @@ To create an instance of BoardShim class for your board check required inputs in
    "Cyton Wifi", "BoardIds.CYTON_WIFI_BOARD (5)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-"
    "Cyton Daisy Wifi", "BoardIds.CYTON_DAISY_WIFI_BOARD (6)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-"
 
+
 Streaming Board
 ------------------
 
@@ -108,6 +109,8 @@ Supported platforms:
 - Linux
 - MacOS
 
+**On MacOS there are two serial ports for each device: /dev/tty..... and /dev/cu..... You HAVE to specify /dev/cu.....**
+
 Board Spec:
 
 - num eeg(emg,...) channels: 8
@@ -139,6 +142,8 @@ Supported platforms:
 - Linux
 - MacOS
 
+**On MacOS there are two serial ports for each device: /dev/tty..... and /dev/cu..... You HAVE to specify /dev/cu.....**
+
 Board Spec:
 
 - num eeg(emg,...) channels: 4
@@ -165,6 +170,8 @@ Supported platforms:
 - Windows >= 8.1
 - Linux
 - MacOS
+
+**On MacOS there are two serial ports for each device: /dev/tty..... and /dev/cu..... You HAVE to specify /dev/cu.....**
 
 Board Spec:
 
