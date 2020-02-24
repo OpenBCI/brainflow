@@ -354,7 +354,7 @@ int BrainBit::prepare_session ()
     return UNSUPPORTED_BOARD_ERROR;
 }
 
-int BrainBit::config_board ()
+int BrainBit::config_board (char *config)
 {
     safe_logger (spdlog::level::err, "BrainBit supports only Windows.");
     return UNSUPPORTED_BOARD_ERROR;
@@ -372,14 +372,10 @@ int BrainBit::stop_stream ()
     return UNSUPPORTED_BOARD_ERROR;
 }
 
-int BrainBit::start_stream ()
+int BrainBit::start_stream (int buffer_size, char *streamer_params)
 {
     safe_logger (spdlog::level::err, "BrainBit supports only Windows.");
     return UNSUPPORTED_BOARD_ERROR;
-}
-
-void BrainBit::read_thread ()
-{
 }
 
 #endif
