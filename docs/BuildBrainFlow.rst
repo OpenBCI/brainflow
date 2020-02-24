@@ -73,7 +73,7 @@ Windows
 
     Compilation using batch files ::
 
-        python -m pip install cmake==3.13.0
+        python -m pip install cmake==3.15.3
         .\tools\build_win32.cmd
         .\tools\build_win64.cmd
 
@@ -89,7 +89,7 @@ Linux
 
     Compilation using bash file ::
 
-        python -m pip install cmake==3.13.0
+        python -m pip install cmake==3.15.3
         ./tools/build_linux.sh
 
 MacOS
@@ -103,6 +103,6 @@ MacOS
 
     Compilation using bash file ::
 
-        python -m pip install cmake==3.13.0
+        python -m pip install cmake==3.15.3
         ./tools/build_mac.sh
 
