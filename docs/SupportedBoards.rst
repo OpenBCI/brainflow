@@ -69,7 +69,7 @@ This board generates synthetic data and you dont need real hardware to use it.
 
 **It can be extremely useful during development.**
 
-**To choose this board in BoardShim constructor please specify:**
+To choose this board in BoardShim constructor please specify:
 
 - board_id: -1
 - you dont need to set any fields in BrainFlowInputParams structure
@@ -99,7 +99,7 @@ Cyton
 
 `Cyton Getting Started Guide from OpenBCI <https://docs.openbci.com/docs/01GettingStarted/01-Boards/CytonGS>`_.
 
-**To choose this board in BoardShim constructor please specify:**
+To choose this board in BoardShim constructor please specify:
 
 - board_id: 0
 - serial_port field of BrainFlowInputParams structure
@@ -131,7 +131,7 @@ Ganglion
 
 **To use Ganglion board you need a** `dongle <https://shop.openbci.com/collections/frontpage/products/ganglion-dongle>`_.
 
-**To choose this board in BoardShim constructor please specify:**
+To choose this board in BoardShim constructor please specify:
 
 - board_id: 1
 - serial_port field of BrainFlowInputParams structure
@@ -161,7 +161,7 @@ Cyton Daisy
 
 `CytonDaisy Getting Started Guide from OpenBCI <https://docs.openbci.com/docs/01GettingStarted/01-Boards/DaisyGS>`_.
 
-**To choose this board in BoardShim constructor please specify:**
+To choose this board in BoardShim constructor please specify:
 
 - board_id: 2
 - serial_port field of BrainFlowInputParams structure
@@ -194,7 +194,7 @@ Ganglion with WiFi Shield
 
 `WiFi Shield Programming Guide from OpenBCI <https://docs.openbci.com/docs/05ThirdParty/03-WiFiShield/WiFiProgam>`_.
 
-**To choose this board in BoardShim constructor please specify:**
+To choose this board in BoardShim constructor please specify:
 
 - board_id: 4
 - ip_address field of BrainFlowInputParams structure should contain WiFi Shield Ip address(in direct mode its 192.168.4.1)
@@ -224,7 +224,7 @@ Cyton with WiFi Shield
 
 `WiFi shield Programming Guide from OpenBCI <https://docs.openbci.com/docs/05ThirdParty/03-WiFiShield/WiFiProgam>`_.
 
-**To choose this board in BoardShim constructor please specify:**
+To choose this board in BoardShim constructor please specify:
 
 - board_id: 5
 - ip_address field of BrainFlowInputParams structure should contain WiFi Shield Ip address(in direct mode its 192.168.4.1)
@@ -256,7 +256,7 @@ CytonDaisy with WiFi Shield
 
 `WiFi Shield Programming Guide from OpenBCI <https://docs.openbci.com/docs/05ThirdParty/03-WiFiShield/WiFiProgam>`_.
 
-**To choose this board in BoardShim constructor please specify:**
+To choose this board in BoardShim constructor please specify:
 
 - board_id: 6
 - ip_address field of BrainFlowInputParams structure should contain WiFi Shield Ip address(in direct mode its 192.168.4.1)
@@ -288,7 +288,7 @@ BrainBit
 
 `BrainBit website <https://brainbit.com/>`_.
 
-**To choose this board in BoardShim constructor please specify:**
+To choose this board in BoardShim constructor please specify:
 
 - board_id: 7
 - other_info field of BrainFlowInputParams structure should contain Serial Number of BrainBit device
