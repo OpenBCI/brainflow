@@ -89,22 +89,14 @@ int BrainBit::prepare_session ()
     int res = find_device (serial_number);
     if (res != STATUS_OK)
     {
-        if (device)
-        {
-            device_delete (device);
-            device = NULL;
-        }
+        free_device ();
         return res;
     }
     // try to connect to device
     res = connect_device ();
     if (res != STATUS_OK)
     {
-        if (device)
-        {
-            device_delete (device);
-            device = NULL;
-        }
+        free_device ();
         return res;
     }
 
@@ -117,11 +109,7 @@ int BrainBit::prepare_session ()
         char error_msg[1024];
         sdk_last_error_msg (error_msg, 1024);
         safe_logger (spdlog::level::err, "get channels error {}", error_msg);
-        if (device)
-        {
-            device_delete (device);
-            device = NULL;
-        }
+        free_device ();
         return GENERAL_ERROR;
     }
 
@@ -229,11 +217,7 @@ int BrainBit::prepare_session ()
         safe_logger (spdlog::level::err, "get channels error {}", error_msg);
         free_listeners ();
         free_channels ();
-        if (device)
-        {
-            device_delete (device);
-            device = NULL;
-        }
+        free_device ();
         free_ChannelInfoArray (device_channels);
         return GENERAL_ERROR;
     }
@@ -384,12 +368,7 @@ int BrainBit::release_session ()
         initialized = false;
         free_listeners ();
         free_channels ();
-        if (device)
-        {
-            device_disconnect (device);
-            device_delete (device);
-            device = NULL;
-        }
+        free_device ();
     }
     return STATUS_OK;
 }
@@ -507,6 +486,16 @@ void BrainBit::free_listeners ()
     {
         free_listener_handle (battery_listener);
         battery_listener = NULL;
+    }
+}
+
+void BrainBit::free_device ()
+{
+    if (device)
+    {
+        device_disconnect (device);
+        device_delete (device);
+        device = NULL;
     }
 }
 

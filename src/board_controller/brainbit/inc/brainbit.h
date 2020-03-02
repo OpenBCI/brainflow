@@ -36,6 +36,7 @@ private:
         DeviceEnumerator *enumerator, uint64_t serial_number, DeviceInfo *out_device_info);
     int connect_device ();
     void free_listeners ();
+    void free_device ();
     void free_channels ();
 
     ListenerHandle battery_listener;
