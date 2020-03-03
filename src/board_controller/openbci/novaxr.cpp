@@ -317,6 +317,7 @@ void NovaXR::read_thread ()
 
             double timestamp_device;
             memcpy (&timestamp_device, b + 64 + offset, 8);
+            timestamp_device /= 1e6; // convert usec to sec
             double timestamp = timestamp_device + start_time;
             streamer->stream_data (package, NovaXR::num_channels, timestamp);
             db->add_data (timestamp, package);
