@@ -34,8 +34,9 @@ SyntheticBoard::SyntheticBoard (struct BrainFlowInputParams params)
 
 SyntheticBoard::~SyntheticBoard ()
 {
-    skip_logs = true;
+    Board::skip_logs = true;
     release_session ();
+    Board::skip_logs = false;
 }
 
 

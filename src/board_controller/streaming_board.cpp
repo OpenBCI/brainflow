@@ -22,8 +22,9 @@ StreamingBoard::StreamingBoard (struct BrainFlowInputParams params)
 
 StreamingBoard::~StreamingBoard ()
 {
-    skip_logs = true;
+    Board::skip_logs = true;
     release_session ();
+    Board::skip_logs = false;
 }
 
 int StreamingBoard::prepare_session ()

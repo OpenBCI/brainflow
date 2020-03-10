@@ -17,8 +17,9 @@ OpenBCISerialBoard::OpenBCISerialBoard (
 
 OpenBCISerialBoard::~OpenBCISerialBoard ()
 {
-    skip_logs = true;
+    Board::skip_logs = true;
     release_session ();
+    Board::skip_logs = false;
 }
 
 int OpenBCISerialBoard::open_port ()

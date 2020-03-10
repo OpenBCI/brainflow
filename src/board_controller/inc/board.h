@@ -27,7 +27,6 @@ public:
     }
     Board (int board_id, struct BrainFlowInputParams params)
     {
-        skip_logs = false;
         db = NULL;       // should be initialized in start_stream
         streamer = NULL; // should be initialized in start_stream
         this->board_id = board_id;
@@ -50,7 +49,7 @@ public:
     void safe_logger (spdlog::level::level_enum log_level, const char *fmt, const Arg1 &arg1,
         const Args &... args)
     {
-        if (!skip_logs)
+        if (!Board::skip_logs)
         {
             Board::board_logger->log (log_level, fmt, arg1, args...);
         }
@@ -58,7 +57,7 @@ public:
 
     template <typename T> void safe_logger (spdlog::level::level_enum log_level, const T &msg)
     {
-        if (!skip_logs)
+        if (!Board::skip_logs)
         {
             Board::board_logger->log (log_level, msg);
         }
@@ -66,7 +65,7 @@ public:
 
 protected:
     DataBuffer *db;
-    bool skip_logs;
+    static volatile bool skip_logs;
     int board_id;
     struct BrainFlowInputParams params;
     Streamer *streamer;

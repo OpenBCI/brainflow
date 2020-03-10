@@ -10,6 +10,7 @@
 #define LOGGER_NAME "brainflow_logger"
 
 std::shared_ptr<spdlog::logger> Board::board_logger = spdlog::stderr_logger_mt (LOGGER_NAME);
+volatile bool Board::skip_logs = false;
 
 int Board::set_log_level (int level)
 {
@@ -29,11 +30,14 @@ int Board::set_log_level (int level)
 
 int Board::set_log_file (char *log_file)
 {
+    skip_logs = true; // we reset logger, ensure that streaming thread will not log using nullptr
     spdlog::level::level_enum level = Board::board_logger->level ();
+    Board::board_logger = nullptr;
     spdlog::drop (LOGGER_NAME);
     Board::board_logger = spdlog::basic_logger_mt (LOGGER_NAME, log_file);
     Board::board_logger->set_level (level);
     Board::board_logger->flush_on (level);
+    skip_logs = false;
     return STATUS_OK;
 }
 

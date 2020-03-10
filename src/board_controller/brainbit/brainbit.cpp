@@ -57,8 +57,9 @@ BrainBit::BrainBit (struct BrainFlowInputParams params) : Board ((int)BRAINBIT_B
 
 BrainBit::~BrainBit ()
 {
-    skip_logs = true;
+    Board::skip_logs = true;
     release_session ();
+    Board::skip_logs = false;
 }
 
 int BrainBit::prepare_session ()

@@ -39,9 +39,10 @@ Ganglion::Ganglion (struct BrainFlowInputParams params) : Board ((int)GANGLION_B
 
 Ganglion::~Ganglion ()
 {
-    skip_logs = true;
+    Board::skip_logs = true;
     Ganglion::num_objects--;
     release_session ();
+    Board::skip_logs = false;
 }
 
 int Ganglion::prepare_session ()
