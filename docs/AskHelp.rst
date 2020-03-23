@@ -4,7 +4,7 @@ Ask Help
 Contact Info, Feature Request, Report an Issue
 -----------------------------------------------
 
-- Join our `slack workspace <https://openbraintalk.slack.com/>`_ using `self\-invite page <https://6cnpug7lm8.execute-api.eu-west-1.amazonaws.com/Express/>`_
+- Join our `slack workspace <https://openbraintalk.slack.com/>`_ using `self\-invite page <https://c6ber255cc.execute-api.eu-west-1.amazonaws.com/Express/>`_
 - To report bugs or request features create an issue in our `GitHub Page <https://github.com/Andrey1994/brainflow>`_ 
 - For questions about adding new devices or collaboration use `Andrey\`s email <a1994ndrey@gmail.com>`_
 - For hardware related questions and issues contact board manufacturer
