@@ -19,7 +19,7 @@ BrainFlow is a library intended to obtain, parse and analyze EEG, EMG, ECG and o
 
 ## [BrainFlow Docs, Dev and User guides and other information](https://brainflow.readthedocs.io)
 
-## [BrainFlow's slack workspace](https://openbraintalk.slack.com/), use this [link to join](https://6cnpug7lm8.execute-api.eu-west-1.amazonaws.com/Express/)
+## [BrainFlow's slack workspace](https://openbraintalk.slack.com/), use this [link to join](https://c6ber255cc.execute-api.eu-west-1.amazonaws.com/Express/)
 
 ## Build status
 Compiled with:
