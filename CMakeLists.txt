@@ -323,6 +323,7 @@ install (
     ${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/board_controller.h
     ${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/brainflow_constants.h
     ${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/board_info_getter.h
+    ${CMAKE_HOME_DIRECTORY}/src/board_controller/inc/brainflow_input_params.h
     ${CMAKE_HOME_DIRECTORY}/src/data_handler/inc/data_handler.h
     ${CMAKE_HOME_DIRECTORY}/cpp-package/src/inc/data_filter.h
     ${CMAKE_HOME_DIRECTORY}/cpp-package/src/inc/board_shim.h
