@@ -18,29 +18,3 @@ BrainFlow is a library intended to obtain, parse and analyze EEG, EMG, ECG and o
     * Simplified process to add new boards and methods
 
 ## [BrainFlow Docs, Dev and User guides and other information](https://brainflow.readthedocs.io)
-
-## Build status
-Compiled with:
-* MSVC on Windows
-* GCC on Linux
-* Clang on MacOS
-
-*Linux and MacOS(Travis)*:
-
-[![Build Status](https://travis-ci.com/OpenBCI/brainflow.svg?branch=master)](https://travis-ci.com/OpenBCI/brainflow)
-
-*Windows(AppVeyour)*:
-
-[![Build status](https://ci.appveyor.com/api/projects/status/kuuoa32me3253jad/branch/master?svg=true)](https://ci.appveyor.com/project/daniellasry/brainflow/branch/master)
-
-## Brainflow Bindings
-We support bindings for:
-* [Python](./python-package)
-* [Java](./java-package/brainflow/)
-* [R](./r-package/)
-* [C++](./cpp-package/)
-* [C# (Windows only)](./csharp-package/brainflow/)
-* [Matlab](./matlab-package/brainflow)
-
-## License: 
-MIT

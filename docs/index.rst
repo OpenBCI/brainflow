@@ -19,6 +19,7 @@ It provides a **uniform data acquisition API for all supported boards**, it mean
     UserAPI
     DataFormatDesc
     Examples
+    Gallery
     BrainFlowDev
     AskHelp
     License
