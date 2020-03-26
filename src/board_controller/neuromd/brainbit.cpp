@@ -473,7 +473,7 @@ void BrainBit::free_listener (ListenerHandle lh)
 #ifdef _WIN32
         free_listener_handle (lh);
 #else
-        free_length_listener_handle (lh)
+        free_length_listener_handle (lh);
 #endif
         lh = NULL;
     }
