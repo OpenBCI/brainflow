@@ -9,4 +9,3 @@ ipykernel
 nbsphinx
 pandoc
 sphinxcontrib-ghcontributors
-sphinxcontrib-matlabdomain
