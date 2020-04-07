@@ -249,7 +249,7 @@ int UnicornBoard::call_open ()
     {
         safe_logger (spdlog::level::warn,
             "Use device with id {}. To select another one provide id to other_info field.",
-            available_devices[i]);
+            available_devices[device_num]);
     }
     else
     {
