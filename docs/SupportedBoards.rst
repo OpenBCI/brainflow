@@ -16,8 +16,8 @@ To create an instance of BoardShim class for your board check required inputs in
    "Ganglion Wifi", "BoardIds.GANGLION_WIFI_BOARD (4)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-", "Timeout for HTTP response(default 10sec)"
    "Cyton Wifi", "BoardIds.CYTON_WIFI_BOARD (5)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-", "Timeout for HTTP response(default 10sec)"
    "Cyton Daisy Wifi", "BoardIds.CYTON_DAISY_WIFI_BOARD (6)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-", "Timeout for HTTP response(default 10sec)"
-   "BrainBit", "BoardIds.BRAINBIT_BOARD (7)", "-", "-", "-", "-", "-", "Serial Number of BrainBit device", "Timeout for device discovery(default 15sec)"
-   "Unicorn", "BoardIds.UNICORN_BOARD (8)", "-", "-", "-", "-", "-", "Serial Number of Unicorn device", "-"
+   "BrainBit", "BoardIds.BRAINBIT_BOARD (7)", "-", "-", "-", "-", "-", "Optional: Serial Number of BrainBit device", "Timeout for device discovery(default 15sec)"
+   "Unicorn", "BoardIds.UNICORN_BOARD (8)", "-", "-", "-", "-", "-", "Optional: Serial Number of Unicorn device", "-"
 
 
 Streaming Board
@@ -301,7 +301,7 @@ BrainBit
 To choose this board in BoardShim constructor please specify:
 
 - board_id: 7
-- other_info field of BrainFlowInputParams structure should contain Serial Number of BrainBit device
+- optional: other_info field of BrainFlowInputParams structure should contain Serial Number of BrainBit device, use it if you have multiple devices
 - optional: timeout field of BrainFlowInputParams structure, default is 15sec
 
 Supported platforms:
@@ -332,7 +332,7 @@ Unicorn
 To choose this board in BoardShim constructor please specify:
 
 - board_id: 8
-- other_info field of BrainFlowInputParams structure should contain Serial Number of BrainBit device
+- optional: other_info field of BrainFlowInputParams structure should contain Serial Number of BrainBit device, use it if you have multiple devices
 
 Supported platforms:
 

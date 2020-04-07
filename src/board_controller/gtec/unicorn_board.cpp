@@ -53,12 +53,6 @@ int UnicornBoard::prepare_session ()
         safe_logger (spdlog::level::info, "Session is already prepared");
         return STATUS_OK;
     }
-    if (params.other_info.empty ())
-    {
-        safe_logger (
-            spdlog::level::err, "You need to provide Unicorn serial number to other_info field!");
-        return INVALID_ARGUMENTS_ERROR;
-    }
 
     if (!dll_loader->load_library ())
     {
@@ -249,6 +243,32 @@ int UnicornBoard::call_open ()
         return BOARD_NOT_READY_ERROR;
     }
 
+    // search for device
+    int device_num = 0;
+    if (params.other_info.empty ())
+    {
+        safe_logger (spdlog::level::warn,
+            "Use device with id {}. To select another one provide id to other_info field.",
+            available_devices[i]);
+    }
+    else
+    {
+        for (device_num = 0; device_num < available_device_count; device_num++)
+        {
+            if (strcmp (available_devices[device_num], params.other_info.c_str ()) == 0)
+            {
+                break;
+            }
+        }
+        if (device_num == available_device_count)
+        {
+            safe_logger (
+                spdlog::level::err, "device with id {} not found", params.other_info.c_str ());
+            delete[] available_devices;
+            return GENERAL_ERROR;
+        }
+    }
+
     // open device
     int (*func_open) (UNICORN_DEVICE_SERIAL, UNICORN_HANDLE *) = (int (*) (
         UNICORN_DEVICE_SERIAL, UNICORN_HANDLE *))dll_loader->get_address ("UNICORN_OpenDevice");
@@ -258,24 +278,7 @@ int UnicornBoard::call_open ()
         delete[] available_devices;
         return GENERAL_ERROR;
     }
-
-    // search for specified device
-    int i = 0;
-    for (i = 0; i < available_device_count; i++)
-    {
-        if (strcmp (available_devices[i], params.other_info.c_str ()) == 0)
-        {
-            break;
-        }
-    }
-    if (i == available_device_count)
-    {
-        safe_logger (spdlog::level::err, "device with id {} not found", params.other_info.c_str ());
-        delete[] available_devices;
-        return GENERAL_ERROR;
-    }
-
-    ec = func_open (available_devices[i], &device_handle);
+    ec = func_open (available_devices[device_num], &device_handle);
     if ((ec != UNICORN_ERROR_SUCCESS) || (device_handle == 0))
     {
         safe_logger (spdlog::level::err, "Error in UNICORN_OpenDevice {}", ec);
