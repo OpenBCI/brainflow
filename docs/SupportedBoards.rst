@@ -17,7 +17,7 @@ To create an instance of BoardShim class for your board check required inputs in
    "Cyton Wifi", "BoardIds.CYTON_WIFI_BOARD (5)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-", "Timeout for HTTP response(default 10sec)"
    "Cyton Daisy Wifi", "BoardIds.CYTON_DAISY_WIFI_BOARD (6)", "-", "-", "Wifi Shield IP(default 192.168.4.1)", "any local port which is free", "-", "-", "Timeout for HTTP response(default 10sec)"
    "BrainBit", "BoardIds.BRAINBIT_BOARD (7)", "-", "-", "-", "-", "-", "Serial Number of BrainBit device", "Timeout for device discovery(default 15sec)"
-   "Unicorn", "BoardIds.UNICORN_BOARD (8)", "-", "-", "-", "-", "-", "-", "-"
+   "Unicorn", "BoardIds.UNICORN_BOARD (8)", "-", "-", "-", "-", "-", "Serial Number of Unicorn device", "-"
 
 
 Streaming Board
@@ -332,10 +332,12 @@ Unicorn
 To choose this board in BoardShim constructor please specify:
 
 - board_id: 8
+- other_info field of BrainFlowInputParams structure should contain Serial Number of BrainBit device
 
 Supported platforms:
 
 - Ubuntu 18.04, may work on other Linux OSes, it depends on dynamic library provided by Unicorn
+- May also work on Raspberry PI, if you replace libunicorn.so by library provided by Unicorn for Raspberry PI
 
 Board Spec:
 
