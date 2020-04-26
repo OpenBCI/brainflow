@@ -108,22 +108,25 @@ void CytonDaisy::read_thread ()
         // place processed accel data
         if (b[31] == END_BYTE_STANDARD)
         {
-            double accelTemp[3] = {0.};
-            accelTemp[0] = accel_scale * cast_16bit_to_int32 (b + 25);
-            accelTemp[1] = accel_scale * cast_16bit_to_int32 (b + 27);
-            accelTemp[2] = accel_scale * cast_16bit_to_int32 (b + 29);
+            int32_t accel_temp[3] = {0};
+            accel_temp[0] = cast_16bit_to_int32 (b + 25);
+            accel_temp[1] = cast_16bit_to_int32 (b + 27);
+            accel_temp[2] = cast_16bit_to_int32 (b + 29);
 
             if ((b[0] % 2 == 0) && (first_sample))
             {
                 // need to average accel data
-                for (int i = 0; i < 3; i++)
+                if (accel_temp[0] != 0)
                 {
-                    if (accelTemp[i] != 0)
-                    {
-                        accel[i] += accelTemp[i];
-                        accel[i] /= 2.f;
-                    }
+                    accel[0] += accel_scale * accel_temp[0];
+                    accel[1] += accel_scale * accel_temp[1];
+                    accel[2] += accel_scale * accel_temp[2];
+
+                    accel[0] /= 2.f;
+                    accel[1] /= 2.f;
+                    accel[2] /= 2.f;
                 }
+
                 package[20] = (double)b[31];
             }
             else
@@ -131,12 +134,11 @@ void CytonDaisy::read_thread ()
                 first_sample = true;
                 package[0] = (double)b[0];
                 // accel
-                for (int i = 0; i < 3; i++)
+                if (accel_temp[0] != 0)
                 {
-                    if (accelTemp[i] != 0)
-                    {
-                        accel[i] = accelTemp[i];
-                    }
+                    accel[0] = accel_scale * accel_temp[0];
+                    accel[1] = accel_scale * accel_temp[1];
+                    accel[2] = accel_scale * accel_temp[2];
                 }
             }
 
