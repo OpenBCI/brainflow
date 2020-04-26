@@ -27,6 +27,7 @@ void CytonWifi::read_thread ()
     */
     int res;
     unsigned char b[OpenBCIWifiShieldBoard::transaction_size];
+    double accel[3] = {0.};
     while (keep_alive)
     {
         // check start byte
@@ -71,9 +72,22 @@ void CytonWifi::read_thread ()
             // place processed bytes for accel
             if (bytes[31 + offset] == END_BYTE_STANDARD)
             {
-                package[9] = accel_scale * cast_16bit_to_int32 (bytes + 25 + offset);
-                package[10] = accel_scale * cast_16bit_to_int32 (bytes + 27 + offset);
-                package[11] = accel_scale * cast_16bit_to_int32 (bytes + 29 + offset);
+                double accelTemp[3] = {0.};
+                accelTemp[0] = accel_scale * cast_16bit_to_int32 (bytes + 25 + offset);
+                accelTemp[1] = accel_scale * cast_16bit_to_int32 (bytes + 27 + offset);
+                accelTemp[2] = accel_scale * cast_16bit_to_int32 (bytes + 29 + offset);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    if (accelTemp[i] != 0)
+                    {
+                        accel[i] = accelTemp[i];
+                    }
+                }
+
+                package[9] = accel[0];
+                package[10] = accel[1];
+                package[11] = accel[2];
             }
             // place processed bytes for analog
             if (bytes[31 + offset] == END_BYTE_ANALOG)
