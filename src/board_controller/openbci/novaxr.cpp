@@ -126,6 +126,11 @@ int NovaXR::config_board (char *config)
 
 int NovaXR::start_stream (int buffer_size, char *streamer_params)
 {
+    if (!initialized)
+    {
+        safe_logger (spdlog::level::err, "You need to call prepare_session before config_board");
+        return BOARD_NOT_CREATED_ERROR;
+    }
     if (is_streaming)
     {
         safe_logger (spdlog::level::err, "Streaming thread already running");
