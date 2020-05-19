@@ -73,6 +73,11 @@ int NovaXR::prepare_session ()
 
 int NovaXR::config_board (char *config)
 {
+    if (socket == NULL)
+    {
+        safe_logger (spdlog::level::err, "You need to call prepare_session before config_board");
+        return BOARD_NOT_CREATED_ERROR;
+    }
     safe_logger (spdlog::level::debug, "Trying to config NovaXR with {}", config);
     int res = validate_config (config);
     if (res != STATUS_OK)
